@@ -23,8 +23,8 @@
 
 ## 📰 News
 
-- **[2026-07-31]** 📄 **NatureBench** is out: [*NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?*](https://arxiv.org/abs/2606.24530) ([code](https://github.com/FrontisAI/NatureBench)) — the held-out transfer benchmark used to evaluate Frontis-MA1 and OpenMLE-Evo.
 - **[2026-07-31]** 🎉 First OpenRSI release: **Frontis-MA1** ([35B](https://huggingface.co/FrontisAI/Frontis-MA1-35B) / [30B](https://huggingface.co/FrontisAI/Frontis-MA1-30B), with [GGUF](https://huggingface.co/collections/FrontisAI/frontis-ma1) derivatives), the **OpenMLE** stack (Gym / RL / Evo), and the [OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) and [OpenMLE SFT Traces](https://huggingface.co/datasets/FrontisAI/OpenMLE-SFT-Traces) datasets.
+- **[2026-06-23]** 📄 **NatureBench** is out: [*NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?*](https://arxiv.org/abs/2606.24530) ([code](https://github.com/FrontisAI/NatureBench)) — the held-out transfer benchmark used to evaluate Frontis-MA1 and OpenMLE-Evo.
 
 <a id="openrsi"></a>
 
