@@ -1,0 +1,12 @@
+# @package _global_
+search:
+  runner:
+    solver:
+      execution_mode: async_steady_state
+      async_workers: ${oc.decode:${oc.env:AIRAEVO_WORKERS,8}}
+      async_sandbox_urls:
+        - ${oc.env:SANDBOX_ROUTER_URL}
+      async_sandbox_assignment: round_robin
+      async_checkpoint_every_commits: 1
+sandbox:
+  base_url: ${oc.env:SANDBOX_ROUTER_URL}

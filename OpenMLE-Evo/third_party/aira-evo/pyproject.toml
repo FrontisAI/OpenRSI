@@ -1,0 +1,103 @@
+[tool.ruff]
+line-length = 119
+
+[tool.mypy]
+python_version = "3.12"
+namespace_packages = true
+incremental = false
+# Removed cache_dir to use default caching behavior
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = false
+allow_redefinition = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+strict_optional = true
+strict_equality = true
+explicit_package_bases = true
+follow_imports = "skip"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+    "mpl_toolkits.*",
+    "gym.*",
+    "pytest_mock.*",
+    "numpy.*",
+    "tree.*",
+    "pytest.*",
+    "IPython.*",
+    "tensorboardX.*",
+    "scipy.*",
+    "hydra.*",
+    "omegaconf.*",
+]
+ignore_missing_imports = true
+
+[tool.flake8]
+select = ["A","B","C","D","E","F","G","I","N","T","W"]
+exclude = [
+    ".tox",
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "proto/*",
+    "*.pyc",
+    "*.egg-info",
+    ".cache",
+    ".eggs",
+]
+max-line-length = 100
+max-cognitive-complexity = 18
+import-order-style = "google"
+doctests = true
+docstring-convention = "google"
+
+ignore = [
+    "A002",  # Argument shadowing a Python builtin.
+    "A003",  # Class attribute shadowing a Python builtin.
+    "D107",  # Do not require docstrings for __init__.
+    "E266",  # Do not require block comments to only have a single leading #.
+    "E731",  # Do not assign a lambda expression, use a def.
+    "W503",  # Line break before binary operator (not compatible with black).
+    "B017",  # assertRaises(Exception): or pytest.raises(Exception) should be considered evil.
+    "E203",  # black and flake8 disagree on whitespace before ':'.
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
+optional-dependencies = { dev = { file = "requirements.txt" } }
+
+[project]
+name = "aira-dojo"
+readme = "README.md"
+version = "0.1.0"
+description = ""
+authors = [
+  { name = "Meta FAIR AI Research Agents team", email = "martinjosifoski@meta.com" }
+]
+dynamic = ["dependencies", "optional-dependencies"]
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+]

@@ -1,0 +1,50 @@
+raw/
+- Contents: 4 files (data_description.txt, sample_submission.csv, test.csv, train.csv)
+- Other Notes: Ames, Iowa housing dataset for predicting residential home sale prices.
+--------------------
+raw/data_description.txt
+- Format: Plain text
+- Content: Data dictionary describing all features (columns) in the dataset. Includes variable names, descriptions, and categorical value mappings for fields such as MSSubClass (dwelling type), MSZoning (zoning classification), LotFrontage, LotArea, Street, Alley, LotShape, LandContour, Utilities, LotConfig, LandSlope, Neighborhood, Condition1, Condition2, BldgType, HouseStyle, OverallQual, OverallCond, YearBuilt, YearRemodAdd, RoofStyle, RoofMatl, Exterior1st, and many more. Preview truncated at 6000 characters; full file contains additional feature descriptions.
+- Other Notes: Serves as the reference codebook for train.csv and test.csv columns.
+--------------------
+raw/sample_submission.csv
+- Dimensions: 1459 x 2
+- Headers: Id, SalePrice
+- Data Types: Id (int64), SalePrice (float64)
+- Null Counts: Id (0), SalePrice (0)
+- Raw Sample:
+  | Id   | SalePrice       |
+  |------|-----------------|
+  | 1461 | 169277.0524984  |
+  | 1462 | 187758.393988768|}
+  | 1463 | 183583.683569555|}
+- Other Notes: Template submission file; Id values range starting from 1461, corresponding to test set entries.
+--------------------
+raw/test.csv
+- Dimensions: 1459 x 80
+- Headers (first 32 analyzed): Id, MSSubClass, MSZoning, LotFrontage, LotArea, Street, Alley, LotShape, LandContour, Utilities, LotConfig, LandSlope, Neighborhood, Condition1, Condition2, BldgType, HouseStyle, OverallQual, OverallCond, YearBuilt, YearRemodAdd, RoofStyle, RoofMatl, Exterior1st, Exterior2nd, MasVnrType, MasVnrArea, ExterQual, ExterCond, Foundation, BsmtQual, BsmtCond
+- Data Types (first 32): Id (int64), MSSubClass (int64), MSZoning (str), LotFrontage (float64), LotArea (int64), Street (str), Alley (str), LotShape (str), LandContour (str), Utilities (str), LotConfig (str), LandSlope (str), Neighborhood (str), Condition1 (str), Condition2 (str), BldgType (str), HouseStyle (str), OverallQual (int64), OverallCond (int64), YearBuilt (int64), YearRemodAdd (int64), RoofStyle (str), RoofMatl (str), Exterior1st (str), Exterior2nd (str), MasVnrType (str), MasVnrArea (int64), ExterQual (str), ExterCond (str), Foundation (str), BsmtQual (str), BsmtCond (str)
+- Notable Null Counts (first 32 cols): Alley (1352), MasVnrType (894), LotFrontage (227), BsmtCond (45), BsmtQual (44), MasVnrArea (15), MSZoning (4), Utilities (2), Exterior1st (1), Exterior2nd (1)
+- Raw Sample:
+  | Id   | MSSubClass | MSZoning | LotFrontage | LotArea | Street | Alley | LotShape | LandContour | Neighborhood | BldgType | HouseStyle | OverallQual | YearBuilt |
+  |------|------------|----------|-------------|---------|--------|-------|----------|-------------|--------------|----------|------------|-------------|-----------|
+  | 1461 | 20         | RH       | 80          | 11622   | Pave   | NaN   | Reg      | Lvl         | NAmes        | 1Fam     | 1Story     | 5           | 1961      |
+  | 1462 | 20         | RL       | 81          | 14267   | Pave   | NaN   | IR1      | Lvl         | NAmes        | 1Fam     | 1Story     | 6           | 1958      |
+  | 1463 | 60         | RL       | 74          | 13830   | Pave   | NaN   | IR1      | Lvl         | Gilbert      | 1Fam     | 2Story     | 5           | 1997      |
+- Other Notes: Test set with 80 feature columns (no SalePrice target). Only first 32 columns were analyzed due to tool limit; remaining 48 columns described in data_description.txt.
+--------------------
+raw/train.csv
+- Dimensions: 1460 x 81
+- Headers (first 32 analyzed): Id, MSSubClass, MSZoning, LotFrontage, LotArea, Street, Alley, LotShape, LandContour, Utilities, LotConfig, LandSlope, Neighborhood, Condition1, Condition2, BldgType, HouseStyle, OverallQual, OverallCond, YearBuilt, YearRemodAdd, RoofStyle, RoofMatl, Exterior1st, Exterior2nd, MasVnrType, MasVnrArea, ExterQual, ExterCond, Foundation, BsmtQual, BsmtCond
+- Data Types (first 32): Id (int64), MSSubClass (int64), MSZoning (str), LotFrontage (float64), LotArea (int64), Street (str), Alley (str), LotShape (str), LandContour (str), Utilities (str), LotConfig (str), LandSlope (str), Neighborhood (str), Condition1 (str), Condition2 (str), BldgType (str), HouseStyle (str), OverallQual (int64), OverallCond (int64), YearBuilt (int64), YearRemodAdd (int64), RoofStyle (str), RoofMatl (str), Exterior1st (str), Exterior2nd (str), MasVnrType (str), MasVnrArea (int64), ExterQual (str), ExterCond (str), Foundation (str), BsmtQual (str), BsmtCond (str)
+- Notable Null Counts (first 32 cols): Alley (1369), MasVnrType (872), LotFrontage (259), BsmtQual (37), BsmtCond (37), MasVnrArea (8)
+- Raw Sample:
+  | Id | MSSubClass | MSZoning | LotFrontage | LotArea | Street | Alley | LotShape | LandContour | Neighborhood | BldgType | HouseStyle | OverallQual | YearBuilt |
+  |----|------------|----------|-------------|---------|--------|-------|----------|-------------|--------------|----------|------------|-------------|-----------|
+  | 1  | 60         | RL       | 65          | 8450    | Pave   | NaN   | Reg      | Lvl         | CollgCr      | 1Fam     | 2Story     | 7           | 2003      |
+  | 2  | 20         | RL       | 80          | 9600    | Pave   | NaN   | Reg      | Lvl         | Veenker      | 1Fam     | 1Story     | 6           | 1976      |
+  | 3  | 60         | RL       | 68          | 11250   | Pave   | NaN   | IR1      | Lvl         | CollgCr      | 1Fam     | 2Story     | 7           | 2001      |
+- Other Notes: Training set with 80 feature columns plus SalePrice target (81 total). Only first 32 columns were analyzed due to tool limit; the 81st column (SalePrice) is the prediction target. Remaining columns described in data_description.txt.
+--------------------
+
+--------------------

@@ -1,0 +1,72 @@
+defaults:
+  - /solver/client@debug.llm.client: litellm_4o
+
+debug:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are a Kaggle Grandmaster attending a high-stakes competition. In order to win this competition, you need to come up with an excellent and creative plan for a solution and then implement this solution in Python, that debugs and fixes an existing solution to the task.
+      {{public_system_prompt}}
+    input_variables:
+      - public_system_prompt
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      We will now provide a description of the task.
+
+      Task Description:
+
+      {{task_description}}
+
+      Data Description:
+
+      {{data_description}}
+
+      A previous solution was attempted with the following results:
+
+      Code:
+
+      {{prev_buggy_code}}
+
+      Feedback:
+
+      {{execution_output}}
+
+      Debug Guidance:
+
+      Based on the previous attempt, its score, and execution output, please identify the root cause of the failure and fix the code so it runs successfully and follows the output requirements. After it runs, improve the solution if possible.
+      Preserve the current core idea unless the feedback shows that it cannot be made valid.
+
+      AIRA Evo Search Context:
+
+      {% if memory %}
+      Previous debugging attempts:
+      ```markdown
+      {{memory}}
+      ```
+      {% else %}
+      Previous debugging attempts: none yet.
+      {% endif %}
+
+      {% set overview = data_overview | trim %}
+      {% if overview and "data (missing)" not in overview and "No data preview available" not in overview %}
+      Runtime Data Overview:
+      ```
+      {{data_overview}}
+      ```
+      {% endif %}
+
+      {{public_user_prompt}}
+    input_variables:
+      - task_description
+      - data_description
+      - public_user_prompt
+      - prev_buggy_code
+      - execution_output
+      - memory
+      - data_overview

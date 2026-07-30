@@ -1,0 +1,49 @@
+# @package _global_
+defaults:
+  - override /interpreter: jupyter
+  - override /solver: mlebench/evo
+  - override /solver/client@solver.operators.analyze.llm.client: litellm_4o
+  - override /solver/client@solver.operators.debug.llm.client: litellm_o3
+  - override /solver/client@solver.operators.draft.llm.client: litellm_o3
+  - override /solver/client@solver.operators.improve.llm.client: litellm_o3
+  - override /solver/client@solver.operators.crossover.llm.client: litellm_o3
+
+solver:
+  operators:
+    draft:
+      llm:
+        generation_kwargs:
+          # Overriding config because litellm_o3 does not support top_p
+          # and only supports temperature 1.0
+          temperature: 1.0
+          top_p: null
+    improve:
+      llm:
+        generation_kwargs:
+          # Overriding config because litellm_o3 does not support top_p
+          # and only supports temperature 1.0
+          temperature: 1.0
+          top_p: null
+    debug:
+      llm:
+        generation_kwargs:
+          # Overriding config because litellm_o3 does not support top_p
+          # and only supports temperature 1.0
+          temperature: 1.0
+          top_p: null
+    analyze:
+      llm:
+        generation_kwargs:
+          # Overriding config because litellm_o3 only supports temperature 1.0
+          temperature: 1.0
+    crossover:
+      llm:
+        generation_kwargs:
+          # Overriding config because litellm_o3 only supports temperature 1.0
+          temperature: 1.0
+
+metadata:
+  git_issue_id: AIRA_EVO_o3
+
+vars:
+  metadata.seed: [1,2,3,4,5,6,7,8,9,10]  # 10 seeds for each experiment

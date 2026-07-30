@@ -1,0 +1,47 @@
+Titanic - Machine Learning from Disaster
+
+The competition is the classic Titanic ML challenge. Use machine learning to build a predictive model that answers the question: "what sorts of people were more likely to survive the Titanic shipwreck?" using passenger data such as name, age, gender, socio-economic class, etc.
+
+The sinking of the RMS Titanic on April 15, 1912, resulted in the death of 1502 out of 2224 passengers and crew due to insufficient lifeboats. While luck played a role, certain groups of people were more likely to survive.
+
+Evaluation
+----------
+Submissions are evaluated on accuracy — the percentage of passengers correctly predicted (binary classification: survived or not). For each PassengerId in the test set, predict a 0 or 1 value for the Survived variable.
+
+Submission File Format
+----------------------
+Submit a CSV file with exactly 179 entries plus a header row. The file should have exactly 2 columns:
+- PassengerId (sorted in any order)
+- Survived (contains your binary predictions: 1 for survived, 0 for deceased)
+
+Example:
+PassengerId,Survived
+1,0
+2,1
+3,0
+
+Dataset Description
+-------------------
+The data has been split into two groups: a training set (712 passengers) and a test set (179 passengers). The training set includes the ground truth Survived label and should be used to build models. The test set does not include the Survived label; participants must predict survival outcomes.
+
+Data Dictionary:
+| Variable | Definition | Key |
+|----------|-----------|-----|
+| PassengerId | Unique passenger identifier | |
+| Survived | Survival | 0 = No, 1 = Yes |
+| Pclass | Ticket class (proxy for socio-economic status) | 1 = 1st (Upper), 2 = 2nd (Middle), 3 = 3rd (Lower) |
+| Name | Passenger name | |
+| Sex | Sex | |
+| Age | Age in years | Fractional if < 1; estimated ages in form xx.5 |
+| SibSp | # of siblings/spouses aboard | |
+| Parch | # of parents/children aboard | |
+| Ticket | Ticket number | |
+| Fare | Passenger fare | |
+| Cabin | Cabin number | |
+| Embarked | Port of Embarkation | C = Cherbourg, Q = Queenstown, S = Southampton |
+
+Files
+-----
+- train.csv: Training set with survival labels (712 passengers). Contains all features plus the Survived column.
+- test.csv: Test set without survival labels (179 passengers). Contains all features except Survived.
+- sample_submission.csv: A sample submission file in the correct format with random predictions.

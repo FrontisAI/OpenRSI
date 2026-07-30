@@ -1,0 +1,17 @@
+# @package _global_
+defaults:
+  - /experiment: default
+  - /litellm: sglang_qwen3_30b_a3b_thinking_2507
+  - /search: airaevo
+  - _self_
+
+experiment_name: openmle_evo
+max_steps: 800
+time_budget: 43200
+model_plus_sandbox_time_budget: 64800
+n_samples_per_task: 3
+
+search:
+  runner:
+    solver:
+      data_preview: false

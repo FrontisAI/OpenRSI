@@ -1,0 +1,14 @@
+name: aira-dojo
+dependencies:
+  - python==3.12
+  - pip==25.0
+  - pip:
+    # Use dependencies from requirements/requirements.txt reducing the cost of
+    # dependency management to a single file. It will allow devs to use
+    # one of the following options to set up their environment:
+    #
+    #   - conda env create -f environment.yml
+    #   - conda create --name aira-dojo python=3.11 --file requirements/requirements.txt
+    #   - pip install -r requirements/requirements.txt  # after setting up python and pip manually
+    #
+    - -r requirements.txt

@@ -1,0 +1,90 @@
+defaults:
+  - /solver/client@improve.llm.client: litellm_4o
+
+improve:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are improving a Python solution for a NatureBench scientific coding task using experience memory from prior attempts.
+      {{public_system_prompt}}
+    input_variables:
+      - public_system_prompt
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      Task Description:
+
+      {{task_description}}
+
+      Data Description:
+
+      {{data_description}}
+
+      {% if visible_data_analysis and visible_data_analysis|trim %}
+      Verified Visible-Data Analysis:
+      ```
+      {{visible_data_analysis}}
+      ```
+      Treat paths, schemas, shapes, and empirical facts here as verified from
+      agent-visible inputs. Modeling suggestions are advisory and do not reveal
+      hidden labels or ground truth.
+      {% endif %}
+
+      Runtime Dependencies:
+
+      - Available Python packages include: {{packages}}.
+      - For .loom files, prefer h5py over loompy; cnsbench-base:v3 includes h5py but may not include loompy.
+      - In these .loom files, spliced and unspliced matrices are under /layers/spliced and /layers/unspliced, not top-level /spliced or /unspliced.
+
+      Previous Code:
+
+      {{prev_code}}
+
+      Previous Feedback:
+
+      {{prev_terminal_output}}
+
+      Improve Guidance:
+
+      Use the selected parent memory to preserve what worked, and use sibling memory to avoid nearby failed alternatives. The node score is aggregate_improvement; higher is better and values above 0 surpass the baseline.
+
+      Runtime Contract:
+
+      - Read visible inputs from DATA_DIR.
+      - Write all required outputs under OUTPUT_DIR.
+      - Do not access hidden evaluation files, ground truth, external web resources, or external LLM services.
+      - The solution must finish within {{execution_timeout}}.
+
+      {% if memory %}
+      Targeted memory:
+      ```markdown
+      {{memory}}
+      ```
+      {% endif %}
+
+      {% if data_overview and data_overview|trim and data_overview|trim|lower not in ["data (missing)", "no data preview available", "(no data preview available)"] %}
+      Runtime Data Overview:
+      ```
+      {{data_overview}}
+      ```
+      {% endif %}
+
+      Return only Python code for the improved candidate.
+
+      {{public_user_prompt}}
+    input_variables:
+      - task_description
+      - data_description
+      - visible_data_analysis
+      - public_user_prompt
+      - packages
+      - prev_code
+      - prev_terminal_output
+      - memory
+      - data_overview
+      - execution_timeout

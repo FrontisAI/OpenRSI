@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+  - override /interpreter: jupyter
+  - override /solver: mlebench/greedy
+  - override /benchmark: mlebench/lite
+  - override /solver/operators/mlebench@solver.operators:
+    - aide_operators/debug    # Enables debugging mode for operator prompts
+    - aide_operators/draft    # Enables draft mode for generating initial outputs
+    - aide_operators/improve  # Enables improvement mode for refining outputs
+    - aide_operators/analyze  # Enables evaluation mode for assessing outputs
+  - override /solver/client@solver.operators.analyze.llm.client: litellm_4o
+  - override /solver/client@solver.operators.debug.llm.client: litellm_o3
+  - override /solver/client@solver.operators.draft.llm.client: litellm_o3
+  - override /solver/client@solver.operators.improve.llm.client: litellm_o3
+
+
+metadata:
+  git_issue_id: AIDE_GREEDY_o3
+
+vars:
+  metadata.seed: [1,2,3,4,5,6,7,8,9,10] # 10 seeds for each experiment

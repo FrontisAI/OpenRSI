@@ -1,0 +1,44 @@
+# Controlled NatureBench ablation of the original AIRA-Evo TTS behavior.
+# Keep the NatureBench budget and evaluator integration fixed; disable only the
+# later experience-memory search policy and restore the upstream fresh-draft
+# default. The standard AIRA-Evo memory operators remain enabled.
+runner:
+  package_root: third_party/aira-evo
+  strict_resume: false
+  task_list: []
+  task_concurrency: null
+  llm:
+    api: litellm
+    use_azure_client: false
+    provider: selfhosted
+  solver:
+    step_limit: 160
+    num_islands: 1
+    max_island_size: 160
+    crossover_prob: 0.5
+    migration_prob: 0.0
+    initial_temp: 1.0
+    final_temp: 1.0
+    num_generations_till_migration: 999
+    num_generations_till_crossover: 2
+    num_generations: 80
+    individuals_per_generation: 2
+    max_debug_depth: 2
+    max_debug_time: 1200
+    fresh_draft_prob: 0.0
+    max_wall_time_secs: 21600
+    data_preview: true
+    use_test_score: false
+    use_complexity: false
+    execution_timeout: 14400
+    final_submit: false
+    export_search_results: false
+    experience:
+      enabled: false
+  interpreter:
+    use_symlinks: true
+    format_tb_ipython: false
+  logger:
+    use_console: false
+    use_json: true
+    use_wandb: false

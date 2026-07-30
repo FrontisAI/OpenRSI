@@ -1,0 +1,34 @@
+# @package _global_
+defaults:
+  - /sandbox: default
+  - /execution: standard
+  - /data: default
+  - /hydra: default
+  - /generation: single
+  - _self_
+
+experiment_name: eval
+output_dir: outputs/${.experiment_name}/${now:%y-%m-%d}/${now:%H-%M-%S}
+seed: 42
+max_steps: null
+time_budget: null
+model_plus_sandbox_time_budget: null
+candidates_per_step: 1
+n_samples_per_task: 1
+llm_concurrency: 66
+
+data:
+  validation_split_guidance:
+    enabled: false
+    instructions_path: docs/mlebench_validation_split_instructions_22.md
+    output_filename: eval_data_validation_split_guidance.parquet
+    insert_marker: "**FINAL OUTPUT**"
+    heading: "Validation Split Guidance:"
+    strict: false
+  task_skill_guidance:
+    enabled: false
+    skills_dir: null
+    recursive: true
+    heading: "Task-Specific Skill Reference:"
+    intro: "The following task-specific skill may be useful. Use it as optional guidance while still following all benchmark instructions, reading data from DATA_DIR, and writing ./submission.csv."
+    strict: false

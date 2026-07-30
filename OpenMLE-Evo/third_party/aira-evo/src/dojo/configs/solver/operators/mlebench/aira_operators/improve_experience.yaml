@@ -1,0 +1,89 @@
+defaults:
+  - /solver/client@improve.llm.client: litellm_4o
+
+improve:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are a Kaggle Grandmaster attending a high-stakes competition. In order to win this competition, you need to come up with an excellent and creative plan for a solution and then implement this solution in Python, that improves upon an existing solution to the task.
+      {{public_system_prompt}}
+    input_variables:
+      - public_system_prompt
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      We will now provide a description of the task.
+
+      Task Description:
+
+      {{task_description}}
+
+      Data Description:
+
+      {{data_description}}
+
+      A previous solution was attempted with the following results:
+
+      Code:
+
+      {{prev_code}}
+
+      Feedback:
+
+      {{prev_terminal_output}}
+
+      Improve Guidance:
+
+      Based on the previous attempt, its score, and execution output, please analyze what worked well and what didn't, then improve the solution.
+      Propose exactly one improvement idea that is different from the previously explored improvement ideas.
+      Keep the evaluation method consistent across iterations.
+
+      AIRA Evo Search Context:
+
+      {% if memory %}
+      Targeted memory for this improvement:
+      ```markdown
+      {{memory}}
+      ```
+      Use the selected parent memory to preserve what already works.
+      Use vertical ancestor memory to understand the recent evolution path and which changes helped or hurt.
+      Use horizontal sibling memory to avoid repeating nearby failed alternatives and to borrow useful details.
+      Use board stats only as weak global guidance; prioritize evidence from the selected parent branch.
+      {% else %}
+      Targeted memory for this improvement: none available.
+      {% endif %}
+
+      {% if data_overview and data_overview|trim and data_overview|trim|lower not in ["data (missing)", "no data preview available", "(no data preview available)"] %}
+      Runtime Data Overview:
+      ```
+      {{data_overview}}
+      ```
+      {% endif %}
+
+      Execution Budget:
+
+      Be aware of the running time of the code, it should complete within {{execution_timeout}}.
+      Your code will be executed in a sandbox after generation.
+      A single sandbox run must finish within {{execution_timeout}}.
+      Always choose a validation/training strategy that leaves enough time to write ./submission.csv.
+
+      Submission Check:
+
+      Before finishing, verify that ./submission.csv exists, has the same row count and required columns/order as sample_submission.csv when available, preserves the sample id/order, and contains no NaN/inf values.
+      When building features, align train/test columns explicitly and handle missing values before model fitting or prediction.
+
+      {{public_user_prompt}}
+    input_variables:
+      - task_description
+      - data_description
+      - public_user_prompt
+      - prev_code
+      - prev_terminal_output
+      - memory
+      - data_overview
+      - execution_timeout

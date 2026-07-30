@@ -1,0 +1,3 @@
+_target_: dojo.config_dataclasses.interpreter.python.PythonInterpreterConfig
+
+use_symlinks: True

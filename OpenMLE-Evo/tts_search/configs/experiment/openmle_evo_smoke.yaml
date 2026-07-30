@@ -1,0 +1,27 @@
+# @package _global_
+defaults:
+  - openmle_evo
+  - _self_
+
+experiment_name: openmle_evo_smoke
+max_steps: 3
+time_budget: 1800
+model_plus_sandbox_time_budget: 2400
+candidates_per_step: 2
+n_samples_per_task: 1
+llm_concurrency: 2
+
+sandbox:
+  concurrency: 2
+  job_timeout: 600
+  wait_timeout: 900
+  poll_interval: 5
+
+search:
+  runner:
+    solver:
+      num_generations: 1
+      individuals_per_generation: 2
+      max_debug_depth: 0
+      max_debug_time: 600
+      execution_timeout: 600

@@ -1,0 +1,217 @@
+<!--
+ ! MIT-licensed
+ ! Copyright (c) 2024 Weco AI Ltd
+ ! See THIRD_PARTY_LICENSES.md for the full licence text.
+ ! https://github.com/WecoAI/aideml/blob/main/LICENSE
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- p5.js -->
+    <script
+      id="p5scripttag"
+      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+      integrity="sha512-uaz5GpnQoE6t5echKlX8P52czvsIGgLPcvlzfvRubLZ1Hp8JemUDnbUiAahbVtPb+jUVrNETuXvAhDDF/N3M4w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Highlight.js and Marked -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Google Fonts: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+      <!-- placeholder -->
+    </script>
+    <title>Visualization</title>
+    <style>
+      /* Global styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #f2f0e7;
+        font-family: 'Roboto', sans-serif;
+      }
+      /* Canvas styling with subtle box shadow */
+      canvas {
+        float: left;
+        height: 100vh;
+        width: 40vw;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+      }
+      /* Text container styling */
+      #text-container {
+        float: right;
+        height: 100vh;
+        width: 50vw;
+        background-color: #282c34;
+        padding: 1.5em;
+        color: #f2f0e7;
+        overflow-y: auto;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #444;
+        margin: 1em 0;
+      }
+      /* Section headings with accent border */
+      .section-heading {
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 1em 0 0.5em;
+        padding: 0.4em;
+        font-size: 1.1rem;
+        color: #f2f0e7;
+        background-color: #3b4049;
+        border-left: 5px solid #fd4578;
+        border-radius: 4px;
+      }
+      /* Code and pre blocks styling */
+      #plan,
+      #termOut,
+      #analysis,
+      #performance,
+      #auxiliarymetrics,
+      #prompt-display,
+      #code {
+        margin-bottom: 1em;
+        overflow: auto;
+        white-space: pre;
+        padding: 1em;
+        background-color: #2b2b2b;
+        border-radius: 4px;
+        font-family: Consolas, monospace;
+        font-size: 0.9rem;
+      }
+      /* Markdown content styles */
+      .markdown-content {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        padding: 1em;
+      }
+      .markdown-content h1,
+      .markdown-content h2,
+      .markdown-content h3 {
+        font-size: 1rem;
+        margin-top: 0.75em;
+        margin-bottom: 0.4em;
+      }
+      .markdown-content code {
+        font-size: 0.9rem;
+      }
+      .statsPanel{
+        font: 14px/1.4 "Helvetica Neue", Arial, sans-serif;
+        margin-top: .5rem;
+      }
+      #tree-stats{
+        font: 14px/1.35 "Helvetica Neue", Arial, sans-serif;
+        color:#ffffff;
+        max-width:280px;
+      }
+      
+      #tree-stats section{
+        margin-bottom:1.1rem;
+      }
+      
+      #tree-stats h4{
+        margin:0 0 .35rem 0;
+        font-size:.9rem;
+        font-weight:600;
+        color:#ffffff;
+        text-transform:uppercase;
+        letter-spacing:.02em;
+      }
+      
+      #tree-stats .metric{
+        margin:0;
+      }
+      
+      #tree-stats .val{
+        font-weight:700;
+        color:#ffffff;
+      }
+      
+      #tree-stats small{
+        color:#ffffff;
+        font-size:.8em;
+      }
+      :checked + label + #plan,
+      :checked + label + #termOut,
+      :checked + label + #analysis,
+      :checked + label + #performance,
+      :checked + label + #auxiliarymetrics,
+      :checked + label + #prompt-display {
+        white-space: pre-wrap;
+      }
+      /* Copy button styling */
+      #copy-data-btn {
+        margin-top: 1em;
+        padding: 0.7em 1.2em;
+        background-color: #fd4578;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      #copy-data-btn:hover {
+        background-color: #e03e6a;
+      }
+      /* Checkbox and label adjustments */
+      input[type="checkbox"] {
+        vertical-align: middle;
+        margin-right: 0.3em;
+      }
+      label {
+        vertical-align: middle;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="text-container">
+      <h2 class="section-heading">Performance</h2>
+      <div id="performance"></div>
+      <hr>
+      <h2 class="section-heading">Plan</h2>
+      <input type="checkbox" id="planWordWrap" checked /><label for="planWordWrap">Word Wrap</label>
+      <div id="plan"></div>
+      <hr>
+      <h2 class="section-heading">Code</h2>
+      <pre id="code" class="language-python"></pre>
+      <hr>
+      <h2 class="section-heading">Term Out</h2>
+      <input type="checkbox" id="termOutWordWrap" checked /><label for="termOutWordWrap">Word Wrap</label>
+      <pre id="termOut"></pre>
+      <hr>
+      <h2 class="section-heading">Analysis</h2>
+      <input type="checkbox" id="analysisWordWrap" checked /><label for="analysisWordWrap">Word Wrap</label>
+      <div id="analysis"></div>
+      <hr>
+      <h2 class="section-heading">Auxiliary Metrics</h2>
+      <input type="checkbox" id="auxiliarymetricsWordWrap" checked /><label for="auxiliarymetricsWordWrap">Word Wrap</label>
+      <pre id="auxiliarymetrics"></pre>
+      <button id="copy-data-btn">Copy Current Node Data (JSON)</button>
+      
+      <h2 class="section-heading">Tree Stats</h2>
+
+      <div id="tree-stats" class="statsPanel"></div>
+
+      <h2 class="section-heading">Prompt</h2>
+      <input type="checkbox" id="prompt-displayWordWrap" checked /><label for="prompt-displayWordWrap">Word Wrap</label>
+      <pre id="prompt-display"></pre>
+    </div>
+  </body>
+</html>

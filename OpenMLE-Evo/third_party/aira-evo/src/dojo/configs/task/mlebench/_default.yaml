@@ -1,0 +1,15 @@
+# @package task
+
+_target_: dojo.config_dataclasses.task.mlebench.MLEBenchTaskConfig
+name: ???
+benchmark: mlebench
+
+# ~~~ Task data ~~~
+cache_dir: ${get_mlebench_data_dir:}
+
+# ~~~ Workspace preparation ~~~
+public_dir: ${task.cache_dir}/${task.name}/prepared/public
+private_dir: ${task.cache_dir}/${task.name}/prepared/private
+
+# ~~~ Evaluation and results ~~~
+submission_fname: submission.csv

@@ -1,0 +1,20 @@
+Creative Commons Attribution-NonCommercial 4.0 International
+CC BY-NC 4.0
+
+Copyright (c) 2026 Frontis AI and the OpenMLE contributors.
+
+Except for third-party material identified in NOTICE or in an individual file, the original OpenMLE source code, documentation, and release materials in this repository are licensed under the Creative Commons Attribution-NonCommercial 4.0 International Public License.
+
+You may share and adapt the licensed material provided that you:
+
+1. give appropriate credit, provide a link to the license, and indicate if changes were made; and
+2. do not use the licensed material for commercial purposes.
+
+The canonical license and full legal code are available at:
+
+https://creativecommons.org/licenses/by-nc/4.0/
+https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+SPDX-License-Identifier: CC-BY-NC-4.0
+
+This notice is a convenient repository-level pointer. If it conflicts with the full legal code, the full legal code controls. Third-party dependencies, frameworks, model bases, datasets, benchmarks, and copied or modified third-party files remain subject to their own licenses and notices.

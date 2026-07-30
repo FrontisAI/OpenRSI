@@ -1,0 +1,52 @@
+### Description
+
+The competition is the classic Titanic ML challenge, designed as an introductory getting-started competition on Kaggle. Participants use machine learning to build a predictive model that answers the question: "what sorts of people were more likely to survive the Titanic shipwreck?" using passenger data such as name, age, gender, socio-economic class, etc. The sinking of the RMS Titanic on April 15, 1912, resulted in the death of 1502 out of 2224 passengers and crew due to insufficient lifeboats. While luck played a role, certain groups of people were more likely to survive. Participants must predict survival outcomes for 418 passengers in the test set.
+
+### Evaluation
+
+Submissions are evaluated on **accuracy** — the percentage of passengers correctly predicted (binary classification: survived or not). For each PassengerId in the test set, participants must predict a 0 or 1 value for the Survived variable.
+
+### Submission File
+
+You should submit a csv file with exactly 418 entries plus a header row. The file should have exactly 2 columns:
+
+- `PassengerId` (sorted in any order)
+- `Survived` (contains your binary predictions: 1 for survived, 0 for deceased)
+
+```
+PassengerId,Survived
+892,0
+893,1
+894,0
+Etc.
+```
+
+### Dataset Description
+
+The data has been split into two groups: a training set and a test set. The training set (891 passengers) includes the ground truth `Survived` label and should be used to build models. The test set (418 passengers) does not include the ground truth; participants must predict survival outcomes. Features include passenger demographics and ticket information. A sample submission file (`gender_submission.csv`) assumes all and only female passengers survive.
+
+**Data Dictionary:**
+
+| Variable | Definition | Key |
+|----------|-----------|-----|
+| survival | Survival | 0 = No, 1 = Yes |
+| pclass | Ticket class (proxy for socio-economic status) | 1 = 1st (Upper), 2 = 2nd (Middle), 3 = 3rd (Lower) |
+| sex | Sex | |
+| age | Age in years | Fractional if < 1; estimated ages in form xx.5 |
+| sibsp | # of siblings/spouses aboard | Sibling = brother, sister, stepbrother, stepsister; Spouse = husband, wife |
+| parch | # of parents/children aboard | Parent = mother, father; Child = daughter, son, stepdaughter, stepson; Some children with nanny have parch=0 |
+| ticket | Ticket number | |
+| fare | Passenger fare | |
+| cabin | Cabin number | |
+| embarked | Port of Embarkation | C = Cherbourg, Q = Queenstown, S = Southampton |
+
+### Files
+
+**Under raw/**:
+
+- raw/train.csv - Training set with survival labels. Rows: 891, Columns: PassengerId(int64, null_count=0), Survived(int64, null_count=0), Pclass(int64, null_count=0), Name(str, null_count=0), Sex(str, null_count=0), Age(float64, null_count=177), SibSp(int64, null_count=0), Parch(int64, null_count=0), Ticket(str, null_count=0), Fare(float64, null_count=0), Cabin(str, null_count=687), Embarked(str, null_count=2)
+    - row sample: PassengerId=1, Survived=0, Pclass=3, Name="Braund, Mr. Owen Harris", Sex=male, Age=22, SibSp=1, Parch=0, Ticket="A/5 21171", Fare=7.25, Cabin=NaN, Embarked=S
+- raw/test.csv - Test set without survival labels (must predict these). Rows: 418, Columns: PassengerId(int64, null_count=0), Pclass(int64, null_count=0), Name(str, null_count=0), Sex(str, null_count=0), Age(float64, null_count=86), SibSp(int64, null_count=0), Parch(int64, null_count=0), Ticket(str, null_count=0), Fare(float64, null_count=1), Cabin(str, null_count=327), Embarked(str, null_count=0)
+    - row sample: PassengerId=892, Pclass=3, Name="Kelly, Mr. James", Sex=male, Age=34.5, SibSp=0, Parch=0, Ticket=330911, Fare=7.8292, Cabin=NaN, Embarked=Q
+- raw/gender_submission.csv - Example submission file assuming all and only female passengers survive. Rows: 418, Columns: PassengerId(int64, null_count=0), Survived(int64, null_count=0)
+    - row sample: PassengerId=892, Survived=0

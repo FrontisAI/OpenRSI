@@ -1,0 +1,6 @@
+_target_: dojo.config_dataclasses.metadata.MetadataConfig
+
+script_id: ""
+git_issue_id: ""
+description: ""
+seed: 42

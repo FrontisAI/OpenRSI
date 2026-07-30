@@ -1,0 +1,74 @@
+runner:
+  package_root: third_party/aira-evo
+  task_root: third_party/aira-evo/examples/mle_bench
+  strict_resume: false
+  task_list: []
+  task_concurrency: null
+  submit_dir: ${oc.env:OPENMLE_SUBMIT_DIR,MLTasks/MLE-Bench-Lite-Modified}
+  submit_job_timeout: 14400
+  submit_wait_timeout: 28800
+  submit_data_dir_root: ${oc.env:OPENMLE_SUBMIT_DATA_DIR_ROOT}
+  submit_repeats: 1
+  evaluation_protocol: ${oc.env:OPENMLE_EVALUATION_PROTOCOL,self_valid}
+  selection_score_source: model_final_validation_score
+  llm:
+    api: litellm
+    use_azure_client: false
+    provider: selfhosted
+  solver:
+    step_limit: 800
+    num_islands: 1
+    max_island_size: 500
+    crossover_prob: 0.5
+    migration_prob: 0.0
+    initial_temp: 1.0
+    final_temp: 1.0
+    num_generations_till_migration: 999
+    num_generations_till_crossover: 2
+    num_generations: 100
+    individuals_per_generation: 5
+    max_debug_depth: 10
+    max_debug_time: 21600
+    data_preview: true
+    use_test_score: false
+    use_complexity: false
+    execution_timeout: 7200
+    export_search_results: true
+    experience:
+      enabled: true
+      prompt_score_sanitization:
+        enabled: true
+      parent_selection:
+        enabled: true
+        weights:
+          score: 1.0
+          delta: 0.4
+          novelty: 0.25
+        component_normalization:
+          score: minmax
+          delta: minmax
+          hybrid_minmax_weight: 0.5
+      prompt_memory:
+        enabled: true
+        use_base_memory: false
+        max_related_cards: 3
+        sibling_ranking:
+          weights:
+            score: 1.0
+            delta: 0.4
+            novelty: 0.25
+        improve:
+          ancestor_k: 3
+          sibling_k: 3
+        crossover:
+          ancestor_k: 2
+          sibling_k: 2
+        debug:
+          max_related_cards: 8
+  interpreter:
+    use_symlinks: true
+    format_tb_ipython: false
+  logger:
+    use_console: true
+    use_json: true
+    use_wandb: false

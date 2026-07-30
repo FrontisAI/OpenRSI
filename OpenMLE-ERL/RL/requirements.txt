@@ -1,0 +1,8 @@
+# Direct dependencies of the OpenMLE RL extension.
+# Install these only inside a compatible SLIME runtime. The framework image
+# provides PyTorch/CUDA, Ray, SGLang, Megatron-LM, Transformer Engine, and SLIME.
+black==25.9.0
+httpx==0.28.1
+numpy==1.26.4
+openai==2.6.1
+pandas==2.3.3

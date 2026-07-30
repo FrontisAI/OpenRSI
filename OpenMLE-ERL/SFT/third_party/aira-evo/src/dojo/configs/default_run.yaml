@@ -1,0 +1,8 @@
+defaults:
+  - metadata: base_metadata
+  - logger: base_logger
+  - task: ???
+  - solver: ???
+  - interpreter: ???
+
+_target_: dojo.config_dataclasses.run.RunConfig

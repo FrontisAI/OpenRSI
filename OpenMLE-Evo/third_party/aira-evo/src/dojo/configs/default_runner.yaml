@@ -1,0 +1,9 @@
+defaults:
+  - metadata: base_metadata
+  - logger: base_logger
+  - launcher: slurm
+  - benchmark: ???
+  - solver: ???
+  - interpreter: ???
+
+_target_: dojo.config_dataclasses.runner.RunnerConfig

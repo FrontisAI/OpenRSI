@@ -1,0 +1,52 @@
+naturebench_root: ${oc.env:NATUREBENCH_ROOT}
+tasks_root: ${oc.env:NATUREBENCH_TASKS_ROOT,naturebench}
+task_list: []
+task_set_path: task-set/all.txt
+eval_service_url: ${oc.env:NATUREBENCH_CONTAINER_EVAL_SERVICE_URL,http://host.docker.internal:8321}
+batch_name: ${oc.env:NATUREBENCH_BATCH_NAME,naturebench-airaevo-scm-all}
+execution_mode: scm_docker
+workspace_root: ${oc.env:NATUREBENCH_WORKSPACE_ROOT,outputs/naturebench-staging}
+docker_image: ${oc.env:NATUREBENCH_DOCKER_IMAGE,cnsbench-base:v3}
+submit_repeats: 0
+eval_timeout: ${oc.decode:${oc.env:NATUREBENCH_EVAL_TIMEOUT,14400}}
+execution_timeout: ${oc.decode:${oc.env:NATUREBENCH_EXECUTION_TIMEOUT,600}}
+candidate_preflight: true
+candidate_preflight_imports: true
+candidate_preflight_timeout: ${oc.decode:${oc.env:NATUREBENCH_PREFLIGHT_TIMEOUT,45}}
+scm_gpu_wait_timeout: ${oc.decode:${oc.env:NATUREBENCH_SCM_GPU_WAIT_TIMEOUT,3600}}
+scm_host: ${oc.env:NATUREBENCH_SCM_HOST}
+scm_workspace_root: ${oc.env:NATUREBENCH_SCM_WORKSPACE_ROOT}
+scm_task_set_host: null
+scm_task_set_root: null
+scm_task_roots:
+  - ${oc.env:NATUREBENCH_SCM_TASK_ROOT}
+scm_eval_service_url: ${oc.env:NATUREBENCH_SCM_EVAL_SERVICE_URL,http://localhost:8321}
+scm_container_eval_service_url: ${oc.env:NATUREBENCH_CONTAINER_EVAL_SERVICE_URL,http://host.docker.internal:8321}
+scm_resource_lines:
+  cpu_thu:
+    scm_host: ${oc.env:NATUREBENCH_SCM_HOST}
+    gpu_mode: none
+  gpu_thu_normal:
+    scm_host: ${oc.env:NATUREBENCH_SCM_HOST}
+    gpu_mode: exclusive
+    gpu_devices: ${oc.env:NATUREBENCH_SCM_GPU_DEVICES,0}
+    gpu_pool_file: ${oc.env:NATUREBENCH_SCM_EXCLUSIVE_GPU_POOL,/tmp/airaevo_naturebench_exclusive_gpu_pool}
+  gpu_thu_shared:
+    scm_host: ${oc.env:NATUREBENCH_SCM_HOST}
+    gpu_mode: shared
+    shared_gpu_device: ${oc.decode:${oc.env:NATUREBENCH_SCM_SHARED_GPU_DEVICE,0}}
+    shared_gpu_slots: ${oc.decode:${oc.env:NATUREBENCH_SCM_SHARED_GPU_SLOTS,1}}
+    shared_gpu_pool_file: ${oc.env:NATUREBENCH_SCM_SHARED_GPU_POOL,/tmp/airaevo_naturebench_shared_gpu_pool}
+  gpu_amd_normal:
+    scm_host: ${oc.env:NATUREBENCH_SCM_HOST}
+    gpu_mode: exclusive
+    gpu_devices: ${oc.env:NATUREBENCH_SCM_GPU_DEVICES,0}
+    gpu_pool_file: ${oc.env:NATUREBENCH_SCM_EXCLUSIVE_GPU_POOL,/tmp/airaevo_naturebench_exclusive_gpu_pool}
+  gpu_amd_shared:
+    scm_host: ${oc.env:NATUREBENCH_SCM_HOST}
+    gpu_mode: shared
+    shared_gpu_device: ${oc.decode:${oc.env:NATUREBENCH_SCM_SHARED_GPU_DEVICE,0}}
+    shared_gpu_slots: ${oc.decode:${oc.env:NATUREBENCH_SCM_SHARED_GPU_SLOTS,1}}
+    shared_gpu_pool_file: ${oc.env:NATUREBENCH_SCM_SHARED_GPU_POOL,/tmp/airaevo_naturebench_shared_gpu_pool}
+public_system_prompt: ""
+public_user_prompt: ""

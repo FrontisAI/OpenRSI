@@ -1,0 +1,5 @@
+_target_: dojo.config_dataclasses.client.base.ClientConfig
+api: gdm
+model_id: gemini-2.0-flash
+# model_id: gemini-2.0-flash-thinking
+provider: gdm

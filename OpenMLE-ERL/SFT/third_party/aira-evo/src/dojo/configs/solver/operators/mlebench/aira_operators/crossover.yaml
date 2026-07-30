@@ -1,0 +1,82 @@
+defaults:
+  - /solver/client@crossover.llm.client: litellm_4o
+
+crossover:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are a Kaggle Grandmaster attending a high-stakes competition. Your goal is to synthesize the strengths of two provided solutions, neutralize their respective weaknesses, and propose novel improvements that neither original solution possessed. A simple "merge" of existing code won't suffice to win. You must identify the hidden synergies between previous attempts and engineering a third-generation solution that transcends its predecessors.
+      {{public_system_prompt}}
+    input_variables:
+      - public_system_prompt
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      We will now provide a description of the task.
+
+      Task Description:
+
+      {{task_description}}
+
+      Data Description:
+
+      {{data_description}}
+
+      Two previous solutions were attempted with the following results:
+
+      Code 1:
+
+      {{prev_code1}}
+
+      Feedback 1:
+
+      {{prev_terminal_output1}}
+
+      Code 2:
+
+      {{prev_code2}}
+
+      Feedback 2:
+
+      {{prev_terminal_output2}}
+
+      Crossover Guidance:
+
+      Based on the previous attempts, their scores, and execution outputs, please synthesize the winning components of both solutions into a superior hybrid while introducing novel improvements to address shared weaknesses.
+      Propose exactly one crossover plan and keep the evaluation method consistent across iterations.
+
+      AIRA Evo Search Context:
+
+      {% if memory %}
+      Previously explored crossover or combination ideas:
+      ```markdown
+      {{memory}}
+      ```
+      {% else %}
+      Previously explored crossover or combination ideas: none yet.
+      {% endif %}
+
+      {% set overview = data_overview | trim %}
+      {% if overview and "data (missing)" not in overview and "No data preview available" not in overview %}
+      Runtime Data Overview:
+      ```
+      {{data_overview}}
+      ```
+      {% endif %}
+
+      {{public_user_prompt}}
+    input_variables:
+      - task_description
+      - data_description
+      - public_user_prompt
+      - prev_code1
+      - prev_terminal_output1
+      - prev_code2
+      - prev_terminal_output2
+      - memory
+      - data_overview

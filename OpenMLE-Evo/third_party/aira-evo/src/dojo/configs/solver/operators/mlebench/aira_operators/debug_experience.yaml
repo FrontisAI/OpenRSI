@@ -1,0 +1,88 @@
+defaults:
+  - /solver/client@debug.llm.client: litellm_4o
+
+debug:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are a Kaggle Grandmaster attending a high-stakes competition. In order to win this competition, you need to come up with an excellent and creative plan for a solution and then implement this solution in Python, that debugs and fixes an existing solution to the task.
+      {{public_system_prompt}}
+    input_variables:
+      - public_system_prompt
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      We will now provide a description of the task.
+
+      Task Description:
+
+      {{task_description}}
+
+      Data Description:
+
+      {{data_description}}
+
+      A previous solution was attempted with the following results:
+
+      Code:
+
+      {{prev_buggy_code}}
+
+      Feedback:
+
+      {{execution_output}}
+
+      Debug Guidance:
+
+      Based on the previous attempt, its score, and execution output, please identify the root cause of the failure and fix the code so it runs successfully and follows the output requirements. After it runs, improve the solution if possible.
+      Preserve the current core idea unless the feedback shows that it cannot be made valid.
+
+      AIRA Evo Search Context:
+
+      {% if memory %}
+      Targeted debug memory:
+      ```markdown
+      {{memory}}
+      ```
+      Use same-error memories first to avoid repeating known failure modes.
+      Use recent related memories to preserve working modeling logic while fixing the bug.
+      Make the smallest code change that resolves the failure before attempting extra improvements.
+      {% else %}
+      Targeted debug memory: none available.
+      {% endif %}
+
+      {% if data_overview and data_overview|trim and data_overview|trim|lower not in ["data (missing)", "no data preview available", "(no data preview available)"] %}
+      Runtime Data Overview:
+      ```
+      {{data_overview}}
+      ```
+      {% endif %}
+
+      Execution Budget:
+
+      Be aware of the running time of the code, it should complete within {{execution_timeout}}.
+      Your code will be executed in a sandbox after generation.
+      A single sandbox run must finish within {{execution_timeout}}.
+      Always choose a validation/training strategy that leaves enough time to write ./submission.csv.
+      If the previous attempt timed out, reduce compute first: fewer epochs/folds, smaller input size, smaller model, cached features, or simpler ensembling.
+
+      Submission Check:
+
+      Before finishing, verify that ./submission.csv exists, has the same row count and required columns/order as sample_submission.csv when available, preserves the sample id/order, and contains no NaN/inf values.
+      When building features, align train/test columns explicitly and handle missing values before model fitting or prediction.
+
+      {{public_user_prompt}}
+    input_variables:
+      - task_description
+      - data_description
+      - public_user_prompt
+      - prev_buggy_code
+      - execution_output
+      - memory
+      - data_overview
+      - execution_timeout

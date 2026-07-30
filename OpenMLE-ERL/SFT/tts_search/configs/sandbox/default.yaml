@@ -1,0 +1,9 @@
+base_url: ${oc.env:OPENMLE_SANDBOX_GPU_URL,''}
+cpu_base_url: ${oc.env:OPENMLE_SANDBOX_CPU_URL,${oc.env:OPENMLE_SANDBOX_GPU_URL,''}}
+resource_type_override: null
+concurrency: 24
+job_timeout: 3600
+wait_timeout: 5400
+poll_interval: 5
+use_score2reward: true
+enable_sandbox_eval: false

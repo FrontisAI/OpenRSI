@@ -1,0 +1,10 @@
+_target_: dojo.config_dataclasses.interpreter.jupyter.JupyterInterpreterConfig
+
+superimage_directory: ${get_superimage_dir:}
+superimage_version: "2025-05-02v2"
+
+read_only_overlays: []
+
+env:
+    HF_HUB_OFFLINE: "1"
+    NLTK_DATA: /root/.nltk_data

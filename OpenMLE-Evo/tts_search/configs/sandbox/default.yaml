@@ -1,0 +1,10 @@
+base_url: ${oc.env:SANDBOX_URL}
+concurrency: ${oc.decode:${oc.env:SANDBOX_CONCURRENCY,66}}
+priority: ${oc.decode:${oc.env:SANDBOX_PRIORITY,2}}
+job_timeout: ${oc.decode:${oc.env:SANDBOX_JOB_TIMEOUT,7200}}
+wait_timeout: ${oc.decode:${oc.env:SANDBOX_WAIT_TIMEOUT,86400}}
+poll_interval: ${oc.decode:${oc.env:SANDBOX_POLL_INTERVAL,10}}
+use_score2reward: true
+use_clear_run_log_score: true
+trust_model_validation_score: false
+verify_tls: true

@@ -1,0 +1,9 @@
+# @package _global_
+search:
+  runner:
+    solver:
+      execution_mode: generation
+      async_workers: 1
+      async_sandbox_urls: []
+      async_sandbox_assignment: round_robin
+      async_checkpoint_every_commits: 1

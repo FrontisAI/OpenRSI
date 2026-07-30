@@ -1,0 +1,10 @@
+_target_: dojo.config_dataclasses.launcher.slurm.SlurmConfig
+await_completion: true # Whether to wait for the jobs to complete
+nodes: 1
+ntasks_per_node: 1
+gpus_per_node: 1
+cpus_per_task: 24
+time: "36:00:00"
+mem: 200G
+debug: True
+array_parallelism: null

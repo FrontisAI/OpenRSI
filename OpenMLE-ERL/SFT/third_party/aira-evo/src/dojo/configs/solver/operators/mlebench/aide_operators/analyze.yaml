@@ -1,0 +1,34 @@
+defaults:
+  - /solver/client@analyze.llm.client: litellm_4o
+
+analyze:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs:
+      temperature: 0.5
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |
+      # Introduction:
+      You are a Kaggle grandmaster attending a competition.
+      You have written code to solve this task and now need to evaluate the output of the code execution.
+      You should determine if there were any bugs as well as report the empirical findings.
+
+      # Task Description:
+      {{task_desc}}
+
+      # Implementation:
+      {{code}}
+
+      # Execution output:
+      {{execution_output}}
+
+      # Output Format:
+      {{output_format}}
+    input_variables:
+      - task_desc
+      - code
+      - execution_output
+      - output_format

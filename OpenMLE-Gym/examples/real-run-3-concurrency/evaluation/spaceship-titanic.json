@@ -1,0 +1,1205 @@
+{
+  "task_name": "spaceship-titanic",
+  "task_path": "examples/real-run-3-concurrency/task_package/spaceship-titanic",
+  "has_description": true,
+  "has_prepare": true,
+  "has_metric": true,
+  "has_raw_data": true,
+  "has_sample_submission": true,
+  "has_private_answer": true,
+  "train_rows": 6954,
+  "test_rows": 1739,
+  "raw_size_mb": 1.1805,
+  "data_size_mb": 0.8059,
+  "file_types": [],
+  "csv_previews": {
+    "train.csv": {
+      "columns": [
+        "PassengerId",
+        "HomePlanet",
+        "CryoSleep",
+        "Cabin",
+        "Destination",
+        "Age",
+        "VIP",
+        "RoomService",
+        "FoodCourt",
+        "ShoppingMall",
+        "Spa",
+        "VRDeck",
+        "Name",
+        "Transported"
+      ],
+      "rows": [
+        [
+          "3868_04",
+          "Earth",
+          "False",
+          "G/630/S",
+          "TRAPPIST-1e",
+          "0.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Harrie Braymon",
+          "True"
+        ],
+        [
+          "1336_01",
+          "Earth",
+          "True",
+          "G/201/S",
+          "TRAPPIST-1e",
+          "17.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "True"
+        ],
+        [
+          "9193_01",
+          "Earth",
+          "",
+          "G/1483/S",
+          "PSO J318.5-22",
+          "35.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Camily Howence",
+          "False"
+        ],
+        [
+          "5422_01",
+          "Europa",
+          "True",
+          "D/164/S",
+          "55 Cancri e",
+          "26.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "Pleion Sperap",
+          "True"
+        ],
+        [
+          "5076_01",
+          "Earth",
+          "False",
+          "G/818/P",
+          "TRAPPIST-1e",
+          "13.0",
+          "False",
+          "0.0",
+          "0.0",
+          "60.0",
+          "1.0",
+          "5147.0",
+          "Alicey Wolferguson",
+          "False"
+        ],
+        [
+          "5728_01",
+          "Earth",
+          "False",
+          "F/1185/P",
+          "TRAPPIST-1e",
+          "24.0",
+          "False",
+          "0.0",
+          "217.0",
+          "0.0",
+          "77.0",
+          "510.0",
+          "Jodia Wolferguson",
+          "False"
+        ],
+        [
+          "0811_03",
+          "Mars",
+          "False",
+          "F/152/S",
+          "TRAPPIST-1e",
+          "0.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Phams Nutte",
+          "True"
+        ],
+        [
+          "2953_01",
+          "",
+          "False",
+          "E/179/P",
+          "55 Cancri e",
+          "25.0",
+          "False",
+          "0.0",
+          "641.0",
+          "0.0",
+          "2.0",
+          "0.0",
+          "Eilan Solivers",
+          "True"
+        ],
+        [
+          "0849_02",
+          "Europa",
+          "True",
+          "B/32/S",
+          "55 Cancri e",
+          "32.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Tareson Oidederval",
+          "True"
+        ],
+        [
+          "2857_01",
+          "Earth",
+          "False",
+          "F/545/S",
+          "PSO J318.5-22",
+          "29.0",
+          "False",
+          "631.0",
+          "",
+          "0.0",
+          "40.0",
+          "0.0",
+          "Hanry Larlowelley",
+          "False"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 6954,
+      "preview_is_truncated": true
+    },
+    "test.csv": {
+      "columns": [
+        "PassengerId",
+        "HomePlanet",
+        "CryoSleep",
+        "Cabin",
+        "Destination",
+        "Age",
+        "VIP",
+        "RoomService",
+        "FoodCourt",
+        "ShoppingMall",
+        "Spa",
+        "VRDeck",
+        "Name"
+      ],
+      "rows": [
+        [
+          "3857_01",
+          "Europa",
+          "True",
+          "E/230/P",
+          "55 Cancri e",
+          "34.0",
+          "False",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "0.0",
+          "Eltard Dreamspric"
+        ],
+        [
+          "7650_05",
+          "Earth",
+          "True",
+          "G/1242/S",
+          "TRAPPIST-1e",
+          "4.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Tera Palmes"
+        ],
+        [
+          "9139_01",
+          "Mars",
+          "False",
+          "F/1766/S",
+          "TRAPPIST-1e",
+          "25.0",
+          "False",
+          "410.0",
+          "32.0",
+          "14.0",
+          "1239.0",
+          "10.0",
+          "Poselk Paste"
+        ],
+        [
+          "6894_03",
+          "Mars",
+          "False",
+          "F/1319/S",
+          "TRAPPIST-1e",
+          "12.0",
+          "",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Risps Hacle"
+        ],
+        [
+          "8471_01",
+          "Europa",
+          "False",
+          "E/556/S",
+          "55 Cancri e",
+          "66.0",
+          "True",
+          "0.0",
+          "1828.0",
+          "1.0",
+          "1873.0",
+          "45.0",
+          "Bosonon Metiveal"
+        ],
+        [
+          "1783_02",
+          "Earth",
+          "True",
+          "G/281/S",
+          "PSO J318.5-22",
+          "21.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "Francy Garnettiz"
+        ],
+        [
+          "0539_01",
+          "Europa",
+          "True",
+          "C/18/P",
+          "TRAPPIST-1e",
+          "",
+          "False",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "0.0",
+          "Tard Nalanet"
+        ],
+        [
+          "4127_01",
+          "Europa",
+          "",
+          "B/130/P",
+          "TRAPPIST-1e",
+          "23.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "Dsch Ainserfle"
+        ],
+        [
+          "8932_01",
+          "Earth",
+          "False",
+          "F/1727/S",
+          "TRAPPIST-1e",
+          "23.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "912.0",
+          "41.0",
+          "Bretty Blanglison"
+        ],
+        [
+          "8200_01",
+          "Earth",
+          "True",
+          "G/1330/P",
+          "PSO J318.5-22",
+          "22.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Wen Wheelez"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 1739,
+      "preview_is_truncated": true
+    },
+    "sample_submission.csv": {
+      "columns": [
+        "PassengerId",
+        "Transported"
+      ],
+      "rows": [
+        [
+          "3857_01",
+          "True"
+        ],
+        [
+          "7650_05",
+          "False"
+        ],
+        [
+          "9139_01",
+          "True"
+        ],
+        [
+          "6894_03",
+          "True"
+        ],
+        [
+          "8471_01",
+          "True"
+        ],
+        [
+          "1783_02",
+          "False"
+        ],
+        [
+          "0539_01",
+          "True"
+        ],
+        [
+          "4127_01",
+          "True"
+        ],
+        [
+          "8932_01",
+          "True"
+        ],
+        [
+          "8200_01",
+          "False"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 1739,
+      "preview_is_truncated": true
+    },
+    "test_answer.csv": {
+      "columns": [
+        "PassengerId",
+        "Transported"
+      ],
+      "rows": [
+        [
+          "3857_01",
+          "True"
+        ],
+        [
+          "7650_05",
+          "False"
+        ],
+        [
+          "9139_01",
+          "False"
+        ],
+        [
+          "6894_03",
+          "True"
+        ],
+        [
+          "8471_01",
+          "False"
+        ],
+        [
+          "1783_02",
+          "False"
+        ],
+        [
+          "0539_01",
+          "True"
+        ],
+        [
+          "4127_01",
+          "True"
+        ],
+        [
+          "8932_01",
+          "False"
+        ],
+        [
+          "8200_01",
+          "True"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 1739,
+      "preview_is_truncated": true
+    }
+  },
+  "csv_evidence": {
+    "train.csv": {
+      "row_count": 6954,
+      "column_count": 14,
+      "columns": [
+        "PassengerId",
+        "HomePlanet",
+        "CryoSleep",
+        "Cabin",
+        "Destination",
+        "Age",
+        "VIP",
+        "RoomService",
+        "FoodCourt",
+        "ShoppingMall",
+        "Spa",
+        "VRDeck",
+        "Name",
+        "Transported"
+      ],
+      "preview_rows": [
+        [
+          "3868_04",
+          "Earth",
+          "False",
+          "G/630/S",
+          "TRAPPIST-1e",
+          "0.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Harrie Braymon",
+          "True"
+        ],
+        [
+          "1336_01",
+          "Earth",
+          "True",
+          "G/201/S",
+          "TRAPPIST-1e",
+          "17.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "True"
+        ],
+        [
+          "9193_01",
+          "Earth",
+          "",
+          "G/1483/S",
+          "PSO J318.5-22",
+          "35.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Camily Howence",
+          "False"
+        ],
+        [
+          "5422_01",
+          "Europa",
+          "True",
+          "D/164/S",
+          "55 Cancri e",
+          "26.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "Pleion Sperap",
+          "True"
+        ],
+        [
+          "5076_01",
+          "Earth",
+          "False",
+          "G/818/P",
+          "TRAPPIST-1e",
+          "13.0",
+          "False",
+          "0.0",
+          "0.0",
+          "60.0",
+          "1.0",
+          "5147.0",
+          "Alicey Wolferguson",
+          "False"
+        ],
+        [
+          "5728_01",
+          "Earth",
+          "False",
+          "F/1185/P",
+          "TRAPPIST-1e",
+          "24.0",
+          "False",
+          "0.0",
+          "217.0",
+          "0.0",
+          "77.0",
+          "510.0",
+          "Jodia Wolferguson",
+          "False"
+        ],
+        [
+          "0811_03",
+          "Mars",
+          "False",
+          "F/152/S",
+          "TRAPPIST-1e",
+          "0.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Phams Nutte",
+          "True"
+        ],
+        [
+          "2953_01",
+          "",
+          "False",
+          "E/179/P",
+          "55 Cancri e",
+          "25.0",
+          "False",
+          "0.0",
+          "641.0",
+          "0.0",
+          "2.0",
+          "0.0",
+          "Eilan Solivers",
+          "True"
+        ],
+        [
+          "0849_02",
+          "Europa",
+          "True",
+          "B/32/S",
+          "55 Cancri e",
+          "32.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Tareson Oidederval",
+          "True"
+        ],
+        [
+          "2857_01",
+          "Earth",
+          "False",
+          "F/545/S",
+          "PSO J318.5-22",
+          "29.0",
+          "False",
+          "631.0",
+          "",
+          "0.0",
+          "40.0",
+          "0.0",
+          "Hanry Larlowelley",
+          "False"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "data/public/train.csv"
+    },
+    "test.csv": {
+      "row_count": 1739,
+      "column_count": 13,
+      "columns": [
+        "PassengerId",
+        "HomePlanet",
+        "CryoSleep",
+        "Cabin",
+        "Destination",
+        "Age",
+        "VIP",
+        "RoomService",
+        "FoodCourt",
+        "ShoppingMall",
+        "Spa",
+        "VRDeck",
+        "Name"
+      ],
+      "preview_rows": [
+        [
+          "3857_01",
+          "Europa",
+          "True",
+          "E/230/P",
+          "55 Cancri e",
+          "34.0",
+          "False",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "0.0",
+          "Eltard Dreamspric"
+        ],
+        [
+          "7650_05",
+          "Earth",
+          "True",
+          "G/1242/S",
+          "TRAPPIST-1e",
+          "4.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Tera Palmes"
+        ],
+        [
+          "9139_01",
+          "Mars",
+          "False",
+          "F/1766/S",
+          "TRAPPIST-1e",
+          "25.0",
+          "False",
+          "410.0",
+          "32.0",
+          "14.0",
+          "1239.0",
+          "10.0",
+          "Poselk Paste"
+        ],
+        [
+          "6894_03",
+          "Mars",
+          "False",
+          "F/1319/S",
+          "TRAPPIST-1e",
+          "12.0",
+          "",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Risps Hacle"
+        ],
+        [
+          "8471_01",
+          "Europa",
+          "False",
+          "E/556/S",
+          "55 Cancri e",
+          "66.0",
+          "True",
+          "0.0",
+          "1828.0",
+          "1.0",
+          "1873.0",
+          "45.0",
+          "Bosonon Metiveal"
+        ],
+        [
+          "1783_02",
+          "Earth",
+          "True",
+          "G/281/S",
+          "PSO J318.5-22",
+          "21.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "Francy Garnettiz"
+        ],
+        [
+          "0539_01",
+          "Europa",
+          "True",
+          "C/18/P",
+          "TRAPPIST-1e",
+          "",
+          "False",
+          "0.0",
+          "0.0",
+          "",
+          "0.0",
+          "0.0",
+          "Tard Nalanet"
+        ],
+        [
+          "4127_01",
+          "Europa",
+          "",
+          "B/130/P",
+          "TRAPPIST-1e",
+          "23.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "",
+          "Dsch Ainserfle"
+        ],
+        [
+          "8932_01",
+          "Earth",
+          "False",
+          "F/1727/S",
+          "TRAPPIST-1e",
+          "23.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "912.0",
+          "41.0",
+          "Bretty Blanglison"
+        ],
+        [
+          "8200_01",
+          "Earth",
+          "True",
+          "G/1330/P",
+          "PSO J318.5-22",
+          "22.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Wen Wheelez"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "9afb4bc3860b1b5fe4cca47734728266e795bd6d978c931e306226b5c7bdbb7d",
+      "first_column_duplicate_count": 0,
+      "path": "data/public/test.csv"
+    },
+    "sample_submission.csv": {
+      "row_count": 1739,
+      "column_count": 2,
+      "columns": [
+        "PassengerId",
+        "Transported"
+      ],
+      "preview_rows": [
+        [
+          "3857_01",
+          "True"
+        ],
+        [
+          "7650_05",
+          "False"
+        ],
+        [
+          "9139_01",
+          "True"
+        ],
+        [
+          "6894_03",
+          "True"
+        ],
+        [
+          "8471_01",
+          "True"
+        ],
+        [
+          "1783_02",
+          "False"
+        ],
+        [
+          "0539_01",
+          "True"
+        ],
+        [
+          "4127_01",
+          "True"
+        ],
+        [
+          "8932_01",
+          "True"
+        ],
+        [
+          "8200_01",
+          "False"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "9afb4bc3860b1b5fe4cca47734728266e795bd6d978c931e306226b5c7bdbb7d",
+      "first_column_duplicate_count": 0,
+      "path": "data/public/sample_submission.csv"
+    },
+    "test_answer.csv": {
+      "row_count": 1739,
+      "column_count": 2,
+      "columns": [
+        "PassengerId",
+        "Transported"
+      ],
+      "preview_rows": [
+        [
+          "3857_01",
+          "True"
+        ],
+        [
+          "7650_05",
+          "False"
+        ],
+        [
+          "9139_01",
+          "False"
+        ],
+        [
+          "6894_03",
+          "True"
+        ],
+        [
+          "8471_01",
+          "False"
+        ],
+        [
+          "1783_02",
+          "False"
+        ],
+        [
+          "0539_01",
+          "True"
+        ],
+        [
+          "4127_01",
+          "True"
+        ],
+        [
+          "8932_01",
+          "False"
+        ],
+        [
+          "8200_01",
+          "True"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "9afb4bc3860b1b5fe4cca47734728266e795bd6d978c931e306226b5c7bdbb7d",
+      "first_column_duplicate_count": 0,
+      "path": "data/private/test_answer.csv"
+    }
+  },
+  "raw_csv_evidence": {
+    "sample_submission.csv": {
+      "row_count": 4277,
+      "column_count": 2,
+      "columns": [
+        "PassengerId",
+        "Transported"
+      ],
+      "preview_rows": [
+        [
+          "0013_01",
+          "False"
+        ],
+        [
+          "0018_01",
+          "False"
+        ],
+        [
+          "0019_01",
+          "False"
+        ]
+      ],
+      "preview_row_count": 3,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "raw/sample_submission.csv"
+    },
+    "test.csv": {
+      "row_count": 4277,
+      "column_count": 13,
+      "columns": [
+        "PassengerId",
+        "HomePlanet",
+        "CryoSleep",
+        "Cabin",
+        "Destination",
+        "Age",
+        "VIP",
+        "RoomService",
+        "FoodCourt",
+        "ShoppingMall",
+        "Spa",
+        "VRDeck",
+        "Name"
+      ],
+      "preview_rows": [
+        [
+          "0013_01",
+          "Earth",
+          "True",
+          "G/3/S",
+          "TRAPPIST-1e",
+          "27.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Nelly Carsoning"
+        ],
+        [
+          "0018_01",
+          "Earth",
+          "False",
+          "F/4/S",
+          "TRAPPIST-1e",
+          "19.0",
+          "False",
+          "0.0",
+          "9.0",
+          "0.0",
+          "2823.0",
+          "0.0",
+          "Lerome Peckers"
+        ],
+        [
+          "0019_01",
+          "Europa",
+          "True",
+          "C/0/S",
+          "55 Cancri e",
+          "31.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Sabih Unhearfus"
+        ]
+      ],
+      "preview_row_count": 3,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "raw/test.csv"
+    },
+    "train.csv": {
+      "row_count": 8693,
+      "column_count": 14,
+      "columns": [
+        "PassengerId",
+        "HomePlanet",
+        "CryoSleep",
+        "Cabin",
+        "Destination",
+        "Age",
+        "VIP",
+        "RoomService",
+        "FoodCourt",
+        "ShoppingMall",
+        "Spa",
+        "VRDeck",
+        "Name",
+        "Transported"
+      ],
+      "preview_rows": [
+        [
+          "0001_01",
+          "Europa",
+          "False",
+          "B/0/P",
+          "TRAPPIST-1e",
+          "39.0",
+          "False",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "0.0",
+          "Maham Ofracculy",
+          "False"
+        ],
+        [
+          "0002_01",
+          "Earth",
+          "False",
+          "F/0/S",
+          "TRAPPIST-1e",
+          "24.0",
+          "False",
+          "109.0",
+          "9.0",
+          "25.0",
+          "549.0",
+          "44.0",
+          "Juanna Vines",
+          "True"
+        ],
+        [
+          "0003_01",
+          "Europa",
+          "False",
+          "A/0/S",
+          "TRAPPIST-1e",
+          "58.0",
+          "True",
+          "43.0",
+          "3576.0",
+          "0.0",
+          "6715.0",
+          "49.0",
+          "Altark Susent",
+          "False"
+        ]
+      ],
+      "preview_row_count": 3,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "raw/train.csv"
+    }
+  },
+  "raw_usage_evidence": {
+    "status": "available",
+    "target_columns": [
+      "Transported"
+    ],
+    "raw_train_rows": 8693,
+    "raw_train_target_columns": [
+      "Transported"
+    ],
+    "processed_train_rows": 6954,
+    "processed_test_rows": 1739,
+    "processed_train_plus_test_rows": 8693,
+    "row_conservation": true,
+    "labeled_row_utilization_ratio": 1.0,
+    "raw_test_rows": 4277,
+    "raw_test_target_columns": [],
+    "raw_test_role": "unlabeled_original_test_intentionally_excluded",
+    "accounting_note": "private test_answer mirrors processed test labels and must not be added again when measuring row utilization"
+  },
+  "errors": [],
+  "description": "# Spaceship Titanic - Predict which passengers are transported to an alternate dimension\n\n## Overview\n\nThe year is 2912, and the Spaceship Titanic, an interstellar passenger liner, has collided with a spacetime anomaly hidden within a dust cloud. Almost half of the passengers were transported to an alternate dimension. Your task is to predict which passengers were transported using records recovered from the ship's damaged computer system. This is a binary classification task.\n\n## Evaluation\n\nSubmissions are evaluated based on **classification accuracy**, the percentage of predicted labels that are correct.\n\n## Submission Format\n\nFor each PassengerId in the test set, predict either `True` or `False` for the `Transported` variable. The file should contain a header and have the following format:\n\n```\nPassengerId,Transported\n0013_01,False\n0018_01,False\netc.\n```\n\n## Dataset Description\n\n- **train.csv** — Personal records for 6954 passengers (training data). Contains the target column `Transported` (True/False). Features include:\n  - PassengerId: Unique ID in the form gggg_pp (group and number within group)\n  - HomePlanet: The planet the passenger departed from\n  - CryoSleep: Whether the passenger elected to be put into suspended animation\n  - Cabin: Cabin number in format deck/num/side\n  - Destination: The planet the passenger is traveling to\n  - Age: The age of the passenger\n  - VIP: Whether the passenger paid for VIP service\n  - RoomService, FoodCourt, ShoppingMall, Spa, VRDeck: Amounts billed at luxury amenities\n  - Name: First and last name of the passenger\n  - Transported: Whether the passenger was transported (target variable)\n\n- **test.csv** — Personal records for 1739 passengers (test data). Does not contain the `Transported` column.\n\n- **sample_submission.csv** — A sample submission file in the correct format with 1739 entries.\n\n## Notes\n\n- People in a travel group (same gggg prefix) are often family members, but not always.\n- Passengers in cryosleep are confined to their cabins.\n- Some fields may contain missing values.\n",
+  "prepare_code": "import pandas as pd\nimport numpy as np\nfrom sklearn.model_selection import train_test_split\nfrom pathlib import Path\n\n\ndef prepare(raw: Path, public: Path, private: Path):\n    # Load training data (the only data with labels)\n    train_df = pd.read_csv(raw / \"train.csv\")\n    \n    # Verify expected columns\n    assert \"PassengerId\" in train_df.columns, \"Missing PassengerId column\"\n    assert \"Transported\" in train_df.columns, \"Missing Transported column\"\n    assert train_df[\"PassengerId\"].nunique() == len(train_df), \"PassengerId not unique\"\n    \n    # Perform stratified 80/20 split with deterministic seed\n    train_set, test_set = train_test_split(\n        train_df,\n        test_size=0.2,\n        random_state=42,\n        stratify=train_df[\"Transported\"]\n    )\n    \n    # Validate split\n    assert len(train_set) + len(test_set) == len(train_df), \"Split size mismatch\"\n    assert abs(len(test_set) / len(train_df) - 0.2) < 0.01, \"Split ratio off\"\n    \n    # No overlap\n    assert len(set(train_set[\"PassengerId\"]) & set(test_set[\"PassengerId\"])) == 0, \"ID overlap\"\n    \n    # Save train.csv (with labels) to public\n    train_set.to_csv(public / \"train.csv\", index=False)\n    \n    # Save test.csv (without labels) to public\n    test_public = test_set.drop(columns=[\"Transported\"])\n    test_public.to_csv(public / \"test.csv\", index=False)\n    \n    # Save test_answer.csv to private\n    test_answer = test_set[[\"PassengerId\", \"Transported\"]].copy()\n    test_answer.to_csv(private / \"test_answer.csv\", index=False)\n    \n    # Create sample_submission.csv with random but valid labels\n    rng = np.random.RandomState(42)\n    valid_labels = [True, False]\n    random_labels = rng.choice(valid_labels, size=len(test_set))\n    sample_submission = pd.DataFrame({\n        \"PassengerId\": test_set[\"PassengerId\"].values,\n        \"Transported\": random_labels\n    })\n    sample_submission.to_csv(public / \"sample_submission.csv\", index=False)\n    \n    # Validate alignment between test_answer and sample_submission\n    ta = pd.read_csv(private / \"test_answer.csv\")\n    ss = pd.read_csv(public / \"sample_submission.csv\")\n    assert list(ta.columns) == list(ss.columns), \"Column mismatch\"\n    assert len(ta) == len(ss), \"Row count mismatch\"\n    assert set(ta[\"PassengerId\"]) == set(ss[\"PassengerId\"]), \"ID mismatch\"\n    \n    # Validate test.csv and test_answer alignment\n    tc = pd.read_csv(public / \"test.csv\")\n    assert len(tc) == len(ta), \"Test CSV and answer row count mismatch\"\n    assert set(tc[\"PassengerId\"]) == set(ta[\"PassengerId\"]), \"Test CSV and answer ID mismatch\"\n    \n    # Ensure no label leakage in public test.csv\n    assert \"Transported\" not in tc.columns, \"Label leakage in test.csv\"\n    \n    # Write description\n    description = f\"\"\"# Spaceship Titanic - Predict which passengers are transported to an alternate dimension\n\n## Overview\n\nThe year is 2912, and the Spaceship Titanic, an interstellar passenger liner, has collided with a spacetime anomaly hidden within a dust cloud. Almost half of the passengers were transported to an alternate dimension. Your task is to predict which passengers were transported using records recovered from the ship's damaged computer system. This is a binary classification task.\n\n## Evaluation\n\nSubmissions are evaluated based on **classification accuracy**, the percentage of predicted labels that are correct.\n\n## Submission Format\n\nFor each PassengerId in the test set, predict either `True` or `False` for the `Transported` variable. The file should contain a header and have the following format:\n\n```\nPassengerId,Transported\n0013_01,False\n0018_01,False\netc.\n```\n\n## Dataset Description\n\n- **train.csv** — Personal records for {len(train_set)} passengers (training data). Contains the target column `Transported` (True/False). Features include:\n  - PassengerId: Unique ID in the form gggg_pp (group and number within group)\n  - HomePlanet: The planet the passenger departed from\n  - CryoSleep: Whether the passenger elected to be put into suspended animation\n  - Cabin: Cabin number in format deck/num/side\n  - Destination: The planet the passenger is traveling to\n  - Age: The age of the passenger\n  - VIP: Whether the passenger paid for VIP service\n  - RoomService, FoodCourt, ShoppingMall, Spa, VRDeck: Amounts billed at luxury amenities\n  - Name: First and last name of the passenger\n  - Transported: Whether the passenger was transported (target variable)\n\n- **test.csv** — Personal records for {len(test_set)} passengers (test data). Does not contain the `Transported` column.\n\n- **sample_submission.csv** — A sample submission file in the correct format with {len(test_set)} entries.\n\n## Notes\n\n- People in a travel group (same gggg prefix) are often family members, but not always.\n- Passengers in cryosleep are confined to their cabins.\n- Some fields may contain missing values.\n\"\"\"\n    with open(public / \"description.txt\", \"w\") as f:\n        f.write(description)",
+  "metric_code": "from typing import Any\nimport pandas as pd\n\n\nclass SpaceshipTitanicMetrics:\n    \"\"\"Metric class for Spaceship Titanic competition using Classification Accuracy.\"\"\"\n\n    def __init__(self, value: str = \"Transported\", higher_is_better: bool = True):\n        self.higher_is_better = higher_is_better\n        self.value = value\n\n    def _parse_bool(self, series: pd.Series) -> pd.Series:\n        \"\"\"Convert string or boolean values to consistent boolean.\"\"\"\n        def convert(val):\n            if isinstance(val, bool):\n                return val\n            if isinstance(val, str):\n                return val.strip().lower() == \"true\"\n            # Handle numpy bool etc.\n            return bool(val)\n        return series.apply(convert)\n\n    def evaluate(self, y_true: pd.DataFrame = None, y_pred: pd.DataFrame = None) -> float:\n        \"\"\"Calculate classification accuracy between predictions and true labels.\"\"\"\n        if self.value not in y_true.columns or self.value not in y_pred.columns:\n            raise Exception(f\"Both ground truth and submission must contain the '{self.value}' column.\")\n\n        # Align by PassengerId if present\n        if \"PassengerId\" in y_true.columns and \"PassengerId\" in y_pred.columns:\n            merged = y_true[[\"PassengerId\", self.value]].merge(\n                y_pred[[\"PassengerId\", self.value]],\n                on=\"PassengerId\",\n                suffixes=(\"_true\", \"_pred\")\n            )\n            true_vals = self._parse_bool(merged[f\"{self.value}_true\"])\n            pred_vals = self._parse_bool(merged[f\"{self.value}_pred\"])\n        else:\n            true_vals = self._parse_bool(y_true[self.value].reset_index(drop=True))\n            pred_vals = self._parse_bool(y_pred[self.value].reset_index(drop=True))\n\n        if len(true_vals) == 0:\n            raise Exception(\"No matching records found for evaluation.\")\n\n        accuracy = (true_vals == pred_vals).mean()\n        return float(accuracy)\n\n    def validate_submission(self, submission: Any, ground_truth: Any) -> str:\n        if not isinstance(submission, pd.DataFrame):\n            raise Exception(\"Submission must be a pandas DataFrame. Please provide a valid pandas DataFrame.\")\n        if not isinstance(ground_truth, pd.DataFrame):\n            raise Exception(\"Ground truth must be a pandas DataFrame. Please provide a valid pandas DataFrame.\")\n\n        if len(submission) != len(ground_truth):\n            raise Exception(\n                f\"Number of rows in submission ({len(submission)}) does not match \"\n                f\"ground truth ({len(ground_truth)}). Please ensure both have the same number of rows.\"\n            )\n\n        if self.value not in submission.columns:\n            raise Exception(f\"Submission must contain the '{self.value}' column.\")\n        if self.value not in ground_truth.columns:\n            raise Exception(f\"Ground truth must contain the '{self.value}' column.\")\n\n        if \"PassengerId\" in ground_truth.columns and \"PassengerId\" not in submission.columns:\n            raise Exception(\"Submission must contain the 'PassengerId' column.\")\n\n        if \"PassengerId\" in ground_truth.columns and \"PassengerId\" in submission.columns:\n            gt_ids = set(ground_truth[\"PassengerId\"])\n            sub_ids = set(submission[\"PassengerId\"])\n            if gt_ids != sub_ids:\n                raise Exception(\"PassengerId values in submission do not match those in ground truth.\")\n\n        # Check for null values in the target column\n        if submission[self.value].isnull().any():\n            raise Exception(f\"Submission contains null values in the '{self.value}' column.\")\n\n        return \"Submission is valid.\"",
+  "metric_check": {
+    "status": "ok",
+    "task_dir": "examples/real-run-3-concurrency/task_package/spaceship-titanic",
+    "metric_class": "SpaceshipTitanicMetrics",
+    "score": 0.4905117883841288,
+    "submission_rows": 1739,
+    "answer_rows": 1739
+  },
+  "missing_required": [],
+  "validation": {
+    "status": "passed",
+    "findings": []
+  },
+  "overview": {
+    "Name": "spaceship-titanic",
+    "Modality": "Tabular",
+    "Task": "Classification",
+    "Raw Size": "1.18 MB",
+    "Final Size": "825.22 KB",
+    "CPU/GPU": "CPU",
+    "Source": "OpenMLE",
+    "Metric": "@Evaluation result: {'score': 0.4905117883841288}",
+    "NOTE": "",
+    "Server Location": "examples/real-run-3-concurrency/task_package/spaceship-titanic"
+  },
+  "quality_scores": {
+    "task_validity": 5,
+    "task_validity_reason": "Clear supervised binary classification task (predict Transported) with labels present only in processed train and withheld for processed test; no evidence of label leakage into public test.csv.",
+    "data_sufficiency": 4,
+    "data_sufficiency_reason": "6954 labeled training rows with 13 input features is generally sufficient for a tabular binary classification baseline; not huge, but adequate for meaningful modeling.",
+    "raw_data_usage": 5,
+    "raw_data_usage_reason": "Raw labeled train rows (8693) are fully utilized via a deterministic 80/20 split into processed train (6954) and processed test (1739); raw_usage_evidence shows row_conservation=true and labeled_row_utilization_ratio=1.0, and the unlabeled original raw test.csv is intentionally excluded per contract.",
+    "task_complexity": 4,
+    "task_complexity_reason": "Non-trivial tabular prediction with mixed categorical/numeric features and missing values; accuracy metric is appropriate and the sample submission score (~0.49) suggests it is not trivial.",
+    "data_quality": 4,
+    "data_quality_reason": "Processed files have expected schemas (train includes Transported; test excludes it), PassengerId duplicates are reported as 0 in processed train/test, and the metric enforces row-count and PassengerId set equality; minor concern: metric.evaluate() merges on PassengerId without explicitly rejecting duplicate IDs (though evidence shows none and validation checks ID set equality).",
+    "overall_score": 4.4,
+    "major_issues": [],
+    "recommendation": "recommended"
+  },
+  "quality_evaluation": {
+    "status": "completed",
+    "source": "llm"
+  }
+}

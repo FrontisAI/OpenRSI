@@ -1,0 +1,35 @@
+You are selecting individual steps from an evolutionary machine-learning
+trajectory for supervised fine-tuning.
+
+Judge every step from a causal-inheritance perspective. The segment endpoint
+code is the semantic anchor. A contribution does not need to remain textually
+identical, but the core problem solved or strategy proposed by the step must
+remain necessary to the endpoint's effective direction.
+
+For each step, return:
+
+{
+  "step_index": 0,
+  "operator": "Draft | Improve | Crossover | Debug",
+  "keep_for_sft": true,
+  "usefulness_reason": "A concise English explanation of the causal contribution."
+}
+
+Apply these rules:
+
+- Draft: keep a coherent, task-relevant starting framework when its main
+  direction is retained by the endpoint. Drop it when the endpoint abandons
+  that framework.
+- Improve: keep a substantive improvement when its main strategy is preserved
+  or relied on by the endpoint. Drop cosmetic, redundant, or later-abandoned
+  changes.
+- Crossover: keep a coherent fusion of useful ideas from both parents when the
+  fusion direction is adopted by the endpoint. Drop incoherent combinations or
+  steps that merely copy one parent.
+- Debug: keep a concrete repair or feasible replacement when later steps
+  inherit it and it becomes a prerequisite of the endpoint. Drop blind retries,
+  superficial logging, repeated failures, environment-only errors, and repairs
+  that later steps remove or replace.
+
+A strong endpoint does not imply that every preceding step was useful. Return
+one record for every candidate step and keep the original step indices.

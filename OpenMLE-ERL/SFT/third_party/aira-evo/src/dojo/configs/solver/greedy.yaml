@@ -1,0 +1,41 @@
+defaults:
+  - memory: simple_memory  # Enables Memory operator
+  - memory@debug_memory: debug_memory # Enables Debug Memory operator
+      
+_target_: dojo.config_dataclasses.solver.greedy.GreedySolverConfig
+
+# --- Output Configuration ---
+export_search_results: true # Whether to export search results after execution
+
+# --- Search Configuration ---
+improvement_steps: 5      # Number of improvement iterations to perform
+step_limit: 500           # Maximum number of steps allowed in the search process
+data_preview: false       # Whether to provide the agent with a preview of the data before execution
+execution_timeout: 14400  # Specifies the timeout for the interpreter (decreased from 32400)
+time_limit_secs: 86400
+
+# --- Debugging Configuration ---
+max_debug_depth: ??? # Maximum depth of debugging analysis
+debug_prob: ??? # Probability of running a debug step in the process
+
+# --- Drafting Configuration ---
+num_drafts: ??? # Number of draft outputs to generate for selection
+max_llm_call_retries: 3 # Maximum number of retries for failed LLM API calls
+
+use_test_score: false # Whether to use the test score for evaluation
+use_complexity: false # Whether to consider complexity differences in prompts - only works with certain operators
+
+# --- Environment Configuration ---
+# List of Python packages available for execution
+available_packages:
+  - numpy                  # Numerical computing library
+  - pandas                 # Data analysis and manipulation tool
+  - scikit-learn           # Machine learning library
+  - statsmodels            # Statistical modeling and econometrics
+  - xgboost                # Gradient boosting for structured data
+  - lightgbm               # Efficient gradient boosting framework
+  - torch                  # PyTorch deep learning framework
+  - torchvision            # Image processing utilities for PyTorch
+  - torch-geometric        # Graph neural network processing with PyTorch
+  - bayesian-optimization  # Bayesian optimization tools
+  - timm                   # PyTorch image models collection

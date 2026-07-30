@@ -1,0 +1,14 @@
+naturebench_root: ${oc.env:NATUREBENCH_ROOT}
+tasks_root: ${oc.env:NATUREBENCH_TASKS_ROOT,}
+task_list: []
+task_set_path: ${oc.env:NATUREBENCH_TASK_SET_PATH,task-set/cpu.txt}
+eval_service_url: ${oc.env:NATUREBENCH_EVAL_SERVICE_URL,http://127.0.0.1:8321}
+batch_name: ${oc.env:NATUREBENCH_BATCH_NAME,naturebench-airaevo}
+execution_mode: docker
+workspace_root: ${oc.env:NATUREBENCH_WORKSPACE_ROOT,outputs/naturebench-workspaces}
+docker_image: ${oc.env:NATUREBENCH_DOCKER_IMAGE,naturebench-base:v3}
+gpu_devices: ${oc.env:NATUREBENCH_GPU_DEVICES,}
+submit_repeats: 0
+eval_timeout: ${oc.decode:${oc.env:NATUREBENCH_EVAL_TIMEOUT,3600}}
+public_system_prompt: ""
+public_user_prompt: ""

@@ -1,0 +1,46 @@
+defaults:
+  - memory: simple_memory  # Enables Memory operator
+  - memory@debug_memory: debug_memory # Enables Debug Memory operator
+  
+# Specifies the Monte Carlo Tree Search (MCTS) algorithm as the action selector
+# _target_: dojo.solvers.mcts.MCTS
+_target_: dojo.config_dataclasses.solver.mcts.MCTSConfig
+
+# Whether to export search results after execution
+export_search_results: true
+
+# operators
+operators: ???
+
+# --- Search Configuration ---
+step_limit: ??? # Maximum number of nodes the search algorithm can explore
+num_children: ??? # Number of child nodes expanded per search step
+max_debug_depth: ??? # Maximum depth of debugging analysis
+uct_c: ??? # Upper Confidence Bound (UCB) exploration constant
+max_llm_call_retries: 3 # Maximum retry attempts for failed LLM API calls
+max_debug_time: ??? # Maximum time allowed for debugging analysis
+# --- Agent Configuration ---
+data_preview: ??? # Whether to provide the agent with a preview of the data before execution
+
+# Hillclimbing Configuration
+use_test_score: ??? # Whether to use the test score for evaluation
+use_complexity: ??? # Whether to consider complexity differences in prompts - only works with certain operators
+
+
+
+# --- Environment Configuration ---
+execution_timeout: 14400 # Specifies the timeout for the interpreter (decreased from 32400)
+time_limit_secs: 86400
+# List of Python packages available for execution
+available_packages:
+  - numpy                  # Numerical computing library
+  - pandas                 # Data analysis and manipulation tool
+  - scikit-learn           # Machine learning library
+  - statsmodels            # Statistical modeling and econometrics
+  - xgboost                # Gradient boosting for structured data
+  - lightgbm               # Efficient gradient boosting framework
+  - torch                  # PyTorch deep learning framework
+  - torchvision            # Image processing utilities for PyTorch
+  - torch-geometric        # Graph neural network processing with PyTorch
+  - bayesian-optimization  # Bayesian optimization tools
+  - timm                   # PyTorch image models collection

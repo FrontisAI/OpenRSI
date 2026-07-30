@@ -1,0 +1,56 @@
+defaults:
+  - memory: simple_memory  # Enables Memory operator
+  - memory@debug_memory: debug_memory # Enables Debug Memory operator
+  
+# Specifies the evolutionary search method to be used.
+# _target_: dojo.solvers.evo.Evolutionary
+_target_: dojo.config_dataclasses.solver.evo.EvolutionarySolverConfig
+
+# --- Output Configuration ---
+export_search_results: true # Whether to export search results after execution
+
+step_limit: ???
+
+# Hyperparameters for the evolutionary process.
+num_islands: ???          # Number of islands (sub-populations) to initialize.
+max_island_size: ???     # Maximum number of samples allowed in each island.
+crossover_prob: ???     # Probability of choosing a crossover operation over mutation (initially set to 0 in early generations).
+migration_prob: ???     # Probability of refreshing weaker islands with seeds from stronger islands.
+initial_temp: ???        # Starting temperature for exploration (supports uniform sampling).
+final_temp: ???        # Final temperature value, shifting towards exploitation.
+num_generations_till_migration: ??? # Number of generations before migration can occur.
+num_generations_till_crossover: ??? # Number of generations before crossover can occur.
+
+# Few-shot prompting configuration for different operations.
+few_shot:
+  improve: 1   # Number of few-shot prompts for mutation operations.
+  crossover: 2  # Number of few-shot prompts for crossover operations.
+
+# Evolution settings for the search process.
+num_generations: ???            # Total number of generations (iterations) to run.
+individuals_per_generation: ???  # Number of individuals (solutions) per generation (note: 20 used for DPLL).
+
+# Hillclimbing Configuration
+use_test_score: ??? # Whether to use the test score for evaluation
+use_complexity: ??? # Whether to consider complexity differences in prompts - only works with certain operators
+
+max_debug_depth: 5 # Maximum depth of debugging analysis
+max_llm_call_retries: 3    # Maximum number of retries for failed LLM API calls
+max_debug_time: ??? # Maximum time allowed for debugging operations
+
+# --- Environment Configuration ---
+execution_timeout: 14400 # Specifies the timeout for the interpreter (decreased from 32400)
+time_limit_secs: 86400
+# List of Python packages available for execution
+available_packages:
+  - numpy                  # Numerical computing library
+  - pandas                 # Data analysis and manipulation tool
+  - scikit-learn           # Machine learning library
+  - statsmodels            # Statistical modeling and econometrics
+  - xgboost                # Gradient boosting for structured data
+  - lightgbm               # Efficient gradient boosting framework
+  - torch                  # PyTorch deep learning framework
+  - torchvision            # Image processing utilities for PyTorch
+  - torch-geometric        # Graph neural network processing with PyTorch
+  - bayesian-optimization  # Bayesian optimization tools
+  - timm                   # PyTorch image models collection

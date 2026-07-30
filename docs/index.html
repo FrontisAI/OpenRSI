@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenRSI · Frontis-MA1 — Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering</title>
+<meta name="description" content="OpenRSI by Frontis — Frontis-MA1 and the OpenMLE stack: execution-grounded post-training and evolutionary search for machine-learning engineering agents.">
+<meta property="og:title" content="OpenRSI · Frontis-MA1">
+<meta property="og:description" content="Explore Frontis-MA1 and the OpenMLE stack: OpenMLE-Gym, OpenMLE-ERL, OpenMLE-Evo, and the project video.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://frontisai.github.io/OpenRSI/">
+<meta property="og:image" content="https://frontisai.github.io/OpenRSI/assets/images/frontis-ma1-openmle-release-teaser-poster.jpg">
+<link rel="canonical" href="https://frontisai.github.io/OpenRSI/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000000;
+  --cyan:#00C1D4;
+  --white:#FFFFFF;
+  --gray:#3D4145;
+  --surface:#F0F2F4;
+  --orange:#FA5F26;
+  --dim:#7A828C;           /* tint of gray for captions */
+  --hair:rgba(61,65,69,.14);
+  --disp:'Space Grotesk',sans-serif;
+  --body:'Instrument Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--white);color:var(--gray);font-family:var(--body);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+::selection{background:var(--cyan);color:var(--white);}
+a{color:var(--cyan);}
+
+/* ============ nav ============ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 34px;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--hair);
+}
+.brand{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--black);}
+.brand svg.flogo{height:40px;width:auto;display:block;}
+.brand .sep{width:1px;height:26px;background:var(--hair);}
+.brand b{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.12em;color:var(--black);}
+.brand b span{color:var(--cyan);}
+.foot-logo{color:var(--white);margin-bottom:26px;}
+.foot-logo svg.flogo{height:46px;width:auto;display:block;}
+.navlinks{display:flex;gap:26px;align-items:center;}
+.navlinks a{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;transition:color .25s;
+}
+.navlinks a:hover{color:var(--black);}
+.navlinks .pill{
+  padding:8px 16px;border-radius:100px;background:var(--black);color:var(--white);
+  transition:background .25s;
+}
+.navlinks .pill:hover{background:var(--cyan);color:var(--white);}
+#scrollbar{
+  position:fixed;top:0;left:0;height:2px;width:100%;z-index:70;
+  background:var(--cyan);transform-origin:left;transform:scaleX(0);
+}
+
+/* ============ header / title block ============ */
+.masthead{
+  padding:150px 6vw 0;text-align:center;position:relative;
+}
+.conf{
+  display:inline-block;font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--cyan);border:1px solid rgba(0,193,212,.45);
+  border-radius:100px;padding:7px 18px;margin-bottom:30px;
+}
+h1{
+  font-family:var(--disp);font-weight:700;color:var(--black);
+  font-size:clamp(30px,4.2vw,58px);line-height:1.12;letter-spacing:-.015em;
+  max-width:1000px;margin:0 auto;
+}
+h1 .cy{color:var(--cyan);}
+h1 .or{color:var(--orange);}
+.authors{
+  margin-top:26px;font-size:16px;color:var(--gray);
+}
+.authors a{color:var(--gray);text-decoration:none;border-bottom:1px solid rgba(0,193,212,.5);}
+.authors a:hover{color:var(--cyan);}
+.affil{margin-top:8px;font-size:14px;color:var(--dim);}
+.affil sup{color:var(--cyan);}
+.btnrow{margin-top:34px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.06em;
+  padding:12px 24px;border-radius:100px;text-decoration:none;
+  background:var(--black);color:var(--white);
+  transition:background .25s var(--ease),transform .25s var(--ease);
+}
+.btn:hover{background:var(--cyan);transform:translateY(-2px);}
+.btn.alt{background:var(--white);color:var(--black);border:1px solid rgba(61,65,69,.35);}
+.btn.alt:hover{border-color:var(--cyan);color:var(--cyan);background:var(--white);}
+
+/* ============ teaser figure ============ */
+.figure{
+  max-width:1160px;margin:64px auto 0;padding:0 4vw;
+}
+.fig-stage{
+  position:relative;height:min(58vh,540px);
+  border:1px solid var(--hair);border-radius:6px;
+  background:
+    radial-gradient(rgba(61,65,69,.10) 1px,transparent 1px);
+  background-size:26px 26px;
+  overflow:hidden;
+}
+#evoCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.fig-hud{
+  position:absolute;top:14px;left:16px;
+  font-family:var(--mono);font-size:11.5px;color:var(--dim);
+  display:flex;gap:22px;flex-wrap:wrap;pointer-events:none;
+}
+.fig-hud b{color:var(--black);font-weight:600;font-variant-numeric:tabular-nums;}
+.fig-hud .best b{color:var(--orange);}
+.fig-hud .live{color:var(--cyan);}
+.fig-hud .live::after{content:"▌";animation:blink 1.1s steps(2) infinite;}
+@keyframes blink{50%{opacity:0;}}
+.fig-legend{
+  display:flex;gap:26px;flex-wrap:wrap;justify-content:center;
+  margin-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--dim);
+}
+.fig-legend span{display:inline-flex;align-items:center;gap:8px;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.dot.dr{background:var(--gray);}
+.dot.im{background:var(--cyan);}
+.dot.db{background:var(--white);border:2px solid var(--cyan);}
+.dot.co{background:var(--orange);}
+.dot.bx{background:transparent;position:relative;width:10px;height:10px;}
+.dot.bx::before,.dot.bx::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:1.6px;background:rgba(61,65,69,.55);}
+.dot.bx::before{transform:translate(-50%,-50%) rotate(45deg);}
+.dot.bx::after{transform:translate(-50%,-50%) rotate(-45deg);}
+.fig-cap{
+  max-width:880px;margin:18px auto 0;text-align:center;
+  font-size:13.5px;line-height:1.75;color:var(--dim);
+}
+.fig-cap b{color:var(--gray);font-weight:600;}
+.fig-cap .lbl{font-family:var(--mono);font-size:12px;color:var(--black);font-weight:600;letter-spacing:.04em;}
+
+/* ============ project video ============ */
+.video-wrap{max-width:1100px;margin:0 auto;padding:110px 5vw;}
+.video-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.55fr);gap:48px;align-items:end;margin-bottom:34px;}
+.video-head .lede{margin-top:0;}
+.video-stage{
+  overflow:hidden;border:1px solid var(--hair);border-radius:8px;background:var(--black);
+  box-shadow:0 24px 70px rgba(0,0,0,.12);
+}
+.video-stage video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:var(--black);}
+.video-note{
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding:13px 16px;background:var(--surface);
+  font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--dim);
+}
+.video-note a{font-weight:600;text-decoration:none;}
+
+/* ============ shared section styles ============ */
+section{position:relative;}
+.wrap{max-width:1100px;margin:0 auto;padding:110px 5vw;}
+.eyebrow{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--cyan);display:flex;align-items:center;gap:14px;margin-bottom:20px;
+}
+.eyebrow::before{content:"";width:30px;height:2px;background:var(--cyan);}
+h2{
+  font-family:var(--disp);font-weight:700;color:var(--black);
+  font-size:clamp(26px,3vw,42px);line-height:1.18;letter-spacing:-.01em;max-width:860px;
+}
+h2 .cy{color:var(--cyan);}
+h2 .or{color:var(--orange);}
+.lede{margin-top:20px;max-width:740px;color:var(--gray);font-size:16px;line-height:1.85;}
+.lede b{color:var(--black);font-weight:600;}
+.hairline{border:none;border-top:1px solid var(--hair);max-width:1100px;margin:0 auto;}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+.rv.in{opacity:1;transform:none;}
+.rv-st>*{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+.rv-st.in>*{opacity:1;transform:none;}
+.rv-st.in>*:nth-child(1){transition-delay:.04s;}
+.rv-st.in>*:nth-child(2){transition-delay:.12s;}
+.rv-st.in>*:nth-child(3){transition-delay:.2s;}
+.rv-st.in>*:nth-child(4){transition-delay:.28s;}
+.rv-st.in>*:nth-child(5){transition-delay:.36s;}
+.rv-st.in>*:nth-child(6){transition-delay:.44s;}
+
+/* ============ abstract ============ */
+.abstract{
+  max-width:860px;margin:0 auto;
+}
+.abstract p{
+  font-size:16px;line-height:2;color:var(--gray);text-align:justify;
+}
+.abstract p+p{margin-top:18px;}
+.abstract .k{font-family:var(--mono);font-size:.9em;color:var(--cyan);}
+.abstract .o{color:var(--orange);font-weight:600;}
+.tldr{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px;}
+.tl{border-top:2px solid var(--cyan);padding-top:20px;}
+.tl.hot{border-top-color:var(--orange);}
+.tl .t-big{
+  font-family:var(--disp);font-weight:700;color:var(--black);
+  font-size:clamp(24px,2.5vw,38px);letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+}
+.tl.hot .t-big{color:var(--orange);}
+.tl p:not(.t-big){margin-top:12px;font-size:13.5px;color:var(--dim);line-height:1.75;}
+.tl p b{color:var(--black);font-weight:600;}
+.abs-details{margin-top:44px;border:1px solid var(--hair);border-radius:6px;}
+.abs-details summary{
+  cursor:pointer;list-style:none;padding:15px 22px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);
+}
+.abs-details summary::-webkit-details-marker{display:none;}
+.abs-details summary::before{content:"+  ";}
+.abs-details[open] summary::before{content:"−  ";}
+.abs-details .abstract{padding:2px 24px 24px;}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:70px;}
+.stat{
+  background:var(--surface);border-radius:6px;padding:24px 18px;
+  border-top:2px solid transparent;
+  transition:transform .3s var(--ease),border-color .3s;
+}
+.stat:hover{transform:translateY(-5px);border-top-color:var(--cyan);}
+.stat .v{
+  font-family:var(--disp);font-weight:700;font-size:clamp(20px,1.9vw,30px);color:var(--black);
+  font-variant-numeric:tabular-nums;
+}
+.stat .v i{font-style:normal;color:var(--cyan);font-size:.6em;margin-left:1px;}
+.stat.peak{background:var(--black);}
+.stat.peak .v,.stat.peak .v i{color:var(--orange);}
+.stat.peak .k{color:rgba(240,242,244,.75);}
+.stat .k{margin-top:8px;font-size:11.5px;line-height:1.6;color:var(--dim);}
+
+/* ============ ladder + loop ============ */
+.loop-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;margin-top:64px;}
+.ladder{position:relative;}
+.ladder::before{
+  content:"";position:absolute;left:17px;top:16px;bottom:16px;width:2px;
+  background:linear-gradient(180deg,rgba(61,65,69,.15),var(--cyan) 55%,var(--orange));
+}
+.step{display:flex;gap:22px;padding:20px 0;position:relative;}
+.step .node{
+  width:36px;height:36px;flex:0 0 auto;border-radius:50%;z-index:1;
+  background:var(--white);border:2px solid rgba(61,65,69,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--dim);
+}
+.step h4{font-family:var(--disp);font-size:18px;font-weight:600;color:var(--black);}
+.step p{margin-top:6px;font-size:13.5px;color:var(--dim);line-height:1.7;max-width:420px;}
+.step.this .node{
+  border-color:var(--orange);color:var(--orange);
+  animation:ringpulse 2.4s var(--ease) infinite;
+}
+@keyframes ringpulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(250,95,38,.25);}
+  50%{box-shadow:0 0 0 9px rgba(250,95,38,0);}
+}
+.step.this h4{color:var(--orange);}
+.step .flag{
+  display:inline-block;margin-left:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;
+  padding:3px 9px;border-radius:100px;background:var(--orange);color:var(--white);vertical-align:2px;
+}
+.step.goal .node{border-style:dashed;}
+.loop-svg svg{width:100%;height:auto;display:block;overflow:visible;}
+.flow-dash{stroke-dasharray:7 9;animation:dashmove 2.4s linear infinite;}
+@keyframes dashmove{to{stroke-dashoffset:-64;}}
+.spin-slow{transform-origin:280px 280px;animation:spinSlow 60s linear infinite;}
+@keyframes spinSlow{to{transform:rotate(360deg);}}
+
+/* ============ stack cards ============ */
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:60px;}
+.card{
+  background:var(--white);border:1px solid var(--hair);border-radius:6px;
+  padding:32px 28px;position:relative;overflow:hidden;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease);
+}
+.card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--cyan);
+  transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 24px 48px -28px rgba(61,65,69,.35);}
+.card:hover::before{transform:scaleX(1);}
+.card .num{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--dim);}
+.card h3{margin-top:12px;font-family:var(--disp);font-size:21px;font-weight:700;color:var(--black);}
+.card h3 em{display:block;font-style:normal;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--cyan);margin-top:6px;letter-spacing:.05em;}
+.card>p{margin-top:14px;font-size:13.5px;color:var(--gray);line-height:1.75;}
+.card ul{margin-top:16px;list-style:none;}
+.card li{
+  padding:7px 0 7px 16px;border-left:2px solid var(--cyan);
+  margin-bottom:8px;font-size:12.5px;color:var(--gray);line-height:1.6;
+}
+.card li b{color:var(--black);}
+/* --- animated mechanism mini-figures inside module cards --- */
+.mech{
+  margin-top:18px;border:1px solid var(--hair);border-radius:6px;
+  background:#FAFBFC;padding:10px 8px 4px;
+}
+.mech svg{width:100%;height:auto;display:block;overflow:visible;}
+/* gym funnel */
+.mech-gym .fb{transform:scaleX(0);transform-origin:left;transition:transform .55s var(--ease);}
+.mech-gym .fl{opacity:0;transition:opacity .45s var(--ease) .25s;}
+.mech-gym .fstage.on .fb{transform:scaleX(1);}
+.mech-gym .fstage.on .fl{opacity:1;}
+/* erl reward shaping */
+.mech-erl .eb{transform:scaleY(0);transform-origin:bottom;transition:transform .5s var(--ease),fill .5s,opacity .5s;}
+.mech-erl.p1 .eb{transform:scaleY(1);}
+.mech-erl .bl,.mech-erl .blab{opacity:0;transition:opacity .5s var(--ease);}
+.mech-erl.p2 .bl,.mech-erl.p2 .blab{opacity:1;}
+.mech-erl.p3 .eb.low{opacity:.22;transform:scaleY(.05);}
+.mech-erl.p4 .eb.hi{fill:#FA5F26;transform:scaleY(1.1);}
+.mech-erl .xt{opacity:0;transform:translateY(8px);transition:all .5s var(--ease);}
+.mech-erl.p4 .xt{opacity:1;transform:none;}
+/* evo parent selection */
+.mech-evo .ring{transition:transform .6s var(--ease),stroke .4s;}
+.mech-evo.q2 .ring{transform:translateX(84px);}
+.mech-evo.q3 .ring{transform:translateX(168px);}
+.mech-evo.q4 .ring{transform:translateX(84px);stroke:#FA5F26;stroke-dasharray:none;}
+.mech-evo .ce{transform:scaleY(0);transform-origin:top;transition:transform .5s var(--ease) .3s;}
+.mech-evo .cn,.mech-evo .pl{opacity:0;transition:opacity .5s var(--ease) .55s;}
+.mech-evo.q4 .ce{transform:scaleY(1);}
+.mech-evo.q4 .cn,.mech-evo.q4 .pl{opacity:1;}
+/* inference-loop step highlight */
+.iloop .st{transition:border-color .3s,background .3s,color .3s;}
+.iloop .st.active{border-color:var(--cyan);background:var(--white);color:var(--black);}
+.engine{
+  margin-top:22px;background:var(--black);border-radius:6px;color:var(--white);
+  display:flex;align-items:center;gap:24px;padding:26px 32px;flex-wrap:wrap;
+}
+.engine .orb{width:11px;height:11px;border-radius:50%;background:var(--orange);animation:ringpulse 2s var(--ease) infinite;flex:0 0 auto;}
+.engine h4{font-family:var(--disp);font-size:17px;}
+.engine p{flex:1;min-width:260px;font-size:13px;color:rgba(240,242,244,.75);line-height:1.65;}
+.engine .tag{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.2em;}
+
+/* ============ operators + console ============ */
+.ops-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:44px;margin-top:60px;align-items:start;}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.chip{
+  border:1px solid var(--hair);border-radius:6px;padding:22px 20px;background:var(--white);
+  transition:transform .3s var(--ease),border-color .3s;
+}
+.chip:hover{transform:translateY(-4px);border-color:var(--c);}
+.chip .g{
+  width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:16px;color:var(--white);background:var(--c);margin-bottom:14px;
+}
+.chip h4{font-family:var(--disp);font-size:15.5px;font-weight:700;color:var(--black);}
+.chip p{margin-top:7px;font-size:12px;color:var(--dim);line-height:1.65;}
+.chip.c1{--c:var(--gray);}
+.chip.c2{--c:var(--cyan);}
+.chip.c3{--c:#7A828C;}
+.chip.c4{--c:var(--orange);}
+.chips.four{grid-template-columns:repeat(4,1fr);margin-top:56px;}
+.chip em{
+  display:block;font-style:normal;font-family:var(--mono);font-size:11px;
+  color:var(--c);margin-top:4px;letter-spacing:.05em;
+}
+.treewrap{
+  margin-top:20px;border:1px solid var(--hair);border-radius:6px;
+  padding:28px 30px 18px;background:var(--white);
+}
+.treewrap .tw-title{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--dim);
+  text-transform:uppercase;margin-bottom:18px;
+}
+.treewrap svg{width:100%;height:auto;display:block;}
+.treewrap .anim{opacity:0;transition:opacity .7s var(--ease);}
+.treewrap.in .anim{opacity:1;}
+.tree-cap{
+  display:flex;gap:24px;flex-wrap:wrap;align-items:center;
+  margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--dim);
+}
+.tree-cap span{display:inline-flex;align-items:center;gap:8px;}
+.tree-cap .right{margin-left:auto;}
+.ls{width:26px;height:0;display:inline-block;}
+.ls.solid{border-top:2px solid var(--gray);}
+.ls.dashed{border-top:2px dashed var(--cyan);}
+.ls.dotted{border-top:2px dotted var(--cyan);}
+.ls.double{border-top:4px double var(--orange);}
+.iloop{
+  margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:12px;
+}
+.il-cap{
+  font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+  margin-right:8px;
+}
+.iloop .st{
+  border:1px solid var(--hair);border-radius:100px;padding:8px 15px;
+  color:var(--gray);background:var(--surface);white-space:nowrap;
+}
+.iloop .st b{color:var(--cyan);margin-right:7px;font-weight:600;}
+.iloop .arr{color:var(--cyan);}
+.iloop .cycle{color:var(--orange);font-weight:600;margin-left:4px;}
+.scaf{margin-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--dim);}
+.scaf b{color:var(--black);font-weight:600;}
+.console{
+  border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.5);
+  background:var(--black);font-family:var(--mono);
+  box-shadow:0 34px 70px -34px rgba(0,0,0,.5);
+}
+.con-head{
+  display:flex;align-items:center;gap:8px;padding:12px 18px;
+  border-bottom:1px solid rgba(240,242,244,.12);
+}
+.con-head i{width:10px;height:10px;border-radius:50%;display:inline-block;background:rgba(240,242,244,.22);}
+.con-head i:first-child{background:var(--orange);}
+.con-head span{margin-left:10px;font-size:11px;color:rgba(240,242,244,.55);letter-spacing:.08em;}
+.con-body{padding:18px 22px;height:360px;overflow:hidden;font-size:12.5px;line-height:1.95;}
+.t-dim{color:rgba(240,242,244,.4);} .t-cy{color:var(--cyan);} .t-or{color:var(--orange);}
+.t-wh{color:var(--white);} .t-tx{color:rgba(240,242,244,.85);}
+.con-score{
+  display:flex;align-items:center;gap:14px;padding:13px 22px;
+  border-top:1px solid rgba(240,242,244,.12);font-size:11.5px;color:rgba(240,242,244,.55);
+}
+.sc-track{flex:1;height:5px;border-radius:100px;background:rgba(240,242,244,.14);overflow:hidden;}
+.sc-fill{height:100%;width:0;border-radius:100px;background:var(--cyan);transition:width .8s var(--ease);}
+.con-score b{color:var(--white);font-variant-numeric:tabular-nums;min-width:60px;text-align:right;}
+.medal-pop{
+  font-size:10.5px;letter-spacing:.14em;padding:4px 11px;border-radius:100px;
+  background:var(--orange);color:var(--white);
+  opacity:0;transform:scale(.6);transition:opacity .4s,transform .5s cubic-bezier(.2,1.2,.3,1.4);
+}
+.medal-pop.show{opacity:1;transform:scale(1);}
+
+/* ============ results ============ */
+.chart{margin-top:60px;display:flex;flex-direction:column;gap:13px;}
+.rbar{display:grid;grid-template-columns:250px 1fr 74px;gap:18px;align-items:center;}
+.rbar .lbl{font-size:13px;text-align:right;color:var(--gray);line-height:1.4;}
+.rbar .lbl small{display:block;font-family:var(--mono);font-size:10px;color:var(--dim);}
+.rbar .track{height:28px;border-radius:4px;background:var(--surface);overflow:hidden;}
+.rbar .fill{height:100%;width:0;border-radius:4px;background:rgba(61,65,69,.4);transition:width 1.2s var(--ease);}
+.rbar.cy .fill{background:var(--cyan);}
+.rbar.peak .fill{background:var(--orange);}
+.rbar .val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--black);font-variant-numeric:tabular-nums;}
+.rbar.peak .val{color:var(--orange);}
+.rbar.peak .lbl{color:var(--black);font-weight:600;}
+.res-note{
+  margin-top:28px;border-left:2px solid var(--cyan);padding-left:18px;
+  font-size:13.5px;color:var(--dim);line-height:1.8;max-width:800px;
+}
+.res-note b{color:var(--black);}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:64px;}
+.duo .cell{border-radius:6px;padding:34px 32px;}
+.duo .before{background:var(--surface);}
+.duo .after{background:var(--black);color:var(--white);}
+.duo .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;}
+.duo .before .cap{color:var(--dim);}
+.duo .after .cap{color:var(--cyan);}
+.duo .big{margin-top:14px;font-family:var(--disp);font-weight:700;font-size:clamp(30px,3vw,46px);font-variant-numeric:tabular-nums;}
+.duo .before .big{color:var(--gray);}
+.duo .after .big{color:var(--white);}
+.duo .big small{font-family:var(--mono);font-size:13px;color:var(--orange);margin-left:10px;}
+.duo p{margin-top:12px;font-size:13.5px;line-height:1.75;}
+.duo .before p{color:var(--dim);}
+.duo .after p{color:rgba(240,242,244,.75);}
+.duo .after p b{color:var(--cyan);font-weight:600;}
+.cases{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px;}
+.case{border:1px solid var(--hair);border-radius:6px;padding:30px 28px;}
+.case .medal{
+  display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  padding:5px 13px;border-radius:100px;color:var(--white);
+}
+.case .medal.bz{background:var(--orange);}
+.case .medal.sv{background:var(--gray);}
+.case h4{margin-top:16px;font-family:var(--disp);font-size:17px;font-weight:600;color:var(--black);line-height:1.4;}
+.case .hr{margin-top:12px;font-family:var(--disp);font-size:34px;font-weight:700;color:var(--black);font-variant-numeric:tabular-nums;}
+
+/* ============ RL training trace ============ */
+.rl-summary{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:48px;
+}
+.rl-stat{
+  background:var(--surface);padding:22px 20px;border-top:2px solid var(--cyan);
+}
+.rl-stat.peak{background:var(--black);border-top-color:var(--orange);}
+.rl-stat .v{
+  font-family:var(--disp);font-size:clamp(24px,2.5vw,38px);font-weight:700;
+  color:var(--black);font-variant-numeric:tabular-nums;
+}
+.rl-stat.peak .v{color:var(--orange);}
+.rl-stat .k{
+  margin-top:7px;font-family:var(--mono);font-size:10px;line-height:1.5;
+  color:var(--dim);text-transform:uppercase;letter-spacing:.08em;
+}
+.rl-stat.peak .k{color:rgba(240,242,244,.62);}
+.rl-panel{
+  margin-top:22px;background:var(--black);color:var(--white);padding:28px 28px 22px;
+  position:relative;overflow:hidden;
+}
+.rl-panel-head{
+  align-items:flex-start;display:flex;justify-content:space-between;gap:24px;margin-bottom:20px;
+}
+.rl-panel-title{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(240,242,244,.58);
+}
+.rl-panel-title b{color:var(--white);font-weight:600;}
+.rl-series{display:flex;flex-wrap:wrap;gap:8px;}
+.rl-series button{
+  align-items:center;background:transparent;border:1px solid rgba(240,242,244,.2);
+  border-radius:100px;color:rgba(240,242,244,.55);cursor:pointer;display:inline-flex;
+  font-family:var(--mono);font-size:9.5px;gap:7px;letter-spacing:.05em;padding:7px 10px;
+}
+.rl-series button::before{content:"";height:7px;width:7px;background:var(--cyan);}
+.rl-series button[data-series="validation"]::before{background:var(--orange);}
+.rl-series button[data-series="medals"]::before{background:var(--surface);}
+.rl-series button.off{opacity:.38;}
+.rl-canvas-wrap{height:420px;position:relative;}
+#rlCanvas{display:block;height:100%;width:100%;}
+.rl-tooltip{
+  background:var(--white);color:var(--gray);display:none;font-family:var(--mono);
+  font-size:10px;line-height:1.8;min-width:172px;padding:10px 12px;pointer-events:none;
+  position:absolute;z-index:3;
+}
+.rl-tooltip.show{display:block;}
+.rl-tooltip b{color:var(--black);}
+.rl-tooltip .cy{color:var(--cyan);}
+.rl-tooltip .or{color:var(--orange);}
+.rl-note{
+  border-top:1px solid rgba(240,242,244,.14);color:rgba(240,242,244,.55);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:9.5px;line-height:1.6;margin-top:14px;padding-top:14px;
+}
+.rl-note b{color:var(--white);font-weight:500;}
+.case .hr small{font-family:var(--mono);font-size:11px;color:var(--dim);font-weight:400;margin-left:8px;}
+.case p{margin-top:12px;font-size:13px;color:var(--dim);line-height:1.8;}
+.case p b{color:var(--cyan);font-weight:600;}
+
+/* ============ transfer ============ */
+.jumps{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:60px;}
+.jump{background:var(--surface);border-radius:6px;padding:36px 34px;}
+.jump .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+.jump .nums{display:flex;align-items:baseline;gap:16px;margin-top:18px;}
+.jump .from{font-family:var(--disp);font-size:26px;color:var(--dim);text-decoration:line-through;}
+.jump .arr{color:var(--cyan);font-family:var(--mono);font-size:18px;}
+.jump .to{font-family:var(--disp);font-size:56px;font-weight:700;color:var(--black);font-variant-numeric:tabular-nums;}
+.jump .to i{font-style:normal;color:var(--cyan);font-size:.42em;}
+.jump p{margin-top:12px;font-size:13.5px;color:var(--gray);line-height:1.75;}
+.jump p b{color:var(--black);}
+.mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px;}
+.mini{border:1px solid var(--hair);border-radius:6px;padding:26px 24px;}
+.mini .v{font-family:var(--disp);font-size:24px;font-weight:700;color:var(--cyan);}
+.mini .k{margin-top:8px;font-size:12px;color:var(--dim);line-height:1.7;}
+
+/* ============ release + bibtex ============ */
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:60px;}
+.rel{
+  background:var(--surface);border-radius:6px;padding:26px 24px;
+  transition:transform .3s var(--ease);
+}
+.rel:hover{transform:translateY(-4px);}
+.rel .idx{font-family:var(--mono);font-size:10.5px;color:var(--cyan);letter-spacing:.2em;}
+.rel h4{margin-top:10px;font-family:var(--disp);font-size:15px;font-weight:600;color:var(--black);}
+.rel p{margin-top:8px;font-size:12px;color:var(--dim);line-height:1.65;}
+.bib{margin-top:64px;border-radius:8px;overflow:hidden;border:1px solid var(--hair);}
+.bib-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 22px;background:var(--surface);border-bottom:1px solid var(--hair);
+}
+.bib-head span{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim);}
+#copyBib{
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--white);
+  background:var(--black);border:none;border-radius:100px;padding:7px 16px;cursor:pointer;
+  transition:background .25s;
+}
+#copyBib:hover{background:var(--cyan);}
+.bib pre{
+  padding:22px 26px;font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--gray);
+  overflow-x:auto;background:var(--white);
+}
+.bib .c{color:var(--cyan);} .bib .o{color:var(--orange);}
+
+/* ============ footer ============ */
+footer{background:var(--black);color:var(--white);margin-top:40px;}
+.edge{height:2px;background:var(--cyan);}
+.foot{max-width:1100px;margin:0 auto;padding:80px 5vw 50px;}
+.foot h2{color:var(--white);font-size:clamp(24px,2.8vw,40px);}
+.foot h2 .or{color:var(--orange);}
+.foot .btnrow{justify-content:flex-start;margin-top:32px;}
+.foot .btn{background:var(--white);color:var(--black);}
+.foot .btn:hover{background:var(--cyan);color:var(--white);}
+.foot .btn.alt{background:transparent;color:var(--white);border:1px solid rgba(240,242,244,.35);}
+.foot .btn.alt:hover{border-color:var(--cyan);color:var(--cyan);}
+.foot .meta{
+  margin-top:64px;padding-top:24px;border-top:1px solid rgba(240,242,244,.14);
+  display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11.5px;color:rgba(240,242,244,.55);letter-spacing:.05em;
+}
+
+/* responsive */
+@media(max-width:1024px){
+  .stats{grid-template-columns:repeat(3,1fr);}
+  .loop-grid,.ops-grid,.duo,.cases,.jumps{grid-template-columns:1fr;}
+  .cards3,.rel-grid,.mini3{grid-template-columns:1fr;}
+  .chips.four{grid-template-columns:repeat(2,1fr);}
+  .video-head{grid-template-columns:1fr;gap:18px;}
+  .rl-summary{grid-template-columns:repeat(2,1fr);}
+  .navlinks{display:none;}
+  .rbar{grid-template-columns:1fr;gap:8px;}
+  .rbar .lbl{text-align:left;}
+}
+@media(max-width:640px){
+  .stats,.rl-summary{grid-template-columns:repeat(2,1fr);}
+  .rl-panel{padding:22px 14px 18px;}
+  .rl-panel-head{flex-direction:column;}
+  .rl-canvas-wrap{height:350px;}
+}
+</style>
+</head>
+<body>
+<div id="scrollbar"></div>
+
+<nav>
+  <a class="brand" href="#top">
+    <!-- Official FRONTIS logo · fills adapt via currentColor, The Edge stays #00C1D4 -->
+    <svg class="flogo" viewBox="0 0 482 155" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="FRONTIS 衔远科技">
+      <circle cx="94.6386" cy="77.2737" r="66.2076" transform="rotate(180 94.6386 77.2737)" stroke="currentColor" stroke-width="4.27146"/>
+      <path d="M159.509 87.8167C159.509 95.3157 157.854 100.957 154.637 107.885C151.421 114.813 146.706 121.108 140.763 126.411C134.82 131.713 127.765 135.92 119.999 138.789C112.234 141.659 103.912 143.136 95.5069 143.136C87.1021 143.136 78.7795 141.659 71.0144 138.789C63.2493 135.92 56.1938 131.713 50.2506 126.411C44.3075 121.108 39.5932 114.813 36.3767 107.885C33.1603 100.957 31.5049 95.3157 31.5049 87.8167L95.5069 87.8167L159.509 87.8167Z" fill="currentColor"/>
+      <line x1="9.92285" y1="92.3245" x2="179.603" y2="92.3245" stroke="#00C1D4" stroke-width="12.8144"/>
+      <path d="M458.371 125.823C452.074 125.823 447.656 122.559 447.377 116.969H451.343C451.622 120.302 453.605 122.559 458.267 122.559C462.268 122.559 463.485 120.823 463.485 118.566C463.485 115.407 461.05 114.955 456.527 113.809C452.631 112.768 448.351 111.518 448.351 106.795C448.351 102.49 451.691 100.024 457.049 100.024C462.72 100.024 466.408 102.906 466.791 107.906H462.824C462.407 104.92 460.702 103.288 457.084 103.288C453.953 103.288 452.352 104.434 452.352 106.587C452.352 109.365 454.962 109.955 458.162 110.754C462.963 111.969 467.486 113.115 467.486 118.358C467.486 122.629 464.599 125.823 458.371 125.823Z" fill="currentColor"/>
+      <path d="M428.766 125.337H424.939V100.51H428.766V125.337Z" fill="currentColor"/>
+      <path d="M398.618 125.337H394.757V103.809H386.72V100.51H406.655V103.809H398.618V125.337Z" fill="currentColor"/>
+      <path d="M352.385 125.337H348.558V100.51H352.942L364.492 119.608H364.562V100.51H368.424V125.337H364.04L352.455 106.24H352.385V125.337Z" fill="currentColor"/>
+      <path d="M317.302 125.823C309.856 125.823 305.09 120.372 305.09 112.906C305.09 105.441 309.856 100.024 317.302 100.024C324.747 100.024 329.513 105.441 329.513 112.906C329.513 120.372 324.747 125.823 317.302 125.823ZM317.302 122.525C323.181 122.525 325.512 118.011 325.512 112.906C325.512 107.802 323.181 103.323 317.302 103.323C311.422 103.323 309.091 107.802 309.091 112.906C309.091 118.011 311.422 122.525 317.302 122.525Z" fill="currentColor"/>
+      <path d="M272.029 125.337H268.202V100.51H278.57C284.067 100.51 287.024 103.08 287.024 107.663C287.024 110.823 285.111 113.115 282.362 113.74V113.809C288.138 114.886 286.015 124.678 287.372 125.094V125.337H283.267C282.154 124.296 284.519 115.615 278.431 115.615H272.029V125.337ZM272.029 112.316H277.735C281.249 112.316 283.162 110.788 283.162 107.941C283.162 105.267 281.632 103.809 277.805 103.809H272.029V112.316Z" fill="currentColor"/>
+      <rect x="232.564" y="100.567" width="17.2376" height="3.30846" fill="#00C1D4"/>
+      <rect x="236.21" y="111.155" width="14.2264" height="3.64641" transform="rotate(90 236.21 111.155)" fill="currentColor"/>
+      <rect x="232.564" y="111.155" width="14.5856" height="3.30846" fill="currentColor"/>
+      <path d="M458.013 36.5063H470.126V42.4703H457.925V48.4343H468.431C468.431 48.4343 468.431 55.0202 468.431 56.4681C468.431 57.916 462.981 64.5944 461.726 65.9339C461.451 66.2273 459.669 67.7805 459.704 67.9177C463.34 70.1278 468.35 72.4362 472.448 73.6768L469.345 79.5065C464.565 77.6375 459.387 74.73 455.098 71.9776C450.78 74.8671 441.278 79.5065 441.278 79.5065L438.569 73.6768C438.569 73.6768 447.295 70.0335 450.651 67.7614C449.622 66.929 448.549 65.9531 447.662 64.9803C446.842 64.0808 442.319 56.8604 442.319 56.8604L448.228 55.8239C450.049 58.9526 452.323 61.8357 455.069 64.1607C456.301 64.0522 462.221 56.095 462.45 54.3217C460.524 54.3217 441.278 54.5224 441.278 54.3217V48.4375H451.783V42.4703H440.796V36.5063H451.786V29.1869L458.013 29.1869V36.5063Z" fill="currentColor"/>
+      <path d="M341.229 44.1381V50.1109H332.664V63.0665H336.542V60.0431H342.037V68.8799H326.435V50.1109H320.924C320.924 50.1109 320.951 51.7224 320.676 55.1953C320.401 58.6683 318.78 62.5718 316.208 65.6143C315.597 66.3383 312.486 69.3354 311.245 69.9556L306.901 65.8624C310.996 63.8806 313.18 58.697 313.851 56.4357C314.2 55.255 314.843 52.2185 314.476 50.1109H307.607V44.1381H341.229Z" fill="currentColor"/>
+      <path d="M439.171 38.254V44.1382H434.164L434.161 52.7148L439.494 50.8963V57.1801L434.161 58.6909V79.3083H421.718V73.2646H427.86V60.5216L421.816 62.7617L420.421 56.7901L427.86 54.2387V44.1382H421.233V38.254H427.86V29.4292H434.164V38.254H439.171Z" fill="currentColor"/>
+      <path d="M293.448 44.1562L304.901 44.338C304.836 49.8198 304.96 68.5703 304.96 68.5703C304.96 68.5703 309.245 72.2405 309.53 72.2405H344.197V78.3899H307.398L301.661 73.698L295.146 79.146L292.63 73.6859C292.63 73.6859 293.801 72.9077 294.334 72.4644C294.917 71.9796 298.62 68.5703 298.62 68.5703V49.881H293.448V44.1562Z" fill="currentColor"/>
+      <path d="M255.086 50.5925V56.2287H261.147V61.6377H255.086V69.5121L261.228 67.9238V73.7283L249.108 78.1129V61.6377H243.451C243.451 61.6377 243.451 56.7929 243.451 56.2287H248.947V50.5957H244.583V44.9386H260.904V50.5957L255.086 50.5925Z" fill="currentColor"/>
+      <path d="M279.655 50.1849H275.13V64.4203V78.6557H264.139C264.137 78.6557 264.139 73.1129 264.139 72.612H268.987V50.1849C268.416 50.1982 263.169 50.1849 263.169 50.1849V44.4601H279.655L279.651 50.1849H279.655Z" fill="currentColor"/>
+      <path d="M234.563 78.9748V57.1855L230.122 60.8436L227.603 55.8428C228.903 54.953 230.106 53.8144 231.174 52.6535C232.991 50.6762 235.107 47.9812 236.633 45.7806C237.258 44.8844 238.383 43.041 238.383 43.041L243.449 45.1486C243.449 45.1486 240.75 49.8882 240.444 50.3254C240.137 50.7625 239.26 51.8465 238.921 52.3427C238.921 52.3427 239.158 52.3582 239.26 52.3442C239.55 52.3442 240.053 52.3442 240.682 52.3442C240.682 62.7503 240.688 78.9748 240.688 78.9748L234.557 78.9684L234.563 78.9748Z" fill="currentColor"/>
+      <path d="M337.678 31.735V37.4598H310.602L310.602 31.735H337.678Z" fill="currentColor"/>
+      <path d="M252.987 34.7551H261.228C261.275 35.1932 261.228 39.2297 261.228 40.346C257.647 40.346 254.064 40.3109 250.483 40.3109C250.138 40.8688 248.575 43.6601 248.327 43.6628H242.494C243.115 42.2957 243.67 41.4466 244.231 40.3811C246.107 36.8122 247.799 33.1318 248.934 29.2632L254.678 29.3493C254.817 29.3493 254.772 29.3429 255.095 29.3429C255.095 29.8213 253.19 34.0886 252.98 34.7583L252.987 34.7551Z" fill="currentColor"/>
+      <path d="M232.244 37.0865C233.858 35.4695 235.996 32.9883 237.222 31.0874C237.455 30.7239 238.202 29.1701 238.438 29.024C241.187 29.5024 242.836 29.9797 243.691 30.1466C243.878 30.1849 243.992 30.2104 244.102 30.3826C241.174 36.5985 236.274 42.014 230.443 45.7231L227.958 40.8977C229.323 39.571 230.905 38.4292 232.247 37.0833L232.244 37.0865Z" fill="currentColor"/>
+      <path d="M278.523 32.054V37.6225H263.816V32.054C263.816 32.054 277.136 32.0508 278.523 32.0508V32.054Z" fill="currentColor"/>
+      <path d="M372.001 43.8224C372.553 43.8077 379.113 43.8224 379.113 43.8224V49.6139H371.681L380.243 58.0483L376.769 62.2654L372.001 57.4281V79.6304H365.972L365.858 60.8405C365.858 60.8405 364.264 63.4697 363.148 65.0918C361.73 67.1523 359.286 70.201 359.286 70.201L355.835 65.8445C355.835 65.8445 363.038 55.3897 365.855 49.6139H358.261C358.261 49.6139 358.261 45.0014 358.261 43.8192H365.855V38.0944L358.895 39.4563L358.109 34.2896L378.382 28.776L378.88 34.7584L371.997 36.9016V43.8192L372.001 43.8224Z" fill="currentColor"/>
+      <path d="M401.9 57.8203L409.18 56.436V62.2656L401.9 63.754V79.5065H395.758V64.8208L379.11 68.0953V62.0176L395.758 58.9334V29.1901H401.657C401.673 29.1901 401.9 29.4133 401.9 29.4293V57.8203Z" fill="currentColor"/>
+      <path d="M382.477 37.5828L382.105 33.3656L386.448 33.6137L392.688 38.8231V44.7768C392.688 44.7768 389.551 43.5365 387.069 41.5519C385.032 39.9235 382.477 37.5828 382.477 37.5828Z" fill="currentColor"/>
+      <path d="M382.477 50.6065L382.105 46.3893L386.448 46.6374L392.688 51.8468V57.8005C392.688 57.8005 389.551 56.5602 387.069 54.5756C385.032 52.9472 382.477 50.6065 382.477 50.6065Z" fill="currentColor"/>
+      <path d="M305.04 40.3235H298.09L293.623 30.2642L300.336 30.1433L305.04 40.3235Z" fill="currentColor"/>
+    </svg>
+    <span class="sep"></span>
+    <b>OPEN<span>RSI</span></b>
+  </a>
+  <div class="navlinks">
+    <a href="#abstract">Abstract</a>
+    <a href="#loop">Meta-Evolving</a>
+    <a href="#stack">System</a>
+    <a href="#operators">Operators</a>
+    <a href="#results">Results</a>
+    <a href="#training">RL Trace</a>
+    <a href="#project-video">Video</a>
+    <a href="#bibtex">BibTeX</a>
+    <a class="pill" href="https://github.com/FrontisAI/OpenRSI">GitHub ↗</a>
+  </div>
+</nav>
+
+<!-- ================= MASTHEAD ================= -->
+<header class="masthead" id="top">
+  <p class="conf rv in">Preprint 2026 · Open Full-Stack Release · OpenRSI First Release</p>
+  <h1 class="rv in">Frontis-MA1: Training an <span class="cy">AI4AI Model</span> towards<br><span class="or">Recursive Self-Improvement</span> in ML Engineering</h1>
+  <p class="authors rv in"><a href="https://frontis.ai/">Horizon Research, Frontis.AI</a><sup>1</sup> &nbsp;·&nbsp; <a href="https://www.tsinghua.edu.cn/en/">Tsinghua University</a><sup>2</sup></p>
+  <p class="affil rv in">Open weights · open gym · open search — the full OpenMLE stack, released</p>
+  <div class="btnrow rv in">
+    <a class="btn" href="#bibtex">📄 Citation</a>
+    <a class="btn" href="https://github.com/FrontisAI/OpenRSI">&lt;/&gt; Code</a>
+    <a class="btn" href="https://huggingface.co/collections/FrontisAI/frontis-ma1">🤗 Models</a>
+    <a class="btn" href="https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks">🧩 Tasks</a>
+    <a class="btn alt" href="#results">Results ↓</a>
+  </div>
+
+  <!-- teaser figure: live evolutionary search -->
+  <div class="figure rv in">
+    <div class="fig-stage" id="figStage">
+      <canvas id="evoCanvas"></canvas>
+      <div class="fig-hud">
+        <span class="live">LIVE&nbsp;</span>
+        <span>epoch <b id="hudEpoch">1</b></span>
+        <span>nodes <b id="hudNodes">0</b></span>
+        <span class="best">best score <b id="hudBest">0.000</b></span>
+        <span>operator <b id="hudOp">draft</b></span>
+      </div>
+    </div>
+    <div class="fig-legend">
+      <span><span class="dot dr"></span>Draft</span>
+      <span><span class="dot im"></span>Improve</span>
+      <span><span class="dot db"></span>Debug</span>
+      <span><span class="dot co"></span>Crossover</span>
+      <span><span class="dot bx"></span>failed run</span>
+      <span style="color:var(--orange);">◉ incumbent best</span>
+    </div>
+    <p class="fig-cap">
+      <span class="lbl">Live · illustrative simulation, not paper trace.</span>
+      <b>OpenMLE-Evo</b> growing a population of executable programs —
+      node size ∝ simulated validation score. Move your cursor to perturb it.
+    </p>
+  </div>
+</header>
+
+<!-- ================= PROJECT VIDEO ================= -->
+<section id="project-video">
+  <div class="video-wrap">
+    <div class="video-head">
+      <div>
+        <p class="eyebrow rv">Project Film · 64 seconds</p>
+        <h2 class="rv">See the complete <span class="cy">OpenMLE stack</span><br>in one minute.</h2>
+      </div>
+      <p class="lede rv">From executable tasks and execution-grounded learning to evolutionary search and reported results: a visual tour of OpenMLE-Gym, OpenMLE-ERL, OpenMLE-Evo, and Frontis-MA1.</p>
+    </div>
+    <div class="video-stage rv">
+      <video controls playsinline preload="metadata" poster="assets/images/frontis-ma1-openmle-release-teaser-poster.jpg">
+        <source src="assets/videos/frontis-ma1-openmle-release-teaser.mp4" type="video/mp4">
+        Your browser does not support embedded video. <a href="assets/videos/frontis-ma1-openmle-release-teaser.mp4">Open the MP4 directly.</a>
+      </video>
+      <div class="video-note">
+        <span>H.264 · 3840 × 2160 · no audio</span>
+        <a href="assets/videos/frontis-ma1-openmle-release-teaser.mp4">Open MP4 ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABSTRACT ================= -->
+<section id="abstract">
+  <div class="wrap">
+    <p class="eyebrow rv">01 · TL;DR</p>
+    <h2 class="rv">AI that improves the process<br>of <span class="cy">building AI</span></h2>
+    <div class="tldr rv-st rv">
+      <div class="tl">
+        <p class="t-big">One loop</p>
+        <p><b>Draft · Improve · Debug · Crossover</b> — trained with execution-grounded SFT + RL, then composed into long-horizon search. Learning and evolution close.</p>
+      </div>
+      <div class="tl hot">
+        <p class="t-big">39.39 → 71.21</p>
+        <p>Base → post-trained → Evo-Max, MLE-Bench Lite @ 6 GPU-h / task. <b>Beats GPT-5.5 + Codex (68.18)</b>, approaching GPT-5.6 Sol and the 2.8T Kimi K3.</p>
+      </div>
+      <div class="tl">
+        <p class="t-big">100% open</p>
+        <p>Weights · gym · sandbox · training · search · eval. <b>The full stack, released.</b></p>
+      </div>
+    </div>
+    <details class="abs-details rv">
+      <summary>Full abstract</summary>
+      <div class="abstract">
+        <p>Recursive self-improvement (RSI) requires AI systems that improve the process of building AI
+          (i.e., <span class="o">AI4AI</span>); machine learning engineering (MLE) offers a concrete, executable
+          testbed for studying this capability. We introduce <span class="k">OpenMLE</span>, an open full-stack
+          system for RSI research in MLE, spanning verifiable task environments with execution feedback
+          (<span class="k">OpenMLE-Gym</span>), operator learning (<span class="k">OpenMLE-RL</span>), and
+          long-horizon search (<span class="k">OpenMLE-Evo</span>). On this stack we post-train
+          <span class="o">Frontis-MA1 (35B)</span> as a meta-evolution agent for MLE, aligning post-training and
+          inference around four atomic program-evolution operators
+          (<span class="k">Draft</span>, <span class="k">Improve</span>, <span class="k">Debug</span>, <span class="k">Crossover</span>):
+          the same operators are trained via execution-grounded SFT and RL on data deduplicated against all
+          evaluation benchmarks, then composed into long-horizon search, coupling learning and evolution in a
+          single loop.</p>
+        <p>On MLE-Bench Lite under a 12-hour per-task budget on one RTX 4090 capped at 12 GB VRAM,
+          Frontis-MA1 (35B) improves Medal Average from 39.39% to 60.61% over its base model with OpenMLE-Evo,
+          and reaches <span class="o">71.21%</span> with OpenMLE-Evo-Max (benchmark-independent experience priors
+          and asynchronous search), exceeding GPT-5.5 + Codex and approaching GPT-5.6 Sol and the 2.8T Kimi K3.
+          On held-out NatureBench Lite, both components transfer: with the framework fixed, swapping in the
+          trained model raises Match-SOTA from 50% to 70%; with the model fixed, swapping in OpenMLE-Evo raises
+          it from 20% to 50%. We release the model weights and the full OpenMLE stack to enable reproducible
+          research on executable AI4AI toward RSI.</p>
+      </div>
+    </details>
+    <div class="stats rv-st rv">
+      <div class="stat peak"><div class="v"><span class="cnt" data-to="71.21" data-dec="2">0</span><i>%</i></div><div class="k">Medal Average — above GPT-5.5 + Codex (68.18%)</div></div>
+      <div class="stat"><div class="v">+<span class="cnt" data-to="21.22" data-dec="2">0</span><i>pp</i></div><div class="k">Post-training gain over base, identical harness</div></div>
+      <div class="stat"><div class="v"><span class="cnt" data-to="5835" data-dec="0">0</span></div><div class="k">Quality-gated executable tasks in OpenMLE-Gym</div></div>
+      <div class="stat"><div class="v"><span class="cnt" data-to="26574" data-dec="0">0</span></div><div class="k">Execution-verified SFT samples</div></div>
+      <div class="stat"><div class="v"><span class="cnt" data-to="4" data-dec="0">0</span></div><div class="k">Trainable atomic operators = the action space</div></div>
+      <div class="stat"><div class="v"><span class="cnt" data-to="35" data-dec="0">0</span><i>B</i></div><div class="k">Parameters — Pareto frontier vs trillion-scale systems</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= LOOP ================= -->
+<section id="loop">
+  <div class="wrap">
+    <p class="eyebrow rv">02 · Mechanism Ladder</p>
+    <h2 class="rv">When the improver is trained,<br>evolution becomes <span class="or">meta-evolution</span></h2>
+    <p class="lede rv">
+      <b>Verified trajectories return to train the model that generates future evolution.</b>
+    </p>
+    <div class="loop-grid">
+      <div class="ladder rv-st rv">
+        <div class="step"><div class="node">L1</div><div><h4>Evolution</h4><p>Artifacts evolve. The improver stays frozen.</p></div></div>
+        <div class="step"><div class="node">L2</div><div><h4>Self-Evolution</h4><p>Experience flows back into the search.</p></div></div>
+        <div class="step this"><div class="node">L3</div><div><h4>Meta-Evolution<span class="flag">THIS WORK</span></h4><p>The improver itself is trained — SFT + RL on verified trajectories.</p></div></div>
+        <div class="step goal"><div class="node">L4</div><div><h4>Recursive Self-Improvement</h4><p>Each system improves the process that builds its successor.</p></div></div>
+      </div>
+      <div class="loop-svg rv">
+        <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg">
+          <!-- instrument tick ring -->
+          <circle cx="280" cy="280" r="252" fill="none" stroke="rgba(61,65,69,.22)" stroke-width="8"
+                  stroke-dasharray="1.5 11.7"/>
+          <!-- rotating dashed ring -->
+          <g class="spin-slow">
+            <circle cx="280" cy="280" r="232" fill="none" stroke="#00C1D4" stroke-width="1" opacity=".3"
+                    stroke-dasharray="2 16"/>
+            <circle cx="280" cy="48" r="3.5" fill="#00C1D4"/>
+            <circle cx="280" cy="512" r="3.5" fill="#FA5F26"/>
+          </g>
+          <!-- main cycle: left arc (cyan, upward) + right arc (orange, downward) -->
+          <path id="arcL" d="M 280 470 A 190 190 0 0 1 90 280 A 190 190 0 0 1 280 90"
+                fill="none" stroke="#00C1D4" stroke-width="2" class="flow-dash"/>
+          <path id="arcR" d="M 280 90 A 190 190 0 0 1 470 280 A 190 190 0 0 1 280 470"
+                fill="none" stroke="#FA5F26" stroke-width="2" class="flow-dash"/>
+          <!-- direction arrowheads at arc midpoints -->
+          <polygon points="83,286 97,286 90,268" fill="#00C1D4"/>
+          <polygon points="463,274 477,274 470,292" fill="#FA5F26"/>
+          <!-- travelling signal dots -->
+          <circle r="7" fill="#00C1D4" opacity=".18">
+            <animateMotion dur="4.2s" repeatCount="indefinite"
+              path="M 280 470 A 190 190 0 0 1 90 280 A 190 190 0 0 1 280 90"/>
+          </circle>
+          <circle r="3.4" fill="#00C1D4">
+            <animateMotion dur="4.2s" repeatCount="indefinite"
+              path="M 280 470 A 190 190 0 0 1 90 280 A 190 190 0 0 1 280 90"/>
+          </circle>
+          <circle r="3.4" fill="#00C1D4" opacity=".7">
+            <animateMotion dur="4.2s" begin="2.1s" repeatCount="indefinite"
+              path="M 280 470 A 190 190 0 0 1 90 280 A 190 190 0 0 1 280 90"/>
+          </circle>
+          <circle r="7" fill="#FA5F26" opacity=".18">
+            <animateMotion dur="4.2s" repeatCount="indefinite"
+              path="M 280 90 A 190 190 0 0 1 470 280 A 190 190 0 0 1 280 470"/>
+          </circle>
+          <circle r="3.4" fill="#FA5F26">
+            <animateMotion dur="4.2s" repeatCount="indefinite"
+              path="M 280 90 A 190 190 0 0 1 470 280 A 190 190 0 0 1 280 470"/>
+          </circle>
+          <circle r="3.4" fill="#FA5F26" opacity=".7">
+            <animateMotion dur="4.2s" begin="2.1s" repeatCount="indefinite"
+              path="M 280 90 A 190 190 0 0 1 470 280 A 190 190 0 0 1 280 470"/>
+          </circle>
+          <!-- top node: the improver -->
+          <g>
+            <rect x="158" y="56" width="244" height="70" rx="8" fill="#000000"/>
+            <rect x="158" y="56" width="4" height="70" rx="2" fill="#00C1D4"/>
+            <text x="280" y="86" text-anchor="middle" font-family="Space Grotesk" font-size="16.5" font-weight="700" fill="#FFFFFF">Frontis-MA1</text>
+            <text x="280" y="108" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#F0F2F4" opacity=".7">the operator model · the improver</text>
+            <text x="280" y="44" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" letter-spacing="3" fill="#7A828C">TRAINING SIDE</text>
+          </g>
+          <!-- bottom node: the search -->
+          <g>
+            <rect x="158" y="434" width="244" height="70" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+            <rect x="158" y="434" width="4" height="70" rx="2" fill="#FA5F26"/>
+            <text x="280" y="464" text-anchor="middle" font-family="Space Grotesk" font-size="16.5" font-weight="700" fill="#000000">OpenMLE-Evo</text>
+            <text x="280" y="486" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3D4145" opacity=".75">experience-guided long-horizon search</text>
+            <text x="280" y="528" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" letter-spacing="3" fill="#7A828C">INFERENCE SIDE</text>
+          </g>
+          <!-- flow labels -->
+          <g font-family="IBM Plex Mono" font-size="11">
+            <rect x="104" y="212" width="8" height="8" rx="2" fill="#00C1D4"/>
+            <text x="120" y="220" fill="#00C1D4">verified trajectories</text>
+            <text x="120" y="237" fill="#7A828C">→ SFT + RL</text>
+            <rect x="380" y="340" width="8" height="8" rx="2" fill="#FA5F26"/>
+            <text x="394" y="348" fill="#FA5F26">operator weights</text>
+            <text x="394" y="365" fill="#7A828C">→ drive search</text>
+          </g>
+          <!-- center core: pulsing + ripples -->
+          <circle cx="280" cy="280" r="8" fill="none" stroke="#FA5F26" stroke-width="1.4">
+            <animate attributeName="r" values="8;34" dur="2.6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".55;0" dur="2.6s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="280" cy="280" r="8" fill="none" stroke="#FA5F26" stroke-width="1.4">
+            <animate attributeName="r" values="8;34" dur="2.6s" begin="1.3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".55;0" dur="2.6s" begin="1.3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="280" cy="280" r="6" fill="#FA5F26"/>
+          <!-- operator vocabulary carried around the loop -->
+          <g>
+            <rect x="252" y="296" width="9" height="9" rx="2" fill="#3D4145"/>
+            <rect x="266" y="296" width="9" height="9" rx="2" fill="#00C1D4"/>
+            <rect x="280" y="296" width="9" height="9" rx="2" fill="#FFFFFF" stroke="#00C1D4" stroke-width="1.4"/>
+            <rect x="294" y="296" width="9" height="9" rx="2" fill="#FA5F26"/>
+          </g>
+          <text x="280" y="332" text-anchor="middle" font-family="IBM Plex Mono" font-size="11.5" letter-spacing="5" fill="#000000" font-weight="600">META-EVOLVING</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= STACK ================= -->
+<section id="stack">
+  <div class="wrap">
+    <p class="eyebrow rv">03 · The Open Full-Stack</p>
+    <h2 class="rv">Unit of training <span class="cy">=</span> unit of search.<br>One stack closes the loop.</h2>
+    <p class="lede rv">
+      <b>Sandbox feedback = training signal = search signal.</b>
+    </p>
+    <div class="cards3 rv-st rv">
+      <div class="card">
+        <p class="num">MODULE 01 — ENVIRONMENT</p>
+        <h3>OpenMLE-Gym<em>a gym, not a dataset</em></h3>
+        <!-- animated: Kaggle-competition curation funnel (paper Fig. 3) -->
+        <div class="mech mech-gym" id="mechGym">
+          <svg viewBox="0 0 260 128" xmlns="http://www.w3.org/2000/svg">
+            <g class="fstage">
+              <rect class="fb" x="4" y="6" width="224" height="16" rx="3" fill="#3D4145" opacity=".28"/>
+              <text class="fl" x="12" y="18" font-family="IBM Plex Mono" font-size="9.5" fill="#FFFFFF">≈11,000 · Meta Kaggle catalog</text>
+            </g>
+            <g class="fstage">
+              <rect class="fb" x="4" y="36" width="83" height="16" rx="3" fill="#3D4145" opacity=".45"/>
+              <text class="fl" x="95" y="48" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">4,024 · eligible · 37%</text>
+            </g>
+            <g class="fstage">
+              <rect class="fb" x="4" y="66" width="60" height="16" rx="3" fill="#3D4145" opacity=".65"/>
+              <text class="fl" x="72" y="78" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">2,891 · executable · 26%</text>
+            </g>
+            <g class="fstage">
+              <rect class="fb" x="4" y="96" width="47" height="16" rx="3" fill="#00C1D4"/>
+              <text class="fl" x="59" y="108" font-family="IBM Plex Mono" font-size="9.5" fill="#000000">2,292 · quality-gated · 21% ✓</text>
+            </g>
+          </svg>
+        </div>
+        <ul>
+          <li><b>5,835</b> executable tasks · 3 sources · MLE-Bench excluded</li>
+          <li><b>6</b> structured sandbox feedback modes</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="num">MODULE 02 — TRAINING</p>
+        <h3>OpenMLE-ERL<em>execution-grounded SFT + RL</em></h3>
+        <!-- animated: adaptive bounds + entropic advantage (paper Fig. 6) -->
+        <div class="mech mech-erl" id="mechErl">
+          <svg viewBox="0 0 260 128" xmlns="http://www.w3.org/2000/svg">
+            <line x1="10" y1="104" x2="250" y2="104" stroke="#3D4145" stroke-width="1" opacity=".35"/>
+            <rect class="eb hi"  x="20"  y="26" width="18" height="78" rx="2" fill="#3D4145" opacity=".6"/>
+            <rect class="eb"     x="50"  y="40" width="18" height="64" rx="2" fill="#3D4145" opacity=".5"/>
+            <rect class="eb"     x="80"  y="49" width="18" height="55" rx="2" fill="#3D4145" opacity=".5"/>
+            <rect class="eb"     x="110" y="57" width="18" height="47" rx="2" fill="#3D4145" opacity=".5"/>
+            <rect class="eb low" x="140" y="64" width="18" height="40" rx="2" fill="#3D4145" opacity=".4"/>
+            <rect class="eb low" x="170" y="73" width="18" height="31" rx="2" fill="#3D4145" opacity=".4"/>
+            <rect class="eb low" x="200" y="82" width="18" height="22" rx="2" fill="#3D4145" opacity=".4"/>
+            <line class="bl" x1="10" y1="62" x2="236" y2="62" stroke="#00C1D4" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <text class="blab" x="240" y="65" font-family="IBM Plex Mono" font-size="9.5" fill="#00C1D4">W</text>
+            <g class="xt">
+              <text x="29" y="16" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" font-weight="600" fill="#FA5F26">×4.0</text>
+            </g>
+            <text x="130" y="119" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#7A828C">rollout group · bound W clips · entropic top-weighting</text>
+          </svg>
+        </div>
+        <ul>
+          <li><b>26,574</b> execution-verified SFT samples</li>
+          <li>Async rollouts · no straggler stalls</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="num">MODULE 03 — INFERENCE</p>
+        <h3>OpenMLE-Evo<em>test-time scaling → test-time learning</em></h3>
+        <!-- animated: three-factor parent selection (paper Eq. 4 / Fig. 17) -->
+        <div class="mech mech-evo" id="mechEvo">
+          <svg viewBox="0 0 260 128" xmlns="http://www.w3.org/2000/svg">
+            <text x="130" y="13" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">U = λs·s̃ + λΔ·Δ̃ + λn·ν</text>
+            <circle cx="46" cy="48" r="14" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.4"/>
+            <circle cx="130" cy="48" r="14" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.4"/>
+            <circle cx="214" cy="48" r="14" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.4"/>
+            <text x="46" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#000000">s̃①</text>
+            <text x="130" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#000000">Δ̃①</text>
+            <text x="214" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#000000">ν①</text>
+            <text x="46" y="76" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#7A828C">score leader</text>
+            <text x="130" y="76" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#7A828C">gain leader</text>
+            <text x="214" y="76" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#7A828C">novel family</text>
+            <circle class="ring" cx="46" cy="48" r="20" fill="none" stroke="#00C1D4" stroke-width="1.6" stroke-dasharray="4 4"/>
+            <line class="ce" x1="130" y1="62" x2="130" y2="92" stroke="#00C1D4" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <g class="cn">
+              <circle cx="130" cy="98" r="8" fill="#00C1D4"/>
+              <text x="144" y="102" font-family="IBM Plex Mono" font-size="9" fill="#3D4145">Improve</text>
+            </g>
+            <text class="pl" x="130" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#7A828C">P(gain leader): 10.47% → <tspan fill="#FA5F26" font-weight="600">17.09%</tspan></text>
+          </svg>
+        </div>
+        <ul>
+          <li><b>1</b> experience card / node → task-global board</li>
+          <li>On-demand, operator-conditioned memory</li>
+        </ul>
+      </div>
+    </div>
+    <div class="engine rv">
+      <span class="orb"></span>
+      <h4>Frontis-MA1-30B / 35B</h4>
+      <p>Trained by OpenMLE. Driving OpenMLE. Evaluated only on third-party benchmarks.</p>
+      <span class="tag">PRODUCT × ENGINE</span>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= OPERATORS ================= -->
+<section id="operators">
+  <div class="wrap">
+    <p class="eyebrow rv">04 · Trainable Atomic Operators</p>
+    <h2 class="rv">Four operators. One unified<br>action space for <span class="cy">code evolution</span>.</h2>
+    <p class="lede rv">
+      Invoked <b>thousands of times per task</b> — repair, refine, recombine.
+    </p>
+    <div class="chips four rv-st rv">
+      <div class="chip c1"><span class="g">✦</span><h4>Draft</h4><em>generate from scratch</em></div>
+      <div class="chip c2"><span class="g">↗</span><h4>Improve</h4><em>refine a parent program</em></div>
+      <div class="chip c3"><span class="g">⌗</span><h4>Debug</h4><em>repair failing code</em></div>
+      <div class="chip c4"><span class="g">⑂</span><h4>Crossover</h4><em>recombine two parents</em></div>
+    </div>
+
+    <!-- Evolutionary inference: operator-driven expansion of the solution tree (paper Fig. 5 ①) -->
+    <div class="treewrap rv" id="treePanel">
+      <p class="tw-title">① Evolutionary Inference — operator-driven expansion of the solution tree</p>
+      <svg viewBox="0 0 1100 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- root -->
+        <g class="anim">
+          <rect x="460" y="12" width="180" height="40" rx="6" fill="#000000"/>
+          <text x="550" y="37" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#FFFFFF">Root · Task &amp; Data</text>
+        </g>
+        <!-- L1: Draft edges (solid) -->
+        <line class="anim" style="transition-delay:.1s" x1="540" y1="52" x2="288" y2="112" stroke="#3D4145" stroke-width="1.4"/>
+        <line class="anim" style="transition-delay:.16s" x1="550" y1="52" x2="550" y2="112" stroke="#3D4145" stroke-width="1.4"/>
+        <line class="anim" style="transition-delay:.22s" x1="560" y1="52" x2="812" y2="112" stroke="#3D4145" stroke-width="1.4"/>
+        <g class="anim" style="transition-delay:.3s">
+          <rect x="251" y="114" width="58" height="32" rx="6" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.2"/>
+          <text x="280" y="135" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#000000">0.61</text>
+        </g>
+        <g class="anim" style="transition-delay:.38s">
+          <rect x="521" y="114" width="58" height="32" rx="6" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.2"/>
+          <text x="550" y="135" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#000000">0.47</text>
+        </g>
+        <g class="anim" style="transition-delay:.46s">
+          <rect x="791" y="114" width="58" height="32" rx="6" fill="#F0F2F4"/>
+          <text x="820" y="135" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#7A828C">Error</text>
+        </g>
+        <!-- L2: Improve (dashed cyan), Debug (dotted cyan) -->
+        <line class="anim" style="transition-delay:.54s" x1="270" y1="146" x2="150" y2="222" stroke="#00C1D4" stroke-width="1.4" stroke-dasharray="6 5"/>
+        <line class="anim" style="transition-delay:.6s"  x1="290" y1="146" x2="360" y2="222" stroke="#00C1D4" stroke-width="1.4" stroke-dasharray="6 5"/>
+        <line class="anim" style="transition-delay:.66s" x1="540" y1="146" x2="480" y2="222" stroke="#00C1D4" stroke-width="1.4" stroke-dasharray="6 5"/>
+        <line class="anim" style="transition-delay:.72s" x1="560" y1="146" x2="640" y2="222" stroke="#00C1D4" stroke-width="1.4" stroke-dasharray="6 5"/>
+        <line class="anim" style="transition-delay:.78s" x1="820" y1="146" x2="820" y2="222" stroke="#00C1D4" stroke-width="1.6" stroke-dasharray="2 5"/>
+        <g class="anim" style="transition-delay:.84s">
+          <rect x="121" y="224" width="58" height="32" rx="6" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.2"/>
+          <text x="150" y="245" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#000000">0.58</text>
+        </g>
+        <g class="anim" style="transition-delay:.9s">
+          <rect x="331" y="224" width="58" height="32" rx="6" fill="#F0F2F4"/>
+          <text x="360" y="245" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#7A828C">Error</text>
+        </g>
+        <g class="anim" style="transition-delay:.96s">
+          <rect x="451" y="224" width="58" height="32" rx="6" fill="#FFFFFF" stroke="#3D4145" stroke-width="1.2"/>
+          <text x="480" y="245" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#000000">0.32</text>
+        </g>
+        <g class="anim" style="transition-delay:1.02s">
+          <rect x="611" y="224" width="58" height="32" rx="6" fill="#F0F2F4"/>
+          <text x="640" y="245" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#7A828C">Error</text>
+        </g>
+        <g class="anim" style="transition-delay:1.08s">
+          <rect x="791" y="224" width="58" height="32" rx="6" fill="#FFFFFF" stroke="#00C1D4" stroke-width="1.4"/>
+          <text x="820" y="245" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#000000">0.67</text>
+        </g>
+        <!-- L3: Crossover (double orange) -->
+        <line class="anim" style="transition-delay:1.16s" x1="160" y1="256" x2="525" y2="320" stroke="#FA5F26" stroke-width="1.3"/>
+        <line class="anim" style="transition-delay:1.16s" x1="162" y1="262" x2="527" y2="326" stroke="#FA5F26" stroke-width="1.3"/>
+        <line class="anim" style="transition-delay:1.24s" x1="810" y1="256" x2="575" y2="320" stroke="#FA5F26" stroke-width="1.3"/>
+        <line class="anim" style="transition-delay:1.24s" x1="808" y1="262" x2="573" y2="326" stroke="#FA5F26" stroke-width="1.3"/>
+        <g class="anim" style="transition-delay:1.34s">
+          <rect x="521" y="322" width="58" height="32" rx="6" fill="#FA5F26"/>
+          <text x="550" y="343" text-anchor="middle" font-family="IBM Plex Mono" font-size="12.5" fill="#FFFFFF">0.73</text>
+        </g>
+        <!-- continuation -->
+        <text class="anim" style="transition-delay:1.42s" x="150" y="345" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" fill="#7A828C">⋯</text>
+        <text class="anim" style="transition-delay:1.42s" x="820" y="345" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" fill="#7A828C">⋯</text>
+        <text class="anim" style="transition-delay:1.42s" x="360" y="345" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" fill="#7A828C">⋯</text>
+      </svg>
+      <div class="tree-cap">
+        <span><i class="ls solid"></i>Draft</span>
+        <span><i class="ls dashed"></i>Improve</span>
+        <span><i class="ls dotted"></i>Debug</span>
+        <span><i class="ls double"></i>Crossover</span>
+        <span class="right">edge style = operator · node value = sandbox validation score</span>
+      </div>
+    </div>
+
+    <!-- Inference loop (paper Fig. 5) -->
+    <div class="iloop rv">
+      <span class="il-cap">Inference&nbsp;Loop</span>
+      <span class="st"><b>1</b>Choose Operator</span><span class="arr">→</span>
+      <span class="st"><b>2</b>Select Parent</span><span class="arr">→</span>
+      <span class="st"><b>3</b>Generate Code</span><span class="arr">→</span>
+      <span class="st"><b>4</b>Sandbox Execute</span><span class="arr">→</span>
+      <span class="st"><b>5</b>Evaluate &amp; Rank</span><span class="arr">→</span>
+      <span class="st"><b>6</b>Update Database</span>
+      <span class="cycle">⟲ iterate</span>
+    </div>
+    <p class="scaf rv">Scaffold-agnostic → <b>Greedy</b> · <b>abMCTS</b> · <b>AIRA-EVO</b> · <b>OpenEvolve</b></p>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <p class="eyebrow rv">05 · MLE-Bench Lite · 6 GPU-h / task · avg of 3 runs</p>
+    <h2 class="rv">A 35B open model at the table<br>of <span class="cy">frontier systems</span></h2>
+    <div class="chart rv" id="resChart">
+      <div class="rbar"><div class="lbl">Qwen3.6-35B-A3B <small>base · OpenMLE-Evo</small></div><div class="track"><div class="fill" data-w="39.39"></div></div><div class="val">39.39</div></div>
+      <div class="rbar cy"><div class="lbl">Frontis-MA1-35B <small>post-trained · OpenMLE-Evo</small></div><div class="track"><div class="fill" data-w="60.61"></div></div><div class="val">60.61</div></div>
+      <div class="rbar"><div class="lbl">Claude Opus 4.8 <small>Claude Code</small></div><div class="track"><div class="fill" data-w="63.64"></div></div><div class="val">63.64</div></div>
+      <div class="rbar"><div class="lbl">GPT-5.5 <small>Codex</small></div><div class="track"><div class="fill" data-w="68.18"></div></div><div class="val">68.18</div></div>
+      <div class="rbar peak"><div class="lbl">Frontis-MA1-35B <small>OpenMLE-Evo-Max · priors + async parallel search</small></div><div class="track"><div class="fill" data-w="71.21"></div></div><div class="val">71.21</div></div>
+      <div class="rbar"><div class="lbl">GPT-5.6 Sol / Kimi K3 <small>Codex / Claude Code · up to 2.8T</small></div><div class="track"><div class="fill" data-w="72.73"></div></div><div class="val">72.73</div></div>
+    </div>
+    <p class="res-note rv">
+      Gains compose everywhere: 30B <b>34.85 → 53.03 → 66.67</b> (+18.18pp) · GLM-5.2 <b>59.09 → 66.67</b> ·
+      MiniMax M3 <b>54.55 → 65.15</b> · Kimi K2.6 <b>59.09 → 66.67</b> ·
+      medal mix shifts toward <b>Gold</b> — matching Kimi K3's Gold rate.
+    </p>
+    <div class="duo rv-st rv">
+      <div class="cell before">
+        <p class="cap">AIRA-Evo baseline · tokens / 12h run</p>
+        <p class="big">129.3M</p>
+        <p>Free-form history — every expansion gets more expensive.</p>
+      </div>
+      <div class="cell after">
+        <p class="cap">OpenMLE-Evo · same checkpoint, seed &amp; budget</p>
+        <p class="big">75.3M <small>−41.7%</small></p>
+        <p>Prompt <b>−50.3%</b> · nodes <b>−12.4%</b> · <b>more</b> new-best updates.</p>
+      </div>
+    </div>
+    <div class="cases rv-st rv">
+      <div class="case">
+        <span class="medal bz">BRONZE — leaf-classification</span>
+        <h4>Late Crossover + Improve jumps</h4>
+        <p class="hr">0.9455<small>held-out Human Rank</small></p>
+        <p>Debug → Crossover → ConvNeXt leap. <b>85.0%</b> of the gain from late ops. Best baseline: 0.6303, no medal.</p>
+      </div>
+      <div class="case">
+        <span class="medal sv">SILVER — mlsp-2013-birds</span>
+        <h4>Memory-guided recombination</h4>
+        <p class="hr">0.8889<small>held-out Human Rank</small></p>
+        <p>Memory keeps winning branches, flags a weak ResNet50. <b>91.9%</b> of the gain from Improve + Crossover. Best baseline: 0.2963, no medal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= RL TRAINING TRACE ================= -->
+<section id="training">
+  <div class="wrap">
+    <p class="eyebrow rv">06 · RL Training Curves · Frontis-MA1-35B</p>
+    <h2 class="rv">Training signal rises through<br><span class="cy">execution-grounded RL</span></h2>
+    <p class="lede rv">
+      The rollout reward is noisy by design, while held-out validation and medal count expose the
+      underlying learning trajectory. Hover the chart for exact checkpoint values.
+    </p>
+    <div class="rl-summary rv-st rv">
+      <div class="rl-stat"><p class="v">221</p><p class="k">RL policy updates logged</p></div>
+      <div class="rl-stat"><p class="v">0.180 → 0.400</p><p class="k">Rollout reward · first to final step</p></div>
+      <div class="rl-stat peak"><p class="v">0.404</p><p class="k">Peak validation base reward</p></div>
+      <div class="rl-stat"><p class="v">31<span style="font-size:.5em;color:var(--dim)"> /176</span></p><p class="k">Peak validation medal count · out of 176 tasks</p></div>
+    </div>
+    <div class="rl-panel rv" id="rlPanel">
+      <div class="rl-panel-head">
+        <p class="rl-panel-title"><b>Reward / medals</b><br>stitched training step</p>
+        <div class="rl-series" aria-label="Toggle training series">
+          <button type="button" data-series="rollout">Rollout reward · EMA 9</button>
+          <button type="button" data-series="validation">Validation reward</button>
+          <button type="button" data-series="medals">Validation medals</button>
+        </div>
+      </div>
+      <div class="rl-canvas-wrap">
+        <canvas id="rlCanvas" role="img" aria-label="Interactive RL training curves for rollout reward, validation reward, and validation medal count"></canvas>
+        <div class="rl-tooltip" id="rlTooltip"></div>
+      </div>
+      <div class="rl-note">
+        <span>Left axis · <b>base reward</b></span>
+        <span>Right axis · <b>medal count</b></span>
+        <span>Source · <b>qwen36_rl_stitched.csv · inlined</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= TRANSFER ================= -->
+<section id="transfer">
+  <div class="wrap">
+    <p class="eyebrow rv">07 · Meta-Ability &amp; Transfer</p>
+    <h2 class="rv">It learned <span class="cy">how to improve</span> —<br>not one leaderboard's tricks</h2>
+    <p class="lede rv">
+      NatureBench Lite, controlled: <b>hold the model or the framework fixed — both transfer.</b>
+    </p>
+    <div class="jumps rv-st rv">
+      <div class="jump">
+        <p class="cap">Model transfer · framework fixed · Match-SOTA</p>
+        <div class="nums"><span class="from">50%</span><span class="arr">⟶</span><span class="to">70<i>%</i></span></div>
+        <p>Same framework, <b>Frontis-MA1</b> swapped in.</p>
+      </div>
+      <div class="jump">
+        <p class="cap">Framework transfer · model fixed · Match-SOTA</p>
+        <div class="nums"><span class="from">20%</span><span class="arr">⟶</span><span class="to">50<i>%</i></span></div>
+        <p>Same model, <b>OpenMLE-Evo</b> search swapped in.</p>
+      </div>
+    </div>
+    <div class="mini3 rv-st rv">
+      <div class="mini"><p class="v">5 / 5</p><p class="k">Every modality group improves. No Medal Rate drops.</p></div>
+      <div class="mini"><p class="v">+2 +4 +1 +4 +3</p><p class="k">14 new medals, spread across all five modalities.</p></div>
+      <div class="mini"><p class="v">24.2 → 34.8</p><p class="k">Test medal rate with upper-tail reward shaping (×4.0).</p></div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ================= RELEASE + BIBTEX ================= -->
+<section id="bibtex">
+  <div class="wrap">
+    <p class="eyebrow rv">08 · Open-Source Release</p>
+    <h2 class="rv">Models, tasks, training, and search.<br>A <span class="cy">reproducible</span> OpenMLE stack.</h2>
+    <div class="rel-grid rv-st rv">
+      <div class="rel"><p class="idx">R-01</p><h4>Frontis-MA1 weights</h4><p>30B &amp; 35B post-trained checkpoints on HuggingFace.</p></div>
+      <div class="rel"><p class="idx">R-02</p><h4>OpenMLE Tasks</h4><p>Audited task inventory + category-specific release artifacts.</p></div>
+      <div class="rel"><p class="idx">R-03</p><h4>Sandbox infrastructure</h4><p>Scheduler + CPU/GPU Docker workers; control / execution / storage separated.</p></div>
+      <div class="rel"><p class="idx">R-04</p><h4>OpenMLE-ERL</h4><p>Execution-grounded SFT data construction + asynchronous RL configs.</p></div>
+      <div class="rel"><p class="idx">R-05</p><h4>OpenMLE-Evo</h4><p>Experience cards, 3-factor selection, operator-conditioned context.</p></div>
+      <div class="rel"><p class="idx">R-06</p><h4>Evaluation harness</h4><p>Full MLE-Bench Lite / NatureBench Lite evaluation &amp; reproduction scripts.</p></div>
+    </div>
+    <div class="bib rv">
+      <div class="bib-head"><span>CITE — BIBTEX</span><button id="copyBib">COPY</button></div>
+      <pre id="bibText">@misc{<span class="c">openrsi2026frontisma1</span>,
+  title  = {Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering},
+  author = {{OpenRSI Team}},
+  year   = {<span class="o">2026</span>},
+  url    = {https://github.com/FrontisAI/OpenRSI},
+  note   = {Preprint}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="edge"></div>
+  <div class="foot">
+    <p class="eyebrow rv" style="color:var(--cyan);">Towards RSI</p>
+    <h2 class="rv">Today's model trains tomorrow's model.<br><span class="or">The improver is being improved.</span></h2>
+    <div class="btnrow rv">
+      <a class="btn" href="#bibtex">📄 Citation</a>
+      <a class="btn alt" href="https://github.com/FrontisAI/OpenRSI">&lt;/&gt; GitHub</a>
+      <a class="btn alt" href="https://huggingface.co/collections/FrontisAI/frontis-ma1">🤗 Frontis-MA1</a>
+      <a class="btn alt" href="https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks">🧩 OpenMLE Tasks</a>
+    </div>
+    <div class="meta">
+      <div class="foot-logo">
+        <!-- Official FRONTIS icon logo -->
+        <svg class="flogo" viewBox="0 0 170 137" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="FRONTIS">
+          <circle cx="84.7158" cy="68.3432" r="66.2076" transform="rotate(180 84.7158 68.3432)" stroke="currentColor" stroke-width="4.27146"/>
+          <path d="M149.586 78.8862C149.586 86.3853 147.931 92.0263 144.714 98.9545C141.498 105.883 136.784 112.178 130.84 117.48C124.897 122.783 117.842 126.989 110.077 129.859C102.312 132.729 93.989 134.206 85.5841 134.206C77.1792 134.206 68.8566 132.729 61.0916 129.859C53.3265 126.989 46.2709 122.783 40.3278 117.48C34.3847 112.178 29.6703 105.883 26.4539 98.9545C23.2375 92.0263 21.582 86.3853 21.582 78.8862L85.5841 78.8862L149.586 78.8862Z" fill="currentColor"/>
+          <line x1="5.60134e-07" y1="83.3941" x2="169.68" y2="83.3941" stroke="#00C1D4" stroke-width="12.8144"/>
+        </svg>
+      </div>
+      <span>Horizon Research, Frontis.AI × Tsinghua University · © 2026 FRONTIS</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------- scrollbar ---------- */
+const sb=document.getElementById('scrollbar');
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  sb.style.transform='scaleX('+(h.scrollTop/(h.scrollHeight-h.clientHeight||1))+')';
+},{passive:true});
+
+/* ---------- reveals ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+}),{threshold:.16,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv:not(.in)').forEach(el=>io.observe(el));
+
+/* ---------- counters ---------- */
+const ease=t=>1-Math.pow(1-t,4);
+function count(el){
+  const to=parseFloat(el.dataset.to),dec=+el.dataset.dec;
+  let t0=null;
+  const f=ts=>{
+    if(!t0)t0=ts;
+    const p=Math.min((ts-t0)/1700,1),v=to*ease(p);
+    el.textContent=dec?v.toFixed(dec):Math.round(v).toLocaleString('en-US');
+    if(p<1)requestAnimationFrame(f);
+  };
+  requestAnimationFrame(f);
+}
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.querySelectorAll('.cnt').forEach(count);cio.unobserve(e.target);}
+}),{threshold:.3});
+document.querySelectorAll('.stats').forEach(el=>cio.observe(el));
+
+/* ---------- result bars ---------- */
+const bio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    e.target.querySelectorAll('.fill').forEach((b,i)=>setTimeout(()=>b.style.width=(b.dataset.w/80*100)+'%',i*120));
+    bio.unobserve(e.target);
+  }
+}),{threshold:.25});
+const rc=document.getElementById('resChart');if(rc)bio.observe(rc);
+
+/* ---------- RL training curves ---------- */
+(function(){
+  const panel=document.getElementById('rlPanel');
+  const canvas=document.getElementById('rlCanvas');
+  const tip=document.getElementById('rlTooltip');
+  if(!panel||!canvas||!tip)return;
+
+  const ctx=canvas.getContext('2d');
+  const state={rollout:true,validation:true,medals:true,progress:0,inView:false,loaded:false,data:[],ema:[],hover:-1};
+  let frame=0,w=0,h=0,dpr=1;
+  const pad={l:54,r:48,t:16,b:38};
+
+  function parseCSV(text){
+    const lines=text.trim().split(/\r?\n/);
+    const head=lines.shift().split(',');
+    const ix=name=>head.indexOf(name);
+    const value=(cols,name)=>{
+      const raw=cols[ix(name)];
+      return raw===''||raw==null?null:Number(raw);
+    };
+    return lines.map(line=>{
+      const cols=line.split(',');
+      return {
+        step:value(cols,'training_step'),
+        original:value(cols,'original_training_step'),
+        rollout:value(cols,'rollout_base_reward'),
+        validation:value(cols,'validation_base_reward'),
+        medals:value(cols,'validation_medal_count')
+      };
+    }).filter(d=>Number.isFinite(d.step)&&Number.isFinite(d.rollout));
+  }
+
+  function movingAverage(data,windowSize){
+    return data.map((d,i)=>{
+      const a=Math.max(0,i-windowSize+1);
+      const slice=data.slice(a,i+1);
+      return slice.reduce((sum,v)=>sum+v.rollout,0)/slice.length;
+    });
+  }
+
+  function resize(){
+    const rect=canvas.getBoundingClientRect();
+    w=Math.max(rect.width,1);h=Math.max(rect.height,1);
+    dpr=Math.min(devicePixelRatio||1,2);
+    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw();
+  }
+
+  const x=i=>pad.l+(i/Math.max(state.data.length-1,1))*(w-pad.l-pad.r);
+  const yReward=v=>pad.t+(0.65-v)/(0.65-0.05)*(h-pad.t-pad.b);
+  const yMedals=v=>pad.t+(35-v)/35*(h-pad.t-pad.b);
+
+  function strokeSeries(points,color,width,alpha){
+    if(points.length<2)return;
+    ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.globalAlpha=alpha;
+    ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();
+    points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+    ctx.stroke();ctx.restore();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#000000';ctx.fillRect(0,0,w,h);
+    const plotW=w-pad.l-pad.r,plotH=h-pad.t-pad.b;
+
+    ctx.font='9.5px "IBM Plex Mono",monospace';
+    ctx.textBaseline='middle';
+    for(let i=0;i<=6;i++){
+      const reward=0.05+(0.60/6)*i;
+      const yy=yReward(reward);
+      ctx.strokeStyle='rgba(240,242,244,.12)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();
+      ctx.fillStyle='rgba(240,242,244,.46)';ctx.textAlign='right';
+      ctx.fillText(reward.toFixed(2),pad.l-9,yy);
+      ctx.textAlign='left';
+      ctx.fillText(String(Math.round((reward-.05)/.60*35)),w-pad.r+9,yy);
+    }
+
+    const xTicks=[0,55,110,165,220];
+    xTicks.forEach(step=>{
+      const xx=pad.l+(step/220)*plotW;
+      ctx.strokeStyle='rgba(240,242,244,.08)';
+      ctx.beginPath();ctx.moveTo(xx,pad.t);ctx.lineTo(xx,pad.t+plotH);ctx.stroke();
+      ctx.fillStyle='rgba(240,242,244,.46)';ctx.textAlign='center';
+      ctx.fillText(String(step),xx,h-14);
+    });
+
+    if(!state.loaded){
+      ctx.fillStyle='rgba(240,242,244,.55)';ctx.textAlign='center';
+      ctx.fillText('LOADING RL TRACE…',w/2,h/2);
+      return;
+    }
+
+    const last=Math.min(state.data.length-1,Math.floor((state.data.length-1)*state.progress));
+    if(state.rollout){
+      const raw=state.data.slice(0,last+1).map((d,i)=>[x(i),yReward(d.rollout)]);
+      const ema=state.ema.slice(0,last+1).map((v,i)=>[x(i),yReward(v)]);
+      strokeSeries(raw,'#00C1D4',1,.2);
+      strokeSeries(ema,'#00C1D4',2.4,1);
+    }
+    if(state.validation){
+      const pts=state.data.slice(0,last+1).map((d,i)=>d.validation==null?null:[x(i),yReward(d.validation)]).filter(Boolean);
+      strokeSeries(pts,'#FA5F26',1.8,.9);
+      ctx.fillStyle='#FA5F26';
+      pts.forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],3,0,7);ctx.fill();});
+    }
+    if(state.medals){
+      const pts=state.data.slice(0,last+1).map((d,i)=>d.medals==null?null:[x(i),yMedals(d.medals)]).filter(Boolean);
+      strokeSeries(pts,'#F0F2F4',1.2,.48);
+      ctx.fillStyle='#F0F2F4';ctx.globalAlpha=.72;
+      pts.forEach(p=>{ctx.fillRect(p[0]-2,p[1]-2,4,4);});
+      ctx.globalAlpha=1;
+    }
+
+    if(state.hover>=0){
+      const i=Math.min(state.hover,state.data.length-1),d=state.data[i],xx=x(i);
+      ctx.strokeStyle='rgba(240,242,244,.55)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(xx,pad.t);ctx.lineTo(xx,h-pad.b);ctx.stroke();
+      if(state.rollout){
+        ctx.fillStyle='#00C1D4';ctx.beginPath();ctx.arc(xx,yReward(state.ema[i]),4,0,7);ctx.fill();
+      }
+    }
+  }
+
+  function animate(ts){
+    if(!animate.t0)animate.t0=ts;
+    const p=Math.min((ts-animate.t0)/1500,1);
+    state.progress=1-Math.pow(1-p,4);draw();
+    if(p<1)frame=requestAnimationFrame(animate);
+  }
+
+  function maybeStart(){
+    if(!state.loaded||!state.inView||state.progress>0)return;
+    animate.t0=0;frame=requestAnimationFrame(animate);
+  }
+
+  panel.querySelectorAll('.rl-series button').forEach(button=>{
+    button.addEventListener('click',()=>{
+      const key=button.dataset.series;
+      state[key]=!state[key];
+      button.classList.toggle('off',!state[key]);
+      draw();
+    });
+  });
+
+  canvas.addEventListener('pointermove',event=>{
+    if(!state.loaded)return;
+    const rect=canvas.getBoundingClientRect();
+    const px=Math.max(pad.l,Math.min(event.clientX-rect.left,w-pad.r));
+    state.hover=Math.round((px-pad.l)/(w-pad.l-pad.r)*(state.data.length-1));
+    const d=state.data[state.hover];
+    tip.innerHTML='<b>step '+d.step+'</b><br>'+
+      '<span class="cy">rollout '+d.rollout.toFixed(3)+'</span> · EMA '+state.ema[state.hover].toFixed(3)+'<br>'+
+      '<span class="or">validation '+(d.validation==null?'—':d.validation.toFixed(3))+'</span><br>'+
+      'medals '+(d.medals==null?'—':Math.round(d.medals));
+    const tx=Math.min(Math.max(event.clientX-rect.left+14,8),w-184);
+    const ty=Math.min(Math.max(event.clientY-rect.top-68,8),h-92);
+    tip.style.left=tx+'px';tip.style.top=ty+'px';tip.classList.add('show');draw();
+  });
+  canvas.addEventListener('pointerleave',()=>{state.hover=-1;tip.classList.remove('show');draw();});
+
+  new ResizeObserver(resize).observe(canvas);
+  new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){state.inView=true;maybeStart();}
+  },{threshold:.2}).observe(panel);
+
+  // qwen36_rl_stitched.csv · inlined (5 columns used by this chart) so the page works from file://
+  const RL_CSV=`training_step,original_training_step,rollout_base_reward,validation_base_reward,validation_medal_count
+0,570,0.1796,,
+1,571,0.2262,,
+2,572,0.2074,,
+3,573,0.1508,,
+4,574,0.2157,0.1439,8
+5,575,0.1483,,
+6,576,0.2454,,
+7,577,0.1681,,
+8,578,0.2900,,
+9,579,0.2103,0.1553,7
+10,580,0.2715,,
+11,581,0.2030,,
+12,582,0.3244,,
+13,583,0.2511,,
+14,584,0.2607,0.2021,10
+15,585,0.1899,,
+16,586,0.2386,,
+17,587,0.2162,,
+18,588,0.2583,,
+19,589,0.2706,0.1717,11
+20,590,0.3328,,
+21,591,0.2310,,
+22,592,0.1824,,
+23,593,0.2819,,
+24,594,0.2547,0.1924,8
+25,595,0.2399,,
+26,596,0.2331,,
+27,597,0.2821,,
+28,598,0.1973,,
+29,599,0.1716,0.1611,11
+30,600,0.3686,0.1670,12
+31,601,0.2919,,
+32,602,0.3251,,
+33,603,0.2457,,
+34,604,0.2830,0.1801,9
+35,605,0.2704,,
+36,606,0.2911,,
+37,607,0.3551,,
+38,608,0.3142,,
+39,609,0.2837,,
+40,610,0.2068,0.1466,4
+41,611,0.1674,,
+42,612,0.2618,,
+43,613,0.2503,,
+44,614,0.1929,0.1973,17
+45,615,0.2046,,
+46,616,0.2587,,
+47,617,0.3129,,
+48,618,0.2846,,
+49,619,0.3034,0.1911,14
+50,620,0.2472,,
+51,621,0.2866,,
+52,622,0.2758,,
+53,623,0.4386,,
+54,624,0.2885,0.1967,10
+55,625,0.2333,,
+56,626,0.2720,,
+57,627,0.2468,,
+58,628,0.2185,,
+59,629,0.3064,0.1942,12
+60,630,0.1835,,
+61,631,0.1392,,
+62,632,0.2329,,
+63,633,0.2199,,
+64,634,0.2908,0.2525,17
+65,635,0.2724,,
+66,636,0.2320,,
+67,637,0.2174,,
+68,638,0.2978,,
+69,639,0.3409,0.2341,14
+70,640,0.2906,,
+71,641,0.3279,,
+72,642,0.2226,,
+73,643,0.2665,,
+74,644,0.2860,0.2360,13
+75,645,0.2892,,
+76,646,0.3039,,
+77,647,0.4016,,
+78,648,0.2237,,
+79,649,0.3285,0.2517,16
+80,650,0.3355,,
+81,651,0.3562,,
+82,652,0.2833,,
+83,653,0.2125,,
+84,654,0.2645,0.2328,8
+85,655,0.2576,,
+86,656,0.3470,,
+87,657,0.1674,,
+88,658,0.3112,,
+89,659,0.3021,0.1432,12
+90,660,0.2565,,
+91,661,0.3016,,
+92,662,0.2467,,
+93,663,0.2826,,
+94,664,0.2907,0.2056,11
+95,665,0.2823,,
+96,666,0.3716,,
+97,667,0.3365,,
+98,668,0.1828,,
+99,669,0.2614,0.2066,10
+100,670,0.3188,,
+101,671,0.1863,,
+102,672,0.1838,,
+103,673,0.2719,,
+104,674,0.1896,0.2511,15.2099
+105,675,0.2316,,
+106,676,0.2724,,
+107,677,0.2663,,
+108,678,0.1758,,
+109,679,0.3275,0.2096,10
+110,680,0.2319,,
+111,681,0.0867,,
+112,682,0.2203,,
+113,683,0.3963,,
+114,684,0.4266,0.2603,23
+115,685,0.3074,,
+116,686,0.3368,,
+117,687,0.4156,,
+118,688,0.3452,,
+119,689,0.3117,0.3480,26
+120,690,0.3756,,
+121,691,0.3524,,
+122,692,0.2985,,
+123,693,0.2995,,
+124,694,0.2675,0.2676,18
+125,695,0.4754,,
+126,696,0.2632,,
+127,697,0.3179,,
+128,698,0.3611,,
+129,699,0.3647,0.3611,26
+130,700,0.3870,,
+131,701,0.3473,,
+132,702,0.3558,,
+133,703,0.1727,,
+134,704,0.3606,0.3002,18
+135,705,0.4192,,
+136,706,0.4411,,
+137,707,0.3345,,
+138,708,0.2301,,
+139,709,0.3023,0.3015,20
+140,710,0.3548,,
+141,711,0.3485,,
+142,712,0.4156,,
+143,713,0.3296,,
+144,714,0.3967,0.3340,23
+145,715,0.3067,,
+146,716,0.4868,,
+147,717,0.2960,,
+148,718,0.4762,,
+149,719,0.3378,0.3125,22
+150,720,0.3691,,
+151,721,0.3007,,
+152,722,0.3535,,
+153,723,0.3178,,
+154,724,0.2648,0.3508,26
+155,725,0.4134,,
+156,726,0.4915,,
+157,727,0.3232,,
+158,728,0.2395,,
+159,729,0.3087,0.3156,20
+160,730,0.3856,,
+161,731,0.3875,,
+162,732,0.2959,,
+163,733,0.3656,,
+164,734,0.3669,0.3240,21
+165,735,0.4880,,
+166,736,0.3775,,
+167,737,0.3429,,
+168,738,0.4311,,
+169,739,0.5206,0.3598,25
+170,740,0.3436,,
+171,741,0.3555,,
+172,742,0.3762,,
+173,743,0.3679,,
+174,744,0.3717,0.3835,26
+175,745,0.5512,,
+176,746,0.4784,,
+177,747,0.4876,,
+178,748,0.3696,,
+179,749,0.3695,0.3968,27
+180,750,0.4506,,
+181,751,0.4278,,
+182,752,0.3665,,
+183,753,0.3539,,
+184,754,0.4449,0.3109,18
+185,755,0.4004,,
+186,756,0.3588,,
+187,757,0.3651,,
+188,758,0.4129,,
+189,759,0.4320,0.3159,23
+190,760,0.3783,,
+191,761,0.4962,,
+192,762,0.3592,,
+193,763,0.4370,,
+194,764,0.5028,0.3599,24
+195,765,0.2844,,
+196,766,0.3806,,
+197,767,0.4230,,
+198,768,0.5872,,
+199,769,0.4351,0.4036,31
+200,770,0.3907,,
+201,771,0.5139,,
+202,772,0.3780,,
+203,773,0.2915,,
+204,774,0.2936,0.3947,20
+205,775,0.2911,,
+206,776,0.3384,,
+207,777,0.5792,,
+208,778,0.4048,,
+209,779,0.4269,0.3738,23
+210,780,0.3808,,
+211,781,0.3328,,
+212,782,0.4574,,
+213,783,0.3735,,
+214,784,0.3577,0.3217,25
+215,785,0.2653,,
+216,786,0.4966,,
+217,787,0.3942,,
+218,788,0.4152,,
+219,789,0.3612,,
+220,790,0.3995,,`;
+  state.data=parseCSV(RL_CSV);state.ema=movingAverage(state.data,9);state.loaded=true;draw();maybeStart();
+})();
+
+/* ---------- copy bibtex ---------- */
+document.getElementById('copyBib').addEventListener('click',()=>{
+  navigator.clipboard.writeText(document.getElementById('bibText').innerText).then(()=>{
+    const b=document.getElementById('copyBib');b.textContent='COPIED ✓';
+    setTimeout(()=>b.textContent='COPY',1600);
+  });
+});
+
+/* ---------- mechanism mini-animations ---------- */
+function seq(steps){
+  let i=0;
+  (function next(){steps[i].f();const d=steps[i].d;i=(i+1)%steps.length;setTimeout(next,d);})();
+}
+(function(){
+  // gym funnel
+  const g=document.getElementById('mechGym');
+  if(g){
+    const st=g.querySelectorAll('.fstage');
+    seq([
+      {f:()=>st.forEach(s=>s.classList.remove('on')),d:700},
+      {f:()=>st[0].classList.add('on'),d:700},
+      {f:()=>st[1].classList.add('on'),d:700},
+      {f:()=>st[2].classList.add('on'),d:700},
+      {f:()=>st[3].classList.add('on'),d:2600},
+    ]);
+  }
+  // erl reward shaping
+  const e=document.getElementById('mechErl');
+  if(e){
+    e.querySelectorAll('.eb').forEach((b,i)=>b.style.transitionDelay=(i*60)+'ms');
+    seq([
+      {f:()=>e.classList.remove('p1','p2','p3','p4'),d:800},
+      {f:()=>e.classList.add('p1'),d:1100},
+      {f:()=>e.classList.add('p2'),d:900},
+      {f:()=>e.classList.add('p3'),d:1000},
+      {f:()=>e.classList.add('p4'),d:3000},
+    ]);
+  }
+  // evo parent selection
+  const v=document.getElementById('mechEvo');
+  if(v){
+    seq([
+      {f:()=>v.classList.remove('q2','q3','q4'),d:1000},
+      {f:()=>v.classList.add('q2'),d:900},
+      {f:()=>{v.classList.remove('q2');v.classList.add('q3');},d:900},
+      {f:()=>{v.classList.remove('q3');v.classList.add('q4');},d:3400},
+    ]);
+  }
+  // inference loop step highlight
+  const steps=document.querySelectorAll('.iloop .st');
+  if(steps.length){
+    let k=0;
+    setInterval(()=>{
+      steps.forEach(s=>s.classList.remove('active'));
+      steps[k%steps.length].classList.add('active');
+      k++;
+    },850);
+  }
+  // solution-tree replay
+  const tp=document.getElementById('treePanel');
+  if(tp){
+    setInterval(()=>{
+      if(!tp.classList.contains('in'))return;
+      tp.classList.remove('in');
+      setTimeout(()=>tp.classList.add('in'),450);
+    },9500);
+  }
+})();
+
+/* ================= teaser: self-growing evolutionary tree ================= */
+(function(){
+  const cv=document.getElementById('evoCanvas'),ctx=cv.getContext('2d');
+  let W,H,dpr;
+  function resize(){
+    dpr=Math.min(devicePixelRatio||1,2);
+    W=cv.offsetWidth;H=cv.offsetHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();addEventListener('resize',resize);
+
+  const OPS=[
+    {name:'draft',    color:'#3D4145', dash:[]},
+    {name:'improve',  color:'#00C1D4', dash:[]},
+    {name:'debug',    color:'#00C1D4', dash:[3,4], hollow:true},
+    {name:'crossover',color:'#FA5F26', dash:[]}
+  ];
+  let nodes=[],links=[],best=0,evals=0,epoch=1,fade=1,resetting=false,plateau=.88;
+  const mouse={x:-1e4,y:-1e4};
+  const hE=document.getElementById('hudEpoch'),hN=document.getElementById('hudNodes'),
+        hB=document.getElementById('hudBest'),hO=document.getElementById('hudOp');
+
+  function reset(){
+    nodes=[];links=[];best=0;fade=1;resetting=false;
+    plateau=.82+Math.random()*.10;
+    hE.textContent=epoch;
+    const root={x:W*0.5,y:H*0.52,vx:0,vy:0,score:0.30+Math.random()*0.12,
+                op:OPS[0],r:5.2,born:performance.now(),root:true,kids:0};
+    nodes.push(root);best=root.score;hB.textContent=best.toFixed(3);
+  }
+  reset();
+
+  function pick(){
+    const viable=nodes.filter(n=>!n.failed);
+    if(Math.random()<.28)return viable[(Math.random()*viable.length)|0];
+    let bp=nodes[0],bu=-1;
+    for(const n of viable){
+      const novelty=1/(1+(n.kids||0));
+      const u=n.score+Math.random()*.18+novelty*.08-(n.kids||0)*.018;
+      if(u>bu){bu=u;bp=n;}
+    }
+    return bp;
+  }
+
+  function bell(){
+    let v=0;for(let i=0;i<6;i++)v+=Math.random();
+    return v-3;
+  }
+
+  function spawn(){
+    if(nodes.length>96){resetting=true;return;}
+    const w=Math.random();
+    const op=w<0.16?OPS[0]:w<0.54?OPS[1]:w<0.74?OPS[2]:OPS[3];
+    hO.textContent=op.name;
+    const p1=pick();
+    let p2=null;
+    if(op.name==='crossover'&&nodes.length>4){
+      for(let tries=0;tries<5&&!p2;tries++){
+        const candidate=pick();
+        if(candidate!==p1)p2=candidate;
+      }
+    }
+    const ang=Math.random()*Math.PI*2,d=58+Math.random()*70;
+    const failRate=op.name==='draft'?.18:op.name==='improve'?.10:op.name==='debug'?.055:.12;
+    const failed=Math.random()<failRate;
+    let score;
+    if(failed)score=0;
+    else{
+      let base=op.name==='draft'?.22+Math.random()*.36:p1.score;
+      if(op.name==='crossover'&&p2){
+        const hi=Math.max(p1.score,p2.score),lo=Math.min(p1.score,p2.score);
+        base=hi*.72+lo*.28;
+      }
+      let gain;
+      if(op.name==='draft')gain=0;
+      else if(op.name==='improve')gain=.018+bell()*.032;
+      else if(op.name==='debug')gain=.008+bell()*.025+(base<.55?.018:0);
+      else gain=.012+bell()*.026+(Math.random()<.18?.035+Math.random()*.035:0);
+      if(gain>0){
+        const headroom=Math.max(plateau-base,.015);
+        gain*=.24+Math.min(headroom/.55,1)*.76;
+      }
+      score=Math.max(.07,base+gain);
+      if(score>plateau)score=plateau-(.004+Math.random()*.014);
+      score=Math.min(.955,score);
+    }
+    const n={
+      x:p1.x+Math.cos(ang)*d,y:p1.y+Math.sin(ang)*d,vx:0,vy:0,
+      score,op,failed,r:failed?2.6:3.1+score*4.2,born:performance.now(),kids:0
+    };
+    p1.kids++;
+    nodes.push(n);links.push({a:p1,b:n,op});
+    if(p2){
+      p2.kids++;
+      links.push({a:p2,b:n,op});
+    }
+    evals++;hN.textContent=evals;
+    if(score>best){best=score;hB.textContent=best.toFixed(3);}
+  }
+
+  let spawnT=0;
+  const stage=document.getElementById('figStage');
+  stage.addEventListener('pointermove',e=>{
+    const r=cv.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;
+  });
+  stage.addEventListener('pointerleave',()=>{mouse.x=-1e4;mouse.y=-1e4;});
+
+  function tick(ts){
+    if(!resetting&&ts-spawnT>560){spawnT=ts;spawn();}
+    if(resetting){
+      fade-=0.02;
+      if(fade<=0){epoch++;evals=evals;reset();}
+    }
+    ctx.clearRect(0,0,W,H);
+    ctx.save();
+    ctx.globalAlpha=Math.max(fade,0);
+
+    // physics
+    const cx=W*0.5,cy=H*0.52;
+    for(const n of nodes){
+      n.vx+=(cx-n.x)*0.000028;n.vy+=(cy-n.y)*0.00006;
+      for(let i=0;i<4;i++){
+        const o=nodes[(Math.random()*nodes.length)|0];
+        if(o===n)continue;
+        const dx=n.x-o.x,dy=n.y-o.y,d2=dx*dx+dy*dy;
+        if(d2<6400&&d2>0.01){const f=26/d2;n.vx+=dx*f*0.02;n.vy+=dy*f*0.02;}
+      }
+      const mdx=n.x-mouse.x,mdy=n.y-mouse.y,md2=mdx*mdx+mdy*mdy;
+      if(md2<16900){const f=(1-Math.sqrt(md2)/130)*1.7;n.vx+=mdx/Math.sqrt(md2+.1)*f;n.vy+=mdy/Math.sqrt(md2+.1)*f;}
+      n.vx*=0.92;n.vy*=0.92;
+      if(!n.root){n.x+=n.vx;n.y+=n.vy;}
+      // soft bounds
+      const m=18;
+      if(n.x<m)n.vx+=0.06; if(n.x>W-m)n.vx-=0.06;
+      if(n.y<m)n.vy+=0.06; if(n.y>H-m)n.vy-=0.06;
+    }
+
+    // links
+    for(const l of links){
+      const age=Math.min(Math.max((ts-l.b.born)/600,0),1);
+      if(age===0)continue;
+      ctx.strokeStyle=l.op.color;
+      ctx.globalAlpha=(l.op.name==='draft'?0.20:0.30)*age*Math.max(fade,0);
+      ctx.lineWidth=l.op.name==='crossover'?1.7:1.1;
+      ctx.setLineDash(l.op.dash);
+      ctx.beginPath();
+      ctx.moveTo(l.a.x,l.a.y);
+      ctx.lineTo(l.a.x+(l.b.x-l.a.x)*age,l.a.y+(l.b.y-l.a.y)*age);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.globalAlpha=Math.max(fade,0);
+
+    // nodes
+    for(const n of nodes){
+      const age=Math.min(Math.max((ts-n.born)/500,0),1);
+      if(age===0)continue;
+      const rr=Math.max(n.r*age,0.4);
+      if(n.failed){
+        ctx.strokeStyle='rgba(61,65,69,.45)';ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.moveTo(n.x-3,n.y-3);ctx.lineTo(n.x+3,n.y+3);
+        ctx.moveTo(n.x+3,n.y-3);ctx.lineTo(n.x-3,n.y+3);ctx.stroke();
+        continue;
+      }
+      const isBest=best>0.4&&Math.abs(n.score-best)<1e-9;
+      if(n.op.hollow&&!isBest){
+        ctx.fillStyle='#FFFFFF';
+        ctx.strokeStyle=n.op.color;ctx.lineWidth=1.8;
+        ctx.beginPath();ctx.arc(n.x,n.y,rr,0,7);ctx.fill();ctx.stroke();
+      }else{
+        ctx.fillStyle=isBest?'#FA5F26':n.op.color;
+        ctx.globalAlpha=(n.root?0.95:0.45+n.score*0.55)*Math.max(fade,0);
+        ctx.beginPath();ctx.arc(n.x,n.y,isBest?rr+1.6:rr,0,7);ctx.fill();
+        ctx.globalAlpha=Math.max(fade,0);
+      }
+      if(n.root){
+        ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=1.4;
+        ctx.beginPath();ctx.arc(n.x,n.y,rr+3,0,7);ctx.stroke();
+      }
+      if(isBest){
+        ctx.strokeStyle='rgba(250,95,38,.55)';ctx.lineWidth=1.4;
+        const ring=rr+5+Math.sin(ts/300)*1.8;
+        ctx.beginPath();ctx.arc(n.x,n.y,ring,0,7);ctx.stroke();
+        ctx.font='10.5px "IBM Plex Mono",monospace';
+        ctx.fillStyle='#FA5F26';ctx.textAlign='left';
+        ctx.fillText(best.toFixed(3),n.x+ring+5,n.y+3.5);
+      }
+    }
+    ctx.restore();
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+</script>
+</body>
+</html>

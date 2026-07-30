@@ -1,0 +1,183 @@
+#!/bin/bash
+#
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+# if it's one-gpu machine, let's maybe nvidia-smi to see if it's busy
+# to stderr
+nvidia-smi >&2
+
+df -hT >&2
+hostname -f >&2
+hostname -I >&2
+apptainer instance list -a -j >&2
+
+set -e
+
+if [[ -z "$TMP_BASE_DIR" ]]; then
+    TMP_BASE_DIR="/scratch/slurm_tmpdir/$SLURM_JOBID/"
+fi
+mkdir -p $TMP_BASE_DIR
+
+# for some crazy reason, slurm doesn't set/enforce max memory size
+# and doesn't kill the processes exceeding it
+# so we need to do it ourselves
+
+# set MEMORY_LIMIT_IN_MB first from SLURM_MEM_PER_TASK and SLURM_MEM_PER_NODE if first is not set
+MEMORY_LIMIT_IN_MB=$SLURM_MEM_PER_TASK
+if [[ -z "$SLURM_MEM_PER_TASK" ]]; then
+    MEMORY_LIMIT_IN_MB=$SLURM_MEM_PER_NODE
+fi
+
+# given $SLURM_MEM_PER_NODE # in MB
+MEMORY_LIMIT_IN_BYTES=$((MEMORY_LIMIT_IN_MB * 1024))
+ulimit -v 100000000 # 100GBs
+
+# First, we make unique identifier and the temporary overlay image
+echo "Making tmp directory" >&2
+TMP_DIR=$(mktemp -d -p $TMP_BASE_DIR sandbox-XXXXXXXXXX)
+echo "Created temporary dir $TMP_DIR. As it's in /tmp, slurm will handle the cleanup properly" >&2
+INSTANCE_NAME=$(basename "$TMP_DIR")
+
+
+# This is for Jupyter Kernel Gateway to know the hostname / ip exposed
+KG_IP=$(hostname -i)
+
+echo "Hostname: $(hostname -f)" >&2
+
+# to stop apptainer instance on termination
+# apptainer will handle proper cleanup of all the resources other than the overlay
+# then we remove the overlay image
+cleanup() {
+    local trigger="$1"            # e.g., SIGINT, SIGTERM, or EXIT
+
+    echo "Stopping instance..." >&2
+    apptainer instance stop "$INSTANCE_NAME"
+    echo "Cleaning up..." >&2
+    if [[ -n "$TMP_DIR" && -d "$TMP_DIR" ]]; then
+        rm -rf "$TMP_DIR"
+        echo "Removed temporary directory $TMP_DIR" >&2
+    fi
+    exit 0
+}
+
+trap 'cleanup SIGINT'  SIGINT
+trap 'cleanup SIGTERM' SIGTERM
+trap 'cleanup EXIT'    EXIT
+
+
+echo "Creating overlay" >&2
+if [[ "$IMAGE_OVERLAY" == "1" ]]; then
+OVERLAY_PATH="$TMP_DIR/overlay.sparse.img"
+apptainer overlay create --fakeroot --sparse --size 1048576 "$OVERLAY_PATH"
+else
+    OVERLAY_PATH="$TMP_DIR"
+fi
+
+# set SUPERIMAGE_VERSION to default if not set
+if [ -z "$SUPERIMAGE_VERSION" ]; then
+    SUPERIMAGE_VERSION=2025-03-18
+fi
+
+# if not BASE_OVERLAYS is set, set it to empty
+if [ -z "$BASE_OVERLAYS" ]; then
+    BASE_OVERLAYS=""
+fi
+
+
+cache_to_tmp() {
+    echo "Patching APPTAINER_BIND" >&2
+    BASE="/shared/cache/dojo/tasks/mlebench"
+    echo "Original: $APPTAINER_BIND" >&2
+    # Grab the first bind entry that starts with BASE/
+    ORIG=$(echo $APPTAINER_BIND | grep -Eo "(^|,)/.*?/shared/cache/dojo/tasks/mlebench/.*?/prepared/public" || true)
+    echo "Original path: $ORIG" >&2
+    [ -z "$ORIG" ] && return 0     # Nothing to patch—exit silently
+    echo "Original path: $ORIG" >&2
+    TASKNAME=$(basename $(realpath "$ORIG/../..")) # Get the task name
+    echo "TASKNAME: $TASKNAME" >&2
+
+    NEW="$TMP_BASE_DIR/${ORIG}"              # Mirror path under /tmp
+    DONE_MARKER="$NEW/.completed"
+
+    
+    # Rewrite every occurrence in APPTAINER_BIND
+    APPTAINER_BIND="${APPTAINER_BIND//$ORIG/$NEW}"
+    export APPTAINER_BIND
+    echo "Rewrote APPTAINER_BIND to $APPTAINER_BIND" >&2
+
+
+
+    # First call only: make dir, copy once, plant the flag
+    if [ ! -f "$DONE_MARKER" ]; then
+        TARBALL_PATH=$(realpath "$ORIG/../public.tar")
+        # now check if the tarball exists then extract it to the new location
+        # otherwise copy the original
+
+        if [ -f "$TARBALL_PATH" ]; then
+            echo "Extracting $TARBALL_PATH to $NEW" >&2
+            mkdir -p "$NEW"
+            # Extract the tarball to the new location
+            tar -xf "$TARBALL_PATH" -C "$NEW/.."
+            touch "$DONE_MARKER"
+        else
+            echo "Tarball not found, copying directory" >&2
+            if [ -n "$ORIG" ]; then
+                echo "Copying $ORIG to $NEW" >&2
+                mkdir -p "$NEW"
+                # Plain old copy, preserving attrs (-a). Trailing dots keep cp happy.
+                cp -a "$ORIG"/. "$NEW"/
+            fi
+            : > "$DONE_MARKER"
+        fi
+
+    fi
+}
+
+cache_to_tmp
+
+
+if [ ! -f $TMP_BASE_DIR/superimage.root.$SUPERIMAGE_VERSION.sif ]; then
+    echo "Copying image.sif from superimage to /tmp/progress.sif" >&2
+    cp ${SUPERIMAGE_DIR}superimage.root.$SUPERIMAGE_VERSION.sif $TMP_BASE_DIR/progress.superimage.root.$SUPERIMAGE_VERSION.sif
+    # to make sure it's not half-copied
+    mv $TMP_BASE_DIR/progress.superimage.root.$SUPERIMAGE_VERSION.sif $TMP_BASE_DIR/superimage.root.$SUPERIMAGE_VERSION.sif
+fi
+
+
+apptainer instance run \
+    --containall \
+    --cleanenv \
+    --no-home \
+    $BASE_OVERLAYS \
+    --overlay "$OVERLAY_PATH" \
+    --env SSH_PUBLIC_KEY="$SSH_PUBLIC_KEY" \
+    --env KG_IP="$KG_IP" \
+    --env PYTHONUNBUFFERED=1 \
+    --env WANDB_DISABLED=1 \
+    --env TQDM_DISABLE=1 \
+    --env HTTP_PROXY=$RAD_HTTP_PROXY \
+    --env HTTPS_PROXY=$RAD_HTTPS_PROXY \
+    --env NO_PROXY=$RAD_NO_PROXY \
+    --env HF_TOKEN=$RAD_HF_TOKEN \
+    --env HF_HUB_VERBOSITY=$RAD_HF_HUB_VERBOSITY \
+    --env HF_HUB_OFFLINE=$RAD_HF_HUB_OFFLINE \
+    --env HF_HUB_DISABLE_PROGRESS_BARS=1 \
+    --env HF_HUB_DISABLE_TELEMETRY=1 \
+    --env CUDA_LAUNCH_BLOCKING=1 \
+    --env NLTK_DATA=$RAD_NLTK_DATA \
+    --env TF_CPP_MIN_LOG_LEVEL=3 \
+    --nv \
+    --fakeroot \
+    $TMP_BASE_DIR/superimage.root.$SUPERIMAGE_VERSION.sif \
+    "$INSTANCE_NAME" \
+    $@
+
+
+echo "After starting"
+
+# to pipe the output of the instance
+tail -f "$HOME/.apptainer/instances/logs/$(hostname)/$USER/$INSTANCE_NAME.err" >&2

@@ -1,0 +1,37 @@
+### Description
+
+The competition is set in the year 2912, where the *Spaceship Titanic*, an interstellar passenger liner carrying nearly 13,000 passengers, collided with a spacetime anomaly. Almost half of the passengers were transported to an alternate dimension. Participants are challenged to predict which passengers were transported by the anomaly using records recovered from the spaceship's damaged computer system. This is a binary classification task (Transported: True/False) and a Getting Started competition designed for learning machine learning basics.
+
+### Evaluation
+
+Submissions are evaluated based on **classification accuracy**, the percentage of predicted labels that are correct.
+
+### Submission File
+
+For each PassengerId in the test set, predict either `True` or `False` for the `Transported` variable. The file should contain a header and have the following format:
+
+```
+PassengerId,Transported
+0013_01,False
+0018_01,False
+0019_01,False
+0021_01,False
+etc.
+```
+
+### Dataset Description
+
+The task is to predict whether a passenger was transported to an alternate dimension during the Spaceship Titanic's collision with the spacetime anomaly. Participants are given personal records recovered from the ship's damaged computer system. The training set contains about two-thirds (~8700) of the passengers, and the test set contains the remaining one-third (~4300). Features include the passenger's home planet, cryosleep status, cabin number (formatted as deck/num/side), destination planet, age, VIP status, billing amounts at five luxury amenities (RoomService, FoodCourt, ShoppingMall, Spa, VRDeck), and name. PassengerId takes the form `gggg_pp` where `gggg` indicates a travel group and `pp` is the number within the group. People in a group are often family members, but not always. Passengers in cryosleep are confined to their cabins.
+
+### Files
+
+**Under raw/**:
+
+- raw/train.csv - Personal records for about two-thirds of the passengers, used as training data. Rows: 8693, Columns: 14 — PassengerId(str, null_count=0), HomePlanet(str, null_count=201), CryoSleep(object, null_count=217), Cabin(str, null_count=199), Destination(str, null_count=182), Age(float64, null_count=179), VIP(object, null_count=203), RoomService(float64, null_count=181), FoodCourt(float64, null_count=183), ShoppingMall(float64, null_count=208), Spa(float64, null_count=183), VRDeck(float64, null_count=188), Name(str, null_count=200), Transported(bool, null_count=0)
+    - row sample: PassengerId=0001_01, HomePlanet=Europa, CryoSleep=false, Cabin=B/0/P, Destination=TRAPPIST-1e, Age=39.0, VIP=false, RoomService=0.0, FoodCourt=0.0, ShoppingMall=0.0, Spa=0.0, VRDeck=0.0, Name=Maham Ofracculy, Transported=false
+
+- raw/test.csv - Personal records for the remaining one-third of the passengers, used as test data. Does not contain the target column "Transported". Rows: 4277, Columns: 13 — PassengerId(str, null_count=0), HomePlanet(str, null_count=87), CryoSleep(object, null_count=93), Cabin(str, null_count=100), Destination(str, null_count=92), Age(float64, null_count=91), VIP(object, null_count=93), RoomService(float64, null_count=82), FoodCourt(float64, null_count=106), ShoppingMall(float64, null_count=98), Spa(float64, null_count=101), VRDeck(float64, null_count=80), Name(str, null_count=94)
+    - row sample: PassengerId=0013_01, HomePlanet=Earth, CryoSleep=true, Cabin=G/3/S, Destination=TRAPPIST-1e, Age=27.0, VIP=false, RoomService=0.0, FoodCourt=0.0, ShoppingMall=0.0, Spa=0.0, VRDeck=0.0, Name=Nelly Carsoning
+
+- raw/sample_submission.csv - A submission file in the correct format. Rows: 4277, Columns: 2 — PassengerId(str, null_count=0), Transported(bool, null_count=0)
+    - row sample: PassengerId=0013_01, Transported=false

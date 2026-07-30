@@ -1,0 +1,12 @@
+# @package _global_
+# NatureBench candidates execute through its Docker/SCM task adapter rather than
+# the MLE sandbox router. The sentinel is metadata only and is never requested.
+search:
+  runner:
+    solver:
+      execution_mode: async_steady_state
+      async_workers: ${oc.decode:${oc.env:AIRAEVO_WORKERS,8}}
+      async_sandbox_urls:
+        - naturebench://task-adapter
+      async_sandbox_assignment: round_robin
+      async_checkpoint_every_commits: 1

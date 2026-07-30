@@ -1,0 +1,19 @@
+_target_: litellm.Router
+_convert_: all
+
+model_list:
+  - model_name: ${oc.env:OPENMLE_MODEL_ID,Qwen/Qwen3-30B-A3B-Thinking-2507}
+    litellm_params:
+      model: openai/${oc.env:OPENMLE_MODEL_ID,Qwen/Qwen3-30B-A3B-Thinking-2507}
+      api_key: ${oc.env:PRIMARY_KEY,EMPTY}
+      base_url: ${oc.env:SGLANG_BASE_URL,http://127.0.0.1:30010/v1}
+      temperature: 0.6
+      top_p: 0.95
+      max_tokens: ${oc.decode:${oc.env:OPENMLE_MAX_TOKENS,32768}}
+      timeout: ${oc.decode:${oc.env:OPENMLE_LLM_TIMEOUT,600}}
+      num_retries: ${oc.decode:${oc.env:OPENMLE_LLM_RETRIES,1}}
+      extra_body:
+        top_k: 20
+        min_p: 0.0
+        chat_template_kwargs:
+          enable_thinking: true

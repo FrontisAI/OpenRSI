@@ -1,0 +1,44 @@
+# Spaceship Titanic - Predict which passengers are transported to an alternate dimension
+
+## Overview
+
+The year is 2912, and the Spaceship Titanic, an interstellar passenger liner, has collided with a spacetime anomaly hidden within a dust cloud. Almost half of the passengers were transported to an alternate dimension. Your task is to predict which passengers were transported using records recovered from the ship's damaged computer system. This is a binary classification task.
+
+## Evaluation
+
+Submissions are evaluated based on **classification accuracy**, the percentage of predicted labels that are correct.
+
+## Submission Format
+
+For each PassengerId in the test set, predict either `True` or `False` for the `Transported` variable. The file should contain a header and have the following format:
+
+```
+PassengerId,Transported
+0013_01,False
+0018_01,False
+etc.
+```
+
+## Dataset Description
+
+- **train.csv** — Personal records for 6954 passengers (training data). Contains the target column `Transported` (True/False). Features include:
+  - PassengerId: Unique ID in the form gggg_pp (group and number within group)
+  - HomePlanet: The planet the passenger departed from
+  - CryoSleep: Whether the passenger elected to be put into suspended animation
+  - Cabin: Cabin number in format deck/num/side
+  - Destination: The planet the passenger is traveling to
+  - Age: The age of the passenger
+  - VIP: Whether the passenger paid for VIP service
+  - RoomService, FoodCourt, ShoppingMall, Spa, VRDeck: Amounts billed at luxury amenities
+  - Name: First and last name of the passenger
+  - Transported: Whether the passenger was transported (target variable)
+
+- **test.csv** — Personal records for 1739 passengers (test data). Does not contain the `Transported` column.
+
+- **sample_submission.csv** — A sample submission file in the correct format with 1739 entries.
+
+## Notes
+
+- People in a travel group (same gggg prefix) are often family members, but not always.
+- Passengers in cryosleep are confined to their cabins.
+- Some fields may contain missing values.

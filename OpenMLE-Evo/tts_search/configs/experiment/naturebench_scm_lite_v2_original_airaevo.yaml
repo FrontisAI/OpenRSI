@@ -1,0 +1,50 @@
+# @package _global_
+# Fair original-AIRA-Evo TTS baseline for the NatureBench Lite-v2 ablation.
+defaults:
+  - /experiment: default
+  - /litellm: sglang_qwen3_30b_a3b_thinking_2507
+  - /search: airaevo_naturebench_original_tts
+  - override /data: naturebench_scm_all
+  - _self_
+
+experiment_name: naturebench_scm_lite_v2_original_airaevo
+max_steps: null
+time_budget: 14400
+model_plus_sandbox_time_budget: 14400
+n_samples_per_task: 1
+candidates_per_step: 1
+llm_concurrency: 66
+
+data:
+  visible_data_analysis_root: tts_search/data/naturebench_lite_v2_eda
+  task_list:
+    - s41587-025-02688-8
+    - s42256-025-01016-8
+    - s42256-023-00627-3
+    - s41592-025-02776-2
+    - s41467-025-63412-3
+    - s43588-024-00703-7
+    - s43588-025-00842-5
+    - s41467-025-65557-7
+    - s42256-022-00447-x
+    - s42256-023-00611-x
+  task_set_path: null
+  batch_name: naturebench-airaevo-scm-lite-v2-original-airaevo
+
+sandbox:
+  concurrency: 10
+  priority: 2
+  job_timeout: 14400
+  wait_timeout: 18000
+  use_clear_run_log_score: false
+
+search:
+  runner:
+    task_concurrency: 10
+    solver:
+      step_limit: 160
+      num_generations: 80
+      individuals_per_generation: 2
+      data_preview: false
+      execution_timeout: 14400
+      max_debug_time: 1200

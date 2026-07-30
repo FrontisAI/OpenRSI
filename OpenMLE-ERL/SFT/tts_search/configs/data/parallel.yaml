@@ -1,0 +1,5 @@
+eval_data: ${oc.env:OPENMLE_PARALLEL_DATA}
+metric_metadata_parquet: ${oc.env:OPENMLE_METRIC_METADATA,null}
+leaderboard_dir: null
+input_key: prompt
+metadata_key: metadata

@@ -1,0 +1,21 @@
+defaults:
+  - greedy
+  - /solver/operators/mlebench@operators:
+    - aira_operators/debug    # Enables debugging mode for operator prompts
+    - aira_operators/draft    # Enables draft mode for generating initial outputs
+    - aira_operators/improve  # Enables improvement mode for refining outputs
+    - aide_operators/analyze  # Enables evaluation mode for assessing outputs
+  - override memory: simple_memory
+  - override memory@debug_memory: debug_memory # Enables Debug Memory operator
+
+# --- Search Configuration ---
+improvement_steps: 5                   # Number of improvement iterations to perform
+data_preview: true        # Whether to provide the agent with a preview of the data before execution
+
+# --- Debugging Configuration ---ba
+max_debug_depth: 20         # Maximum depth of debugging analysis
+debug_prob: 1.0            # Probability of running a debug step in the process
+
+# --- Drafting Configuration ---
+num_drafts: 5              # Number of draft outputs to generate for selection
+max_llm_call_retries: 3    # Maximum number of retries for failed LLM API calls

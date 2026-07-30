@@ -1,0 +1,47 @@
+experiment_name: aira_evo
+output_dir: output/${.experiment_name}/${now:%y-%m-%d}/${now:%H-%M-%S}
+seed: 42
+time_budget: null
+model_plus_sandbox_time_budget: null
+n_samples_per_task: 3
+task_concurrency: 16
+task_root: third_party/aira-evo/examples/mle_bench
+task_list: []
+leaderboard_dir: null
+llm:
+  api: litellm
+  model_id: ${oc.env:AIRA_DOJO_MODEL_ID,Qwen/Qwen3-30B-A3B-Thinking-2507}
+  base_url: ${oc.env:SGLANG_BASE_URL,http://localhost:30000/v1}
+  use_azure_client: false
+  provider: selfhosted
+solver:
+  step_limit: 800
+  num_islands: 1
+  max_island_size: 500
+  crossover_prob: 0.5
+  migration_prob: 0.0
+  initial_temp: 1.0
+  final_temp: 1.0
+  num_generations_till_migration: 999
+  num_generations_till_crossover: 2
+  num_generations: 100
+  individuals_per_generation: 5
+  max_debug_depth: 10
+  max_debug_time: 21600
+  data_preview: true
+  use_test_score: false
+  use_complexity: false
+  execution_timeout: 14400
+  export_search_results: true
+interpreter:
+  use_symlinks: true
+logger:
+  use_console: true
+  use_json: true
+  use_wandb: false
+hydra:
+  run:
+    dir: ${output_dir}/.hydra
+  output_subdir: .
+  job:
+    chdir: false

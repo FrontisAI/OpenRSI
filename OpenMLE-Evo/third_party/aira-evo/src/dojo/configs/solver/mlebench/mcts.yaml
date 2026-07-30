@@ -1,0 +1,46 @@
+defaults:
+  - mcts
+  - /solver/operators@operators:
+    - mlebench/aira_operators/debug    # Enables debugging mode for operator prompts
+    - mlebench/aira_operators/draft    # Enables draft mode for generating initial outputs
+    - mlebench/aira_operators/improve  # Enables improvement mode for refining outputs
+    - mlebench/aide_operators/analyze  # Enables evaluation mode for assessing outputs
+  - override memory: simple_memory  # Enables Memory operator
+  - override memory@debug_memory: debug_memory # Enables Debug Memory operator
+    
+# Specifies the Monte Carlo Tree Search (MCTS) algorithm as the action selector
+_target_: dojo.config_dataclasses.solver.mcts.MCTSSolverConfig
+
+# Whether to export search results after execution
+export_search_results: true
+
+step_limit: 10000
+num_children: 5
+uct_c: 0.25
+max_debug_depth: 20
+data_preview: True
+max_debug_time: 1e9 # disabled
+
+use_test_score: False
+use_complexity: False
+
+operators:
+  draft:
+    llm:
+      generation_kwargs:
+        temperature: 0.6
+        top_p: 0.95
+  improve:
+    llm:
+      generation_kwargs:
+        temperature: 0.6
+        top_p: 0.95
+  debug:
+    llm:
+      generation_kwargs:
+        temperature: 0.6
+        top_p: 0.95
+  analyze:
+    llm:
+      generation_kwargs:
+        temperature: 0.5

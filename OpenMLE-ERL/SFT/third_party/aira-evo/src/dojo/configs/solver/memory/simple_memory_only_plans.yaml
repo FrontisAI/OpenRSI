@@ -1,0 +1,5 @@
+_target_: dojo.config_dataclasses.operators.memory.MemoryOpConfig
+memory_processor: "simple_memory"
+memory_op_kwargs:
+  only_plans: true
+  include_buggy_nodes: true

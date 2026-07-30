@@ -1,0 +1,86 @@
+[project]
+dependencies = [
+    "pandas",
+    "pyarrow",
+    "python-dotenv",
+]
+name = "openmle-sft"
+readme = "README.md"
+requires-python = ">=3.11"
+version = "0.0.1"
+
+[project.optional-dependencies]
+rollout = [
+    "aira-dojo",
+    "arviz[preview]",
+    "black",
+    "hydra-core",
+    "jax[cuda12]",
+    "litellm==1.80.15",
+    "omegaconf",
+    "treequest[all]==0.3.1",
+]
+train-qwen3-30b = [
+    "numpy<2",
+    "slime",
+    "transformers>=4.57,<5",
+]
+train-qwen3-6-35b = [
+    "numpy<2",
+    "slime",
+    "transformers>=5.8,<6",
+]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[[tool.uv.index]]
+default = true
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
+[dependency-groups]
+dev = [{ include-group = "format" }]
+format = ["ruff"]
+
+[tool.uv]
+package = false
+conflicts = [
+    [
+        { extra = "train-qwen3-30b" },
+        { extra = "train-qwen3-6-35b" },
+    ],
+    [
+        { extra = "rollout" },
+        { extra = "train-qwen3-30b" },
+    ],
+    [
+        { extra = "rollout" },
+        { extra = "train-qwen3-6-35b" },
+    ],
+]
+
+[tool.uv.sources]
+aira-dojo = { path = "third_party/aira-evo", editable = true }
+slime = { path = "slime", editable = true }
+
+[tool.ruff]
+extend-exclude = [
+    "third_party",
+    "tts_search/program_database.py",
+    "tts_search/prompt_builder.py",
+    "tts_search/reward_func_utils.py",
+]
+line-length = 88
+src = ["tts_search"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.isort]
+extra-standard-library = ["typing_extensions"]
+
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "double"

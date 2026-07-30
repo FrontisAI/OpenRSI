@@ -1,0 +1,41 @@
+raw/gender_submission.csv
+- Dimensions: 418 x 2
+- Headers: [PassengerId, Survived]
+- Data Types: [int64, int64]
+- Null Counts: PassengerId: 0, Survived: 0
+- Raw Sample:
+  | PassengerId | Survived |
+  |-------------|----------|
+  | 892         | 0        |
+  | 893         | 1        |
+  | 894         | 0        |
+- Other Notes: Sample submission file mapping PassengerId to a predicted Survived value. All 418 rows are non-null.
+--------------------
+raw/test.csv
+- Dimensions: 418 x 11
+- Headers: [PassengerId, Pclass, Name, Sex, Age, SibSp, Parch, Ticket, Fare, Cabin, Embarked]
+- Data Types: [int64, int64, str, str, float64, int64, int64, str, float64, str, str]
+- Null Counts: PassengerId: 0, Pclass: 0, Name: 0, Sex: 0, Age: 86, SibSp: 0, Parch: 0, Ticket: 0, Fare: 1, Cabin: 327, Embarked: 0
+- Raw Sample:
+  | PassengerId | Pclass | Name                                      | Sex    | Age  | SibSp | Parch | Ticket | Fare    | Cabin | Embarked |
+  |-------------|--------|-------------------------------------------|--------|------|-------|-------|--------|---------|-------|----------|
+  | 892         | 3      | Kelly, Mr. James                          | male   | 34.5 | 0     | 0     | 330911 | 7.8292  | NaN   | Q        |
+  | 893         | 3      | Wilkes, Mrs. James (Ellen Needs)          | female | 47.0 | 1     | 0     | 363272 | 7.0     | NaN   | S        |
+  | 894         | 2      | Myles, Mr. Thomas Francis                 | male   | 62.0 | 0     | 0     | 240276 | 9.6875  | NaN   | Q        |
+- Other Notes: Test dataset without the Survived target column. Significant nulls in Cabin (327/418) and Age (86/418); 1 null in Fare.
+--------------------
+raw/train.csv
+- Dimensions: 891 x 12
+- Headers: [PassengerId, Survived, Pclass, Name, Sex, Age, SibSp, Parch, Ticket, Fare, Cabin, Embarked]
+- Data Types: [int64, int64, int64, str, str, float64, int64, int64, str, float64, str, str]
+- Null Counts: PassengerId: 0, Survived: 0, Pclass: 0, Name: 0, Sex: 0, Age: 177, SibSp: 0, Parch: 0, Ticket: 0, Fare: 0, Cabin: 687, Embarked: 2
+- Raw Sample:
+  | PassengerId | Survived | Pclass | Name                                                      | Sex    | Age | SibSp | Parch | Ticket           | Fare    | Cabin | Embarked |
+  |-------------|----------|--------|-----------------------------------------------------------|--------|-----|-------|-------|------------------|---------|-------|----------|
+  | 1           | 0        | 3      | Braund, Mr. Owen Harris                                   | male   | 22  | 1     | 0     | A/5 21171        | 7.25    | NaN   | S        |
+  | 2           | 1        | 1      | Cumings, Mrs. John Bradley (Florence Briggs Thayer)       | female | 38  | 1     | 0     | PC 17599         | 71.2833 | C85   | C        |
+  | 3           | 1        | 3      | Heikkinen, Miss. Laina                                    | female | 26  | 0     | 0     | STON/O2. 3101282 | 7.925   | NaN   | S        |
+- Other Notes: Training dataset with the Survived target column included. Significant nulls in Cabin (687/891) and Age (177/891); 2 nulls in Embarked.
+--------------------
+
+--------------------

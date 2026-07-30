@@ -1,0 +1,4 @@
+eval_data: ${oc.env:OPENMLE_EVAL_DATA}
+leaderboard_dir: ${oc.env:OPENMLE_LEADERBOARD_DIR}
+input_key: ${oc.env:OPENMLE_INPUT_KEY,prompt}
+metadata_key: ${oc.env:OPENMLE_METADATA_KEY,metadata}

@@ -1,0 +1,60 @@
+# @package _global_
+# Representative GLM-4.7 evolutionary rollout used for SFT data construction.
+
+defaults:
+  - /sandbox: default
+  - /data: evolutionary
+  - /hydra: default
+  - /litellm: glm-4.7
+  - /search: evolutionary
+  - _self_
+
+experiment_name: evolutionary_glm47
+output_dir: ${oc.env:OPENMLE_OUTPUT_DIR,output/evolutionary_glm47}
+seed: 42
+
+max_steps: 64
+time_budget: null
+n_samples_per_task: 1
+max_tasks: null
+llm_concurrency: 64
+candidates_per_step: 5
+
+enable_sandbox_eval: true
+evaluate_only: false
+
+rejection_policy: mixed
+rejection_target: 4
+rejection_reference_scores_path: null
+rejection_mixed_leaderboard_target: 4
+rejection_mixed_no_leaderboard_target: 4
+rejection_accepted_medals: [gold, silver, bronze]
+rejection_apply_baseline_filters: true
+rejection_baseline_token_limit: 32768
+rejection_baseline_tokenizer_model: ${oc.env:OPENMLE_TOKENIZER_MODEL}
+rejection_baseline_relative_gap_limit: 0.12
+
+search:
+  runner:
+    task_list: []
+    task_concurrency: 200
+    strict_resume: false
+    solver:
+      step_limit: ${max_steps}
+      num_generations: 100
+      individuals_per_generation: 5
+      num_islands: 1
+      max_island_size: 500
+      crossover_prob: 0.5
+      migration_prob: 0.0
+      initial_temp: 1.0
+      final_temp: 1.0
+      num_generations_till_migration: 999
+      num_generations_till_crossover: 2
+      max_debug_depth: 10
+      max_debug_time: 21600
+      data_preview: true
+      use_test_score: false
+      use_complexity: false
+      execution_timeout: 14400
+      export_search_results: true

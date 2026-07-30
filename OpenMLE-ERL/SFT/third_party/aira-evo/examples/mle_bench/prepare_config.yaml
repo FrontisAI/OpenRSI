@@ -1,0 +1,16 @@
+data:
+  eval_data: ${oc.env:OPENMLE_EVOLUTIONARY_DATA}
+  leaderboard_dir: null
+  submit_dir: MLTasks/MLE-Bench-Lite-Modified
+  input_key: prompt
+  metadata_key: metadata
+sandbox:
+  base_url_map:
+    - resource: cpu
+      base_url: ${oc.env:OPENMLE_SANDBOX_CPU_URL,${oc.env:OPENMLE_SANDBOX_GPU_URL}}
+    - resource: gpu
+      base_url: ${oc.env:OPENMLE_SANDBOX_GPU_URL}
+  job_timeout: 3600
+  wait_timeout: 86400
+  poll_interval: 5
+  use_score2reward: true

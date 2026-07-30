@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+  - override /benchmark: mlebench/dev
+  - override /interpreter: jupyter
+  - override /solver: mlebench/greedy
+  - override /solver/client@solver.operators.analyze.llm.client: litellm_4o
+  - override /solver/client@solver.operators.debug.llm.client: litellm_4o
+  - override /solver/client@solver.operators.draft.llm.client: litellm_4o
+  - override /solver/client@solver.operators.improve.llm.client: litellm_4o
+  
+launcher:
+  qos: lowest
+
+metadata:
+  git_issue_id: example # Ideally, this should be a number fetched from github issue when running an actual experiment.
+
+solver:
+  step_limit: 5
+
+vars:
+  metadata.seed: [1,2,3]

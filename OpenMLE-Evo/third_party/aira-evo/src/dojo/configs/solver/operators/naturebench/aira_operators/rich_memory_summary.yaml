@@ -1,0 +1,85 @@
+defaults:
+  - /solver/client@rich_memory_summary.llm.client: litellm_4o
+
+rich_memory_summary:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are an expert NatureBench experiment analyst. Summarize one completed node into reusable memory.
+    input_variables: []
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      # Task Description
+      {{task_description}}
+
+      # Current Node Metadata
+      node_id: {{node_id}}
+      operator_that_created_this_node: {{operator}}
+      method_family: {{method_family}}
+      status: {{status}}
+      score: {{score}}
+      delta_vs_parent: {{delta_vs_parent}}
+      runtime_seconds: {{runtime}}
+      error_signature: {{error_signature}}
+
+      # Parent Node Metadata
+      parent_node_id: {{parent_node_id}}
+      parent_method_family: {{parent_method_family}}
+      parent_status: {{parent_status}}
+      parent_score: {{parent_score}}
+      parent_runtime_seconds: {{parent_runtime}}
+
+      # Current Node Plan
+      {{current_plan}}
+
+      # Parent Node Plan
+      {{parent_plan}}
+
+      # Current Node Code
+      {{current_code}}
+
+      # Current Node Execution Output
+      {{current_execution_output}}
+
+      # Parent Node Code
+      {{parent_code}}
+
+      # Parent Node Execution Output
+      {{parent_execution_output}}
+
+      # Instructions
+      Write reusable memory for this NatureBench node. Focus on how the code uses DATA_DIR, what it writes to OUTPUT_DIR, and how the change affected aggregate_improvement.
+
+      Return exactly one valid JSON object and nothing else:
+
+      {
+        "method_overview": string,
+        "parent_comparison_experience": string
+      }
+    input_variables:
+      - task_description
+      - node_id
+      - operator
+      - method_family
+      - status
+      - score
+      - delta_vs_parent
+      - runtime
+      - error_signature
+      - parent_node_id
+      - parent_method_family
+      - parent_status
+      - parent_score
+      - parent_runtime
+      - current_plan
+      - parent_plan
+      - current_code
+      - current_execution_output
+      - parent_code
+      - parent_execution_output

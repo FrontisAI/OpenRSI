@@ -1,0 +1,33 @@
+# @package _global_
+defaults:
+  - /experiment: default
+  - /litellm: sglang_qwen3_30b_a3b_thinking_2507
+  - /search: airaevo_naturebench
+  - override /data: naturebench_scm_cpu
+  - _self_
+
+experiment_name: naturebench_scm_smoke
+max_steps: 2
+time_budget: 14400
+model_plus_sandbox_time_budget: 14400
+n_samples_per_task: 1
+candidates_per_step: 1
+llm_concurrency: 1
+
+sandbox:
+  concurrency: 1
+  priority: 2
+  job_timeout: 600
+  wait_timeout: 1200
+  use_clear_run_log_score: false
+
+search:
+  runner:
+    task_concurrency: 1
+    solver:
+      step_limit: 2
+      num_generations: 1
+      individuals_per_generation: 1
+      data_preview: true
+      execution_timeout: 600
+      max_debug_time: 600

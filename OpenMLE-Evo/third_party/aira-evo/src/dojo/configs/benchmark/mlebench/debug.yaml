@@ -1,0 +1,5 @@
+_target_: dojo.config_dataclasses.benchmark.BenchmarkConfig
+
+name: mlebench
+tasks:
+  - random-acts-of-pizza

@@ -1,0 +1,4 @@
+﻿Name,Modality,Task,Raw Size,Final Size,CPU/GPU,Source,Metric,NOTE,Server Location
+house-prices-advanced-regression-techniques,Tabular,Regression,934.95 KB,462.46 KB,CPU,OpenMLE,@Evaluation result: {'score': 0.5412983730502806},,examples/real-run-3-concurrency/task_package/house-prices-advanced-regression-techniques
+spaceship-titanic,Tabular,Classification,1.18 MB,825.22 KB,CPU,OpenMLE,@Evaluation result: {'score': 0.4905117883841288},,examples/real-run-3-concurrency/task_package/spaceship-titanic
+titanic,"Tabular,Text",Classification,90.90 KB,64.71 KB,CPU,OpenMLE,@Evaluation result: {'score': 0.5027932960893855},,examples/real-run-3-concurrency/task_package/titanic

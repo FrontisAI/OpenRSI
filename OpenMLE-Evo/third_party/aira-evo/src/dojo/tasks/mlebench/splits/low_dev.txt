@@ -1,0 +1,6 @@
+plant-pathology-2020-fgvc7
+aerial-cactus-identification
+random-acts-of-pizza
+aptos2019-blindness-detection
+histopathologic-cancer-detection
+spooky-author-identification

@@ -1,0 +1,70 @@
+defaults:
+  - evo
+  - /solver/operators@operators:
+    - naturebench/aira_operators/debug
+    - naturebench/aira_operators/draft
+    - naturebench/aira_operators/improve
+    - naturebench/aira_operators/analyze
+    - naturebench/aira_operators/crossover
+  - override memory: simple_memory
+  - override memory@debug_memory: debug_memory
+
+step_limit: 160
+
+available_packages:
+  - numpy
+  - scipy
+  - pandas
+  - scikit-learn
+  - h5py
+  - statsmodels
+  - xgboost
+  - lightgbm
+  - torch
+  - torchvision
+  - bayesian-optimization
+  - timm
+
+num_islands: 1
+max_island_size: 160
+crossover_prob: 0.5
+migration_prob: 0.0
+initial_temp: 1.0
+final_temp: 1.0
+num_generations_till_migration: 999
+num_generations_till_crossover: 2
+num_generations: 80
+individuals_per_generation: 2
+
+max_debug_depth: 2
+max_debug_time: 1200
+fresh_draft_prob: 0.2
+max_wall_time_secs: 21600
+data_preview: true
+use_test_score: false
+use_complexity: false
+
+operators:
+  draft:
+    llm:
+      generation_kwargs:
+        temperature: 0.6
+        top_p: 0.95
+  improve:
+    llm:
+      generation_kwargs:
+        temperature: 0.6
+        top_p: 0.95
+  debug:
+    llm:
+      generation_kwargs:
+        temperature: 0.6
+        top_p: 0.95
+  analyze:
+    llm:
+      generation_kwargs:
+        temperature: 0.5
+  crossover:
+    llm:
+      generation_kwargs:
+        temperature: 0.5

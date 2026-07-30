@@ -1,0 +1,34 @@
+# Ames Housing Price Prediction
+
+## Overview
+
+The competition challenges participants to predict the final sale price of residential homes in Ames, Iowa, using 79 explanatory variables describing nearly every aspect of the homes. The dataset covers features ranging from lot size, building type, and construction quality to basement conditions, garage details, and porch areas. The competition encourages practice in creative feature engineering and advanced regression techniques like random forest and gradient boosting.
+
+## Evaluation
+
+Submissions are evaluated on **Root-Mean-Squared-Error (RMSE)** between the **logarithm** of the predicted value and the **logarithm** of the observed sales price. Taking logs means that errors in predicting expensive houses and cheap houses will affect the result equally. For each Id in the test set, participants must predict the value of the SalePrice variable.
+
+## Submission Format
+
+The submission file should contain a header and have the following format:
+
+```
+Id,SalePrice
+1461,169000.1
+1462,187724.1233
+1463,175221
+etc.
+```
+
+## Dataset Description
+
+The Ames Housing dataset was compiled by Dean De Cock for use in data science education. It contains 79 explanatory variables describing residential homes in Ames, Iowa. The target variable is **SalePrice** (the property's sale price in dollars).
+
+Features include: MSSubClass (building class), MSZoning (zoning classification), LotFrontage (linear feet of street connected to property), LotArea (lot size in sq ft), Street, Alley, LotShape, LandContour, Utilities, LotConfig, LandSlope, Neighborhood, Condition1/2 (proximity to roads/railroad), BldgType, HouseStyle, OverallQual, OverallCond, YearBuilt, YearRemodAdd, RoofStyle, RoofMatl, Exterior1st/2nd, MasVnrType, MasVnrArea, ExterQual, ExterCond, Foundation, BsmtQual, BsmtCond, BsmtExposure, BsmtFinType1/2, BsmtFinSF1/2, BsmtUnfSF, TotalBsmtSF, Heating, HeatingQC, CentralAir, Electrical, 1stFlrSF, 2ndFlrSF, LowQualFinSF, GrLivArea, BsmtFullBath, BsmtHalfBath, FullBath, HalfBath, Bedroom, Kitchen, KitchenQual, TotRmsAbvGrd, Functional, Fireplaces, FireplaceQu, GarageType, GarageYrBlt, GarageFinish, GarageCars, GarageArea, GarageQual, GarageCond, PavedDrive, WoodDeckSF, OpenPorchSF, EnclosedPorch, 3SsnPorch, ScreenPorch, PoolArea, PoolQC, Fence, MiscFeature, MiscVal, MoSold, YrSold, SaleType, and SaleCondition.
+
+## Files
+
+- **train.csv** - the training set with 1168 rows and 81 columns (Id + 79 features + SalePrice target).
+- **test.csv** - the test set with 292 rows and 80 columns (Id + 79 features, no SalePrice). Predict SalePrice for each Id.
+- **sample_submission.csv** - a sample submission file with 292 rows showing the correct format (Id, SalePrice).
+- **data_description.txt** - full description of each column including variable names, descriptions, and categorical value mappings for all features.

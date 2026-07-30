@@ -1,0 +1,6 @@
+_target_: dojo.config_dataclasses.operators.memory.MemoryOpConfig
+memory_processor: "sibling_memory"
+memory_op_kwargs:
+  only_plans: True
+  include_buggy_nodes: True
+  include_code: False

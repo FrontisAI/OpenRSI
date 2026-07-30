@@ -1,0 +1,6 @@
+_target_: dojo.config_dataclasses.client.base.ClientConfig
+api: litellm
+model_id: "o1-preview"
+base_url: https://<<<YOUR_AZURE_ENDPOINT_HERE>>>.azure-api.net
+use_azure_client: True
+provider: openai

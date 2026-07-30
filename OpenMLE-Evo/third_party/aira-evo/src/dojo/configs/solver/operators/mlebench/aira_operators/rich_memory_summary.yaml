@@ -1,0 +1,128 @@
+defaults:
+  - /solver/client@rich_memory_summary.llm.client: litellm_4o
+
+rich_memory_summary:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs: {}
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      You are an expert machine learning experiment analyst.
+      Your job is to distill one completed experiment node into reusable memory.
+
+      The memory should explain:
+      1. What the current node's code actually does, with concrete modeling and implementation details.
+      2. What was learned by comparing the current node with its parent, especially whether the change improved or worsened the result.
+
+      Be specific and evidence-based.
+      Use only the provided code, execution outputs, scores, delta, runtime, and status.
+      Do not invent results or claim improvements that are not supported by the metadata.
+    input_variables: []
+  init_user_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |-
+      # Task Description
+      {{task_description}}
+
+      # Current Node Metadata
+      node_id: {{node_id}}
+      operator_that_created_this_node: {{operator}}
+      method_family: {{method_family}}
+      status: {{status}}
+      score: {{score}}
+      delta_vs_parent: {{delta_vs_parent}}
+      runtime_seconds: {{runtime}}
+      error_signature: {{error_signature}}
+
+      # Parent Node Metadata
+      parent_node_id: {{parent_node_id}}
+      parent_method_family: {{parent_method_family}}
+      parent_status: {{parent_status}}
+      parent_score: {{parent_score}}
+      parent_runtime_seconds: {{parent_runtime}}
+
+      # Current Node Plan
+      {{current_plan}}
+
+      # Parent Node Plan
+      {{parent_plan}}
+
+      # Current Node Code
+      {{current_code}}
+
+      # Current Node Execution Output
+      {{current_execution_output}}
+
+      # Parent Node Code
+      {{parent_code}}
+
+      # Parent Node Execution Output
+      {{parent_execution_output}}
+
+      # Instructions
+      Write reusable memory for this experiment node.
+
+      Focus on two things:
+
+      1. method_overview
+      Summarize what the current code does.
+      Include concrete details such as:
+      - model family and main estimator
+      - feature engineering
+      - validation strategy
+      - ensembling or post-processing
+      - training/runtime choices
+      - submission generation logic
+
+      2. parent_comparison_experience
+      Compare the current node with its parent.
+      Explain:
+      - what changed from the parent
+      - whether the score/status/runtime improved, worsened, or stayed similar
+      - what the delta suggests
+      - what experience should be reused if it improved
+      - what should be avoided or fixed if it worsened or failed
+
+      If the node has no parent, say that it is an initial draft and summarize the initial strategy.
+      If the node failed, focus on the failure mode and what should be avoided or fixed.
+
+      Keep the answer concise but information-dense.
+
+      # Output Format
+      Return exactly one valid JSON object and nothing else.
+      Do not return markdown, code fences, headings, or prose outside the JSON object.
+
+      Use exactly these keys:
+
+      {
+        "method_overview": string,
+        "parent_comparison_experience": string
+      }
+
+      Field requirements:
+      - method_overview: 2-5 sentences describing the concrete method used by the current node.
+      - parent_comparison_experience: 2-5 sentences comparing current node vs parent and extracting success or failure experience.
+    input_variables:
+      - task_description
+      - node_id
+      - operator
+      - method_family
+      - status
+      - score
+      - delta_vs_parent
+      - runtime
+      - error_signature
+      - parent_node_id
+      - parent_method_family
+      - parent_status
+      - parent_score
+      - parent_runtime
+      - current_plan
+      - parent_plan
+      - current_code
+      - current_execution_output
+      - parent_code
+      - parent_execution_output

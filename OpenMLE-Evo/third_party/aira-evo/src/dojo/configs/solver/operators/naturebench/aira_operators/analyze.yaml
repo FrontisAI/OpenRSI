@@ -1,0 +1,38 @@
+defaults:
+  - /solver/client@analyze.llm.client: litellm_4o
+
+analyze:
+  _target_: dojo.config_dataclasses.operators.base.OperatorConfig
+  llm:
+    _target_: dojo.config_dataclasses.llm.generic_llm.GenericLLMConfig
+    client: ???
+    generation_kwargs:
+      temperature: 0.5
+  system_message_prompt_template:
+    _target_: dojo.config_dataclasses.llm.jinjaprompt.JinjaPromptConfig
+    template: |
+      # Introduction:
+      You are reviewing a Python solution for a NatureBench scientific coding task.
+      The solution should read visible inputs from DATA_DIR, write all required
+      artifacts under OUTPUT_DIR, and optimize aggregate_improvement.
+      Higher aggregate_improvement is better; values above 0 beat the
+      paper/SOTA baseline. Determine whether execution failed or produced an
+      invalid solution, and report the observed validation metric if it is
+      present in the execution output.
+
+      # Task Description:
+      {{task_desc}}
+
+      # Implementation:
+      {{code}}
+
+      # Execution output:
+      {{execution_output}}
+
+      # Output Format:
+      {{output_format}}
+    input_variables:
+      - task_desc
+      - code
+      - execution_output
+      - output_format

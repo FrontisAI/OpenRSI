@@ -1,0 +1,37 @@
+### Description
+
+The competition focuses on evaluating the effects of climate change on biodiversity by quantifying the impact of human activities on protected natural areas. A crucial first step is the identification of specific vegetation types, particularly a columnar cactus, in aerial imagery. Participants are challenged to create an algorithm that accurately identifies this cactus from aerial images. 
+
+### Evaluation
+
+Submissions are evaluated on area under the **ROC** curve between the predicted probability and the observed target.
+
+### Submission File
+
+For each id in the test set, predict a probability for the has_cactus variable. The file should contain a header and have the following format:
+
+```
+id,has_cactus
+1.jpg,0.5
+2.jpg,0.5
+3.jpg,0.5
+etc.
+```
+
+### Dataset Description
+
+This dataset consists of numerous 32 x 32 thumbnail images depicting aerial photos of the columnar cactus. The images have been resized for uniformity, with each file name corresponding to its unique ID. Participants must develop a classifier to determine whether an image contains a cactus.
+
+### Files
+
+**Under /raw**:
+
+- core/train/ - 2000 train set images
+- core/test/ - 500 test set images (you must predict the labels of these)
+- core/train.csv - the train set metadata and labels, indicates whether the image has a cactus (has_cactus = 1), Rows: 2001, Columns: id(str, null_count=0), has_cactus(bool, null_count=0)
+    - row sample: ...
+- core/test.csv - the test set metadata, without labels, Rows: 501, Columns: id(str, null_count=0)
+    - row sample: ...
+- core/sample_submission.csv - a sample submission file in the correct format, Rows: 501, Columns: id(str, null_count=0), has_cactus(bool, null_count=0)
+    - row sample: ...
+

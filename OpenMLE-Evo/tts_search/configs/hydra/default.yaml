@@ -1,0 +1,5 @@
+run:
+  dir: ${output_dir}/.hydra
+output_subdir: .
+job:
+  chdir: false

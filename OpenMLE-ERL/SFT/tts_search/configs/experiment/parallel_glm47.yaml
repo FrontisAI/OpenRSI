@@ -1,0 +1,35 @@
+# @package _global_
+# Representative GLM-4.7 parallel rollout used for SFT data construction.
+
+defaults:
+  - /sandbox: default
+  - /data: parallel
+  - /hydra: default
+  - /litellm: glm-4.7
+  - _self_
+
+experiment_name: parallel_glm47
+output_dir: ${oc.env:OPENMLE_OUTPUT_DIR,output/parallel_glm47}
+seed: 42
+
+max_steps: 4
+time_budget: null
+n_samples_per_task: 1
+use_draft_prompt_builder: true
+draft_time_limit: true
+draft_time_limit_value: ${sandbox.job_timeout}
+
+max_tasks: null
+task_concurrency: 16
+llm_concurrency: 64
+
+enable_sandbox_eval: true
+evaluate_only: false
+
+loop_enabled: true
+loop_success_target: 4
+loop_target_increment: 4
+loop_max_target: 32
+
+rejection_policy: accept_scored
+rejection_target: 4

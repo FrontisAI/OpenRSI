@@ -1,0 +1,1101 @@
+{
+  "task_name": "titanic",
+  "task_path": "examples/real-run-3-concurrency/task_package/titanic",
+  "has_description": true,
+  "has_prepare": true,
+  "has_metric": true,
+  "has_raw_data": true,
+  "has_sample_submission": true,
+  "has_private_answer": true,
+  "train_rows": 712,
+  "test_rows": 179,
+  "raw_size_mb": 0.0888,
+  "data_size_mb": 0.0632,
+  "file_types": [],
+  "csv_previews": {
+    "train.csv": {
+      "columns": [
+        "PassengerId",
+        "Survived",
+        "Pclass",
+        "Name",
+        "Sex",
+        "Age",
+        "SibSp",
+        "Parch",
+        "Ticket",
+        "Fare",
+        "Cabin",
+        "Embarked"
+      ],
+      "rows": [
+        [
+          "1",
+          "0",
+          "3",
+          "Braund, Mr. Owen Harris",
+          "male",
+          "22.0",
+          "1",
+          "0",
+          "A/5 21171",
+          "7.25",
+          "",
+          "S"
+        ],
+        [
+          "2",
+          "1",
+          "1",
+          "Cumings, Mrs. John Bradley (Florence Briggs Thayer)",
+          "female",
+          "38.0",
+          "1",
+          "0",
+          "PC 17599",
+          "71.2833",
+          "C85",
+          "C"
+        ],
+        [
+          "3",
+          "1",
+          "3",
+          "Heikkinen, Miss. Laina",
+          "female",
+          "26.0",
+          "0",
+          "0",
+          "STON/O2. 3101282",
+          "7.925",
+          "",
+          "S"
+        ],
+        [
+          "4",
+          "1",
+          "1",
+          "Futrelle, Mrs. Jacques Heath (Lily May Peel)",
+          "female",
+          "35.0",
+          "1",
+          "0",
+          "113803",
+          "53.1",
+          "C123",
+          "S"
+        ],
+        [
+          "6",
+          "0",
+          "3",
+          "Moran, Mr. James",
+          "male",
+          "",
+          "0",
+          "0",
+          "330877",
+          "8.4583",
+          "",
+          "Q"
+        ],
+        [
+          "7",
+          "0",
+          "1",
+          "McCarthy, Mr. Timothy J",
+          "male",
+          "54.0",
+          "0",
+          "0",
+          "17463",
+          "51.8625",
+          "E46",
+          "S"
+        ],
+        [
+          "8",
+          "0",
+          "3",
+          "Palsson, Master. Gosta Leonard",
+          "male",
+          "2.0",
+          "3",
+          "1",
+          "349909",
+          "21.075",
+          "",
+          "S"
+        ],
+        [
+          "9",
+          "1",
+          "3",
+          "Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)",
+          "female",
+          "27.0",
+          "0",
+          "2",
+          "347742",
+          "11.1333",
+          "",
+          "S"
+        ],
+        [
+          "11",
+          "1",
+          "3",
+          "Sandstrom, Miss. Marguerite Rut",
+          "female",
+          "4.0",
+          "1",
+          "1",
+          "PP 9549",
+          "16.7",
+          "G6",
+          "S"
+        ],
+        [
+          "13",
+          "0",
+          "3",
+          "Saundercock, Mr. William Henry",
+          "male",
+          "20.0",
+          "0",
+          "0",
+          "A/5. 2151",
+          "8.05",
+          "",
+          "S"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 712,
+      "preview_is_truncated": true
+    },
+    "test.csv": {
+      "columns": [
+        "PassengerId",
+        "Pclass",
+        "Name",
+        "Sex",
+        "Age",
+        "SibSp",
+        "Parch",
+        "Ticket",
+        "Fare",
+        "Cabin",
+        "Embarked"
+      ],
+      "rows": [
+        [
+          "5",
+          "3",
+          "Allen, Mr. William Henry",
+          "male",
+          "35.0",
+          "0",
+          "0",
+          "373450",
+          "8.05",
+          "",
+          "S"
+        ],
+        [
+          "10",
+          "2",
+          "Nasser, Mrs. Nicholas (Adele Achem)",
+          "female",
+          "14.0",
+          "1",
+          "0",
+          "237736",
+          "30.0708",
+          "",
+          "C"
+        ],
+        [
+          "12",
+          "1",
+          "Bonnell, Miss. Elizabeth",
+          "female",
+          "58.0",
+          "0",
+          "0",
+          "113783",
+          "26.55",
+          "C103",
+          "S"
+        ],
+        [
+          "17",
+          "3",
+          "Rice, Master. Eugene",
+          "male",
+          "2.0",
+          "4",
+          "1",
+          "382652",
+          "29.125",
+          "",
+          "Q"
+        ],
+        [
+          "18",
+          "2",
+          "Williams, Mr. Charles Eugene",
+          "male",
+          "",
+          "0",
+          "0",
+          "244373",
+          "13.0",
+          "",
+          "S"
+        ],
+        [
+          "24",
+          "1",
+          "Sloper, Mr. William Thompson",
+          "male",
+          "28.0",
+          "0",
+          "0",
+          "113788",
+          "35.5",
+          "A6",
+          "S"
+        ],
+        [
+          "28",
+          "1",
+          "Fortune, Mr. Charles Alexander",
+          "male",
+          "19.0",
+          "3",
+          "2",
+          "19950",
+          "263.0",
+          "C23 C25 C27",
+          "S"
+        ],
+        [
+          "30",
+          "3",
+          "Todoroff, Mr. Lalio",
+          "male",
+          "",
+          "0",
+          "0",
+          "349216",
+          "7.8958",
+          "",
+          "S"
+        ],
+        [
+          "39",
+          "3",
+          "Vander Planke, Miss. Augusta Maria",
+          "female",
+          "18.0",
+          "2",
+          "0",
+          "345764",
+          "18.0",
+          "",
+          "S"
+        ],
+        [
+          "40",
+          "3",
+          "Nicola-Yarred, Miss. Jamila",
+          "female",
+          "14.0",
+          "1",
+          "0",
+          "2651",
+          "11.2417",
+          "",
+          "C"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 179,
+      "preview_is_truncated": true
+    },
+    "sample_submission.csv": {
+      "columns": [
+        "PassengerId",
+        "Survived"
+      ],
+      "rows": [
+        [
+          "5",
+          "0"
+        ],
+        [
+          "10",
+          "1"
+        ],
+        [
+          "12",
+          "0"
+        ],
+        [
+          "17",
+          "0"
+        ],
+        [
+          "18",
+          "0"
+        ],
+        [
+          "24",
+          "1"
+        ],
+        [
+          "28",
+          "0"
+        ],
+        [
+          "30",
+          "0"
+        ],
+        [
+          "39",
+          "0"
+        ],
+        [
+          "40",
+          "1"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 179,
+      "preview_is_truncated": true
+    },
+    "test_answer.csv": {
+      "columns": [
+        "PassengerId",
+        "Survived"
+      ],
+      "rows": [
+        [
+          "5",
+          "0"
+        ],
+        [
+          "10",
+          "1"
+        ],
+        [
+          "12",
+          "1"
+        ],
+        [
+          "17",
+          "0"
+        ],
+        [
+          "18",
+          "1"
+        ],
+        [
+          "24",
+          "1"
+        ],
+        [
+          "28",
+          "0"
+        ],
+        [
+          "30",
+          "0"
+        ],
+        [
+          "39",
+          "0"
+        ],
+        [
+          "40",
+          "1"
+        ]
+      ],
+      "preview_row_count": 10,
+      "total_rows": 179,
+      "preview_is_truncated": true
+    }
+  },
+  "csv_evidence": {
+    "train.csv": {
+      "row_count": 712,
+      "column_count": 12,
+      "columns": [
+        "PassengerId",
+        "Survived",
+        "Pclass",
+        "Name",
+        "Sex",
+        "Age",
+        "SibSp",
+        "Parch",
+        "Ticket",
+        "Fare",
+        "Cabin",
+        "Embarked"
+      ],
+      "preview_rows": [
+        [
+          "1",
+          "0",
+          "3",
+          "Braund, Mr. Owen Harris",
+          "male",
+          "22.0",
+          "1",
+          "0",
+          "A/5 21171",
+          "7.25",
+          "",
+          "S"
+        ],
+        [
+          "2",
+          "1",
+          "1",
+          "Cumings, Mrs. John Bradley (Florence Briggs Thayer)",
+          "female",
+          "38.0",
+          "1",
+          "0",
+          "PC 17599",
+          "71.2833",
+          "C85",
+          "C"
+        ],
+        [
+          "3",
+          "1",
+          "3",
+          "Heikkinen, Miss. Laina",
+          "female",
+          "26.0",
+          "0",
+          "0",
+          "STON/O2. 3101282",
+          "7.925",
+          "",
+          "S"
+        ],
+        [
+          "4",
+          "1",
+          "1",
+          "Futrelle, Mrs. Jacques Heath (Lily May Peel)",
+          "female",
+          "35.0",
+          "1",
+          "0",
+          "113803",
+          "53.1",
+          "C123",
+          "S"
+        ],
+        [
+          "6",
+          "0",
+          "3",
+          "Moran, Mr. James",
+          "male",
+          "",
+          "0",
+          "0",
+          "330877",
+          "8.4583",
+          "",
+          "Q"
+        ],
+        [
+          "7",
+          "0",
+          "1",
+          "McCarthy, Mr. Timothy J",
+          "male",
+          "54.0",
+          "0",
+          "0",
+          "17463",
+          "51.8625",
+          "E46",
+          "S"
+        ],
+        [
+          "8",
+          "0",
+          "3",
+          "Palsson, Master. Gosta Leonard",
+          "male",
+          "2.0",
+          "3",
+          "1",
+          "349909",
+          "21.075",
+          "",
+          "S"
+        ],
+        [
+          "9",
+          "1",
+          "3",
+          "Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)",
+          "female",
+          "27.0",
+          "0",
+          "2",
+          "347742",
+          "11.1333",
+          "",
+          "S"
+        ],
+        [
+          "11",
+          "1",
+          "3",
+          "Sandstrom, Miss. Marguerite Rut",
+          "female",
+          "4.0",
+          "1",
+          "1",
+          "PP 9549",
+          "16.7",
+          "G6",
+          "S"
+        ],
+        [
+          "13",
+          "0",
+          "3",
+          "Saundercock, Mr. William Henry",
+          "male",
+          "20.0",
+          "0",
+          "0",
+          "A/5. 2151",
+          "8.05",
+          "",
+          "S"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "data/public/train.csv"
+    },
+    "test.csv": {
+      "row_count": 179,
+      "column_count": 11,
+      "columns": [
+        "PassengerId",
+        "Pclass",
+        "Name",
+        "Sex",
+        "Age",
+        "SibSp",
+        "Parch",
+        "Ticket",
+        "Fare",
+        "Cabin",
+        "Embarked"
+      ],
+      "preview_rows": [
+        [
+          "5",
+          "3",
+          "Allen, Mr. William Henry",
+          "male",
+          "35.0",
+          "0",
+          "0",
+          "373450",
+          "8.05",
+          "",
+          "S"
+        ],
+        [
+          "10",
+          "2",
+          "Nasser, Mrs. Nicholas (Adele Achem)",
+          "female",
+          "14.0",
+          "1",
+          "0",
+          "237736",
+          "30.0708",
+          "",
+          "C"
+        ],
+        [
+          "12",
+          "1",
+          "Bonnell, Miss. Elizabeth",
+          "female",
+          "58.0",
+          "0",
+          "0",
+          "113783",
+          "26.55",
+          "C103",
+          "S"
+        ],
+        [
+          "17",
+          "3",
+          "Rice, Master. Eugene",
+          "male",
+          "2.0",
+          "4",
+          "1",
+          "382652",
+          "29.125",
+          "",
+          "Q"
+        ],
+        [
+          "18",
+          "2",
+          "Williams, Mr. Charles Eugene",
+          "male",
+          "",
+          "0",
+          "0",
+          "244373",
+          "13.0",
+          "",
+          "S"
+        ],
+        [
+          "24",
+          "1",
+          "Sloper, Mr. William Thompson",
+          "male",
+          "28.0",
+          "0",
+          "0",
+          "113788",
+          "35.5",
+          "A6",
+          "S"
+        ],
+        [
+          "28",
+          "1",
+          "Fortune, Mr. Charles Alexander",
+          "male",
+          "19.0",
+          "3",
+          "2",
+          "19950",
+          "263.0",
+          "C23 C25 C27",
+          "S"
+        ],
+        [
+          "30",
+          "3",
+          "Todoroff, Mr. Lalio",
+          "male",
+          "",
+          "0",
+          "0",
+          "349216",
+          "7.8958",
+          "",
+          "S"
+        ],
+        [
+          "39",
+          "3",
+          "Vander Planke, Miss. Augusta Maria",
+          "female",
+          "18.0",
+          "2",
+          "0",
+          "345764",
+          "18.0",
+          "",
+          "S"
+        ],
+        [
+          "40",
+          "3",
+          "Nicola-Yarred, Miss. Jamila",
+          "female",
+          "14.0",
+          "1",
+          "0",
+          "2651",
+          "11.2417",
+          "",
+          "C"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "838664834370b55f5c4593e8e6d25d54e0119193c7b64880d0ff8e3c3deeaa65",
+      "first_column_duplicate_count": 0,
+      "path": "data/public/test.csv"
+    },
+    "sample_submission.csv": {
+      "row_count": 179,
+      "column_count": 2,
+      "columns": [
+        "PassengerId",
+        "Survived"
+      ],
+      "preview_rows": [
+        [
+          "5",
+          "0"
+        ],
+        [
+          "10",
+          "1"
+        ],
+        [
+          "12",
+          "0"
+        ],
+        [
+          "17",
+          "0"
+        ],
+        [
+          "18",
+          "0"
+        ],
+        [
+          "24",
+          "1"
+        ],
+        [
+          "28",
+          "0"
+        ],
+        [
+          "30",
+          "0"
+        ],
+        [
+          "39",
+          "0"
+        ],
+        [
+          "40",
+          "1"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "838664834370b55f5c4593e8e6d25d54e0119193c7b64880d0ff8e3c3deeaa65",
+      "first_column_duplicate_count": 0,
+      "path": "data/public/sample_submission.csv"
+    },
+    "test_answer.csv": {
+      "row_count": 179,
+      "column_count": 2,
+      "columns": [
+        "PassengerId",
+        "Survived"
+      ],
+      "preview_rows": [
+        [
+          "5",
+          "0"
+        ],
+        [
+          "10",
+          "1"
+        ],
+        [
+          "12",
+          "1"
+        ],
+        [
+          "17",
+          "0"
+        ],
+        [
+          "18",
+          "1"
+        ],
+        [
+          "24",
+          "1"
+        ],
+        [
+          "28",
+          "0"
+        ],
+        [
+          "30",
+          "0"
+        ],
+        [
+          "39",
+          "0"
+        ],
+        [
+          "40",
+          "1"
+        ]
+      ],
+      "preview_row_count": 10,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "838664834370b55f5c4593e8e6d25d54e0119193c7b64880d0ff8e3c3deeaa65",
+      "first_column_duplicate_count": 0,
+      "path": "data/private/test_answer.csv"
+    }
+  },
+  "raw_csv_evidence": {
+    "gender_submission.csv": {
+      "row_count": 418,
+      "column_count": 2,
+      "columns": [
+        "PassengerId",
+        "Survived"
+      ],
+      "preview_rows": [
+        [
+          "892",
+          "0"
+        ],
+        [
+          "893",
+          "1"
+        ],
+        [
+          "894",
+          "0"
+        ]
+      ],
+      "preview_row_count": 3,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "raw/gender_submission.csv"
+    },
+    "test.csv": {
+      "row_count": 418,
+      "column_count": 11,
+      "columns": [
+        "PassengerId",
+        "Pclass",
+        "Name",
+        "Sex",
+        "Age",
+        "SibSp",
+        "Parch",
+        "Ticket",
+        "Fare",
+        "Cabin",
+        "Embarked"
+      ],
+      "preview_rows": [
+        [
+          "892",
+          "3",
+          "Kelly, Mr. James",
+          "male",
+          "34.5",
+          "0",
+          "0",
+          "330911",
+          "7.8292",
+          "",
+          "Q"
+        ],
+        [
+          "893",
+          "3",
+          "Wilkes, Mrs. James (Ellen Needs)",
+          "female",
+          "47",
+          "1",
+          "0",
+          "363272",
+          "7",
+          "",
+          "S"
+        ],
+        [
+          "894",
+          "2",
+          "Myles, Mr. Thomas Francis",
+          "male",
+          "62",
+          "0",
+          "0",
+          "240276",
+          "9.6875",
+          "",
+          "Q"
+        ]
+      ],
+      "preview_row_count": 3,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "raw/test.csv"
+    },
+    "train.csv": {
+      "row_count": 891,
+      "column_count": 12,
+      "columns": [
+        "PassengerId",
+        "Survived",
+        "Pclass",
+        "Name",
+        "Sex",
+        "Age",
+        "SibSp",
+        "Parch",
+        "Ticket",
+        "Fare",
+        "Cabin",
+        "Embarked"
+      ],
+      "preview_rows": [
+        [
+          "1",
+          "0",
+          "3",
+          "Braund, Mr. Owen Harris",
+          "male",
+          "22",
+          "1",
+          "0",
+          "A/5 21171",
+          "7.25",
+          "",
+          "S"
+        ],
+        [
+          "2",
+          "1",
+          "1",
+          "Cumings, Mrs. John Bradley (Florence Briggs Thayer)",
+          "female",
+          "38",
+          "1",
+          "0",
+          "PC 17599",
+          "71.2833",
+          "C85",
+          "C"
+        ],
+        [
+          "3",
+          "1",
+          "3",
+          "Heikkinen, Miss. Laina",
+          "female",
+          "26",
+          "0",
+          "0",
+          "STON/O2. 3101282",
+          "7.925",
+          "",
+          "S"
+        ]
+      ],
+      "preview_row_count": 3,
+      "preview_is_truncated": true,
+      "row_width_errors": 0,
+      "first_column": "PassengerId",
+      "first_column_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_column_duplicate_count": 0,
+      "path": "raw/train.csv"
+    }
+  },
+  "raw_usage_evidence": {
+    "status": "available",
+    "target_columns": [
+      "Survived"
+    ],
+    "raw_train_rows": 891,
+    "raw_train_target_columns": [
+      "Survived"
+    ],
+    "processed_train_rows": 712,
+    "processed_test_rows": 179,
+    "processed_train_plus_test_rows": 891,
+    "row_conservation": true,
+    "labeled_row_utilization_ratio": 1.0,
+    "raw_test_rows": 418,
+    "raw_test_target_columns": [],
+    "raw_test_role": "unlabeled_original_test_intentionally_excluded",
+    "accounting_note": "private test_answer mirrors processed test labels and must not be added again when measuring row utilization"
+  },
+  "errors": [],
+  "description": "Titanic - Machine Learning from Disaster\n\nThe competition is the classic Titanic ML challenge. Use machine learning to build a predictive model that answers the question: \"what sorts of people were more likely to survive the Titanic shipwreck?\" using passenger data such as name, age, gender, socio-economic class, etc.\n\nThe sinking of the RMS Titanic on April 15, 1912, resulted in the death of 1502 out of 2224 passengers and crew due to insufficient lifeboats. While luck played a role, certain groups of people were more likely to survive.\n\nEvaluation\n----------\nSubmissions are evaluated on accuracy — the percentage of passengers correctly predicted (binary classification: survived or not). For each PassengerId in the test set, predict a 0 or 1 value for the Survived variable.\n\nSubmission File Format\n----------------------\nSubmit a CSV file with exactly 179 entries plus a header row. The file should have exactly 2 columns:\n- PassengerId (sorted in any order)\n- Survived (contains your binary predictions: 1 for survived, 0 for deceased)\n\nExample:\nPassengerId,Survived\n1,0\n2,1\n3,0\n\nDataset Description\n-------------------\nThe data has been split into two groups: a training set (712 passengers) and a test set (179 passengers). The training set includes the ground truth Survived label and should be used to build models. The test set does not include the Survived label; participants must predict survival outcomes.\n\nData Dictionary:\n| Variable | Definition | Key |\n|----------|-----------|-----|\n| PassengerId | Unique passenger identifier | |\n| Survived | Survival | 0 = No, 1 = Yes |\n| Pclass | Ticket class (proxy for socio-economic status) | 1 = 1st (Upper), 2 = 2nd (Middle), 3 = 3rd (Lower) |\n| Name | Passenger name | |\n| Sex | Sex | |\n| Age | Age in years | Fractional if < 1; estimated ages in form xx.5 |\n| SibSp | # of siblings/spouses aboard | |\n| Parch | # of parents/children aboard | |\n| Ticket | Ticket number | |\n| Fare | Passenger fare | |\n| Cabin | Cabin number | |\n| Embarked | Port of Embarkation | C = Cherbourg, Q = Queenstown, S = Southampton |\n\nFiles\n-----\n- train.csv: Training set with survival labels (712 passengers). Contains all features plus the Survived column.\n- test.csv: Test set without survival labels (179 passengers). Contains all features except Survived.\n- sample_submission.csv: A sample submission file in the correct format with random predictions.\n",
+  "prepare_code": "import pandas as pd\nimport numpy as np\nfrom sklearn.model_selection import train_test_split\nfrom pathlib import Path\n\n\ndef prepare(raw: Path, public: Path, private: Path):\n    # Load the training data (only file with labels)\n    train_df = pd.read_csv(raw / \"train.csv\")\n    \n    # Verify expected structure\n    assert \"PassengerId\" in train_df.columns, \"Missing PassengerId column\"\n    assert \"Survived\" in train_df.columns, \"Missing Survived column\"\n    assert len(train_df) == 891, f\"Expected 891 rows, got {len(train_df)}\"\n    assert set(train_df[\"Survived\"].unique()).issubset({0, 1}), \"Survived should be binary\"\n    \n    # Stratified 80/20 split with deterministic seed\n    train_set, test_set = train_test_split(\n        train_df,\n        test_size=0.2,\n        random_state=42,\n        stratify=train_df[\"Survived\"]\n    )\n    \n    # Validate split\n    assert len(train_set) + len(test_set) == len(train_df), \"Split size mismatch\"\n    assert abs(len(test_set) / len(train_df) - 0.2) < 0.02, \"Split ratio off\"\n    \n    # Sort by PassengerId for consistency\n    train_set = train_set.sort_values(\"PassengerId\").reset_index(drop=True)\n    test_set = test_set.sort_values(\"PassengerId\").reset_index(drop=True)\n    \n    # Save train.csv (with labels) to public\n    train_set.to_csv(public / \"train.csv\", index=False)\n    \n    # Save test.csv (without Survived) to public\n    test_public = test_set.drop(columns=[\"Survived\"])\n    test_public.to_csv(public / \"test.csv\", index=False)\n    \n    # Save test_answer.csv (with labels) to private\n    test_answer = test_set[[\"PassengerId\", \"Survived\"]].copy()\n    test_answer.to_csv(private / \"test_answer.csv\", index=False)\n    \n    # Generate sample_submission.csv with random valid labels\n    rng = np.random.RandomState(42)\n    sample_submission = pd.DataFrame({\n        \"PassengerId\": test_set[\"PassengerId\"].values,\n        \"Survived\": rng.randint(0, 2, size=len(test_set))\n    })\n    sample_submission.to_csv(public / \"sample_submission.csv\", index=False)\n    \n    # Validation checks\n    test_answer_check = pd.read_csv(private / \"test_answer.csv\")\n    sample_sub_check = pd.read_csv(public / \"sample_submission.csv\")\n    test_csv_check = pd.read_csv(public / \"test.csv\")\n    train_csv_check = pd.read_csv(public / \"train.csv\")\n    \n    assert list(test_answer_check.columns) == [\"PassengerId\", \"Survived\"]\n    assert list(sample_sub_check.columns) == [\"PassengerId\", \"Survived\"]\n    assert len(test_answer_check) == len(sample_sub_check)\n    assert set(test_answer_check[\"PassengerId\"]) == set(sample_sub_check[\"PassengerId\"])\n    assert set(test_answer_check[\"PassengerId\"]) == set(test_csv_check[\"PassengerId\"])\n    assert \"Survived\" not in test_csv_check.columns, \"Label leakage in test.csv!\"\n    assert \"Survived\" in train_csv_check.columns, \"Train must have labels\"\n    assert len(set(train_csv_check[\"PassengerId\"]) & set(test_csv_check[\"PassengerId\"])) == 0, \"Train/test overlap\"\n    assert set(sample_sub_check[\"Survived\"].unique()).issubset({0, 1}), \"Invalid sample submission labels\"\n    \n    # Write description\n    n_train = len(train_set)\n    n_test = len(test_set)\n    \n    description = f\"\"\"Titanic - Machine Learning from Disaster\n\nThe competition is the classic Titanic ML challenge. Use machine learning to build a predictive model that answers the question: \"what sorts of people were more likely to survive the Titanic shipwreck?\" using passenger data such as name, age, gender, socio-economic class, etc.\n\nThe sinking of the RMS Titanic on April 15, 1912, resulted in the death of 1502 out of 2224 passengers and crew due to insufficient lifeboats. While luck played a role, certain groups of people were more likely to survive.\n\nEvaluation\n----------\nSubmissions are evaluated on accuracy — the percentage of passengers correctly predicted (binary classification: survived or not). For each PassengerId in the test set, predict a 0 or 1 value for the Survived variable.\n\nSubmission File Format\n----------------------\nSubmit a CSV file with exactly {n_test} entries plus a header row. The file should have exactly 2 columns:\n- PassengerId (sorted in any order)\n- Survived (contains your binary predictions: 1 for survived, 0 for deceased)\n\nExample:\nPassengerId,Survived\n1,0\n2,1\n3,0\n\nDataset Description\n-------------------\nThe data has been split into two groups: a training set ({n_train} passengers) and a test set ({n_test} passengers). The training set includes the ground truth Survived label and should be used to build models. The test set does not include the Survived label; participants must predict survival outcomes.\n\nData Dictionary:\n| Variable | Definition | Key |\n|----------|-----------|-----|\n| PassengerId | Unique passenger identifier | |\n| Survived | Survival | 0 = No, 1 = Yes |\n| Pclass | Ticket class (proxy for socio-economic status) | 1 = 1st (Upper), 2 = 2nd (Middle), 3 = 3rd (Lower) |\n| Name | Passenger name | |\n| Sex | Sex | |\n| Age | Age in years | Fractional if < 1; estimated ages in form xx.5 |\n| SibSp | # of siblings/spouses aboard | |\n| Parch | # of parents/children aboard | |\n| Ticket | Ticket number | |\n| Fare | Passenger fare | |\n| Cabin | Cabin number | |\n| Embarked | Port of Embarkation | C = Cherbourg, Q = Queenstown, S = Southampton |\n\nFiles\n-----\n- train.csv: Training set with survival labels ({n_train} passengers). Contains all features plus the Survived column.\n- test.csv: Test set without survival labels ({n_test} passengers). Contains all features except Survived.\n- sample_submission.csv: A sample submission file in the correct format with random predictions.\n\"\"\"\n    \n    with open(public / \"description.txt\", \"w\") as f:\n        f.write(description)",
+  "metric_code": "from typing import Any\nimport pandas as pd\nimport numpy as np\n\n\nclass TitanicMetrics:\n    \"\"\"Metric class for Titanic - Machine Learning from Disaster competition using Accuracy.\"\"\"\n\n    def __init__(self, value: str = \"Survived\", higher_is_better: bool = True):\n        self.higher_is_better = higher_is_better\n        self.value = value\n        self.id_column = \"PassengerId\"\n\n    def evaluate(self, y_true: pd.DataFrame = None, y_pred: pd.DataFrame = None) -> float:\n        \"\"\"Calculate accuracy between the predictions and the true labels.\"\"\"\n        # Merge on PassengerId to ensure correct alignment\n        merged = pd.merge(\n            y_true[[self.id_column, self.value]],\n            y_pred[[self.id_column, self.value]],\n            on=self.id_column,\n            suffixes=(\"_true\", \"_pred\"),\n        )\n\n        if len(merged) == 0:\n            raise Exception(\"No matching PassengerIds found between submission and ground truth.\")\n\n        true_vals = merged[f\"{self.value}_true\"].astype(int)\n        pred_vals = merged[f\"{self.value}_pred\"].astype(int)\n\n        accuracy = (true_vals == pred_vals).mean()\n        return float(accuracy)\n\n    def validate_submission(self, submission: Any, ground_truth: Any) -> str:\n        if not isinstance(submission, pd.DataFrame):\n            raise Exception(\"Submission must be a pandas DataFrame.\")\n        if not isinstance(ground_truth, pd.DataFrame):\n            raise Exception(\"Ground truth must be a pandas DataFrame.\")\n\n        # Check required columns\n        if self.id_column not in submission.columns:\n            raise Exception(f\"Submission must contain the '{self.id_column}' column.\")\n        if self.value not in submission.columns:\n            raise Exception(f\"Submission must contain the '{self.value}' column.\")\n        if self.id_column not in ground_truth.columns:\n            raise Exception(f\"Ground truth must contain the '{self.id_column}' column.\")\n        if self.value not in ground_truth.columns:\n            raise Exception(f\"Ground truth must contain the '{self.value}' column.\")\n\n        # Check number of rows\n        if len(submission) != len(ground_truth):\n            raise Exception(\n                f\"Number of rows in submission ({len(submission)}) does not match \"\n                f\"ground truth ({len(ground_truth)}).\"\n            )\n\n        # Check that all PassengerIds in ground truth are present in submission\n        gt_ids = set(ground_truth[self.id_column])\n        sub_ids = set(submission[self.id_column])\n        if gt_ids != sub_ids:\n            missing = gt_ids - sub_ids\n            extra = sub_ids - gt_ids\n            msg = \"PassengerId mismatch.\"\n            if missing:\n                msg += f\" Missing IDs: {sorted(missing)[:10]}...\"\n            if extra:\n                msg += f\" Extra IDs: {sorted(extra)[:10]}...\"\n            raise Exception(msg)\n\n        # Check that Survived values are binary (0 or 1)\n        unique_vals = submission[self.value].dropna().unique()\n        for v in unique_vals:\n            if int(v) not in (0, 1):\n                raise Exception(\n                    f\"Survived column must contain only 0 or 1 values. Found: {v}\"\n                )\n\n        # Check for NaN in Survived\n        if submission[self.value].isna().any():\n            raise Exception(\"Submission contains NaN values in the Survived column.\")\n\n        return \"Submission is valid.\"",
+  "metric_check": {
+    "status": "ok",
+    "task_dir": "examples/real-run-3-concurrency/task_package/titanic",
+    "metric_class": "TitanicMetrics",
+    "score": 0.5027932960893855,
+    "submission_rows": 179,
+    "answer_rows": 179
+  },
+  "missing_required": [],
+  "validation": {
+    "status": "passed",
+    "findings": []
+  },
+  "overview": {
+    "Name": "titanic",
+    "Modality": "Tabular,Text",
+    "Task": "Classification",
+    "Raw Size": "90.90 KB",
+    "Final Size": "64.71 KB",
+    "CPU/GPU": "CPU",
+    "Source": "OpenMLE",
+    "Metric": "@Evaluation result: {'score': 0.5027932960893855}",
+    "NOTE": "",
+    "Server Location": "examples/real-run-3-concurrency/task_package/titanic"
+  },
+  "quality_scores": {
+    "task_validity": 5,
+    "task_validity_reason": "Binary classification (Survived) from passenger features is a standard, meaningful supervised ML task. The processed test set drops the target column and the metric evaluates predictions against a private answer file, reducing label-leakage risk.",
+    "data_sufficiency": 3,
+    "data_sufficiency_reason": "There are 712 labeled training rows, which is modest but generally adequate for baseline models on tabular data; however, it may be limiting for more complex models or extensive validation without careful cross-validation.",
+    "raw_data_usage": 5,
+    "raw_data_usage_reason": "Raw labeled training data (891 rows) is fully utilized via a deterministic stratified 80/20 split into processed train (712) and processed test (179), with row conservation explicitly confirmed (processed_train_plus_test_rows=891; labeled_row_utilization_ratio=1.0). The unlabeled raw test.csv (418 rows) is intentionally excluded per contract.",
+    "task_complexity": 4,
+    "task_complexity_reason": "The task is non-trivial (requires handling missing values and mixed feature types) but clearly solvable with standard tabular ML methods; accuracy is an appropriate metric for this binary label.",
+    "data_quality": 5,
+    "data_quality_reason": "Processed files have consistent schemas (train has Survived; test does not), unique PassengerId with no duplicates reported, and the metric enforces exact row count and exact PassengerId set match. Smoke test passed with aligned submission/answer row counts (179).",
+    "overall_score": 4.4,
+    "major_issues": [],
+    "recommendation": "recommended"
+  },
+  "quality_evaluation": {
+    "status": "completed",
+    "source": "llm"
+  }
+}

@@ -1,0 +1,35 @@
+### Description
+
+The competition challenges participants to predict the final sale price of residential homes in Ames, Iowa, using 79 explanatory variables describing nearly every aspect of the homes. The dataset covers features ranging from lot size, building type, and construction quality to basement conditions, garage details, and porch areas. The competition is designed for data science students with some experience in R or Python and machine learning basics, encouraging practice in creative feature engineering and advanced regression techniques like random forest and gradient boosting.
+
+### Evaluation
+
+Submissions are evaluated on **Root-Mean-Squared-Error (RMSE)** between the **logarithm** of the predicted value and the **logarithm** of the observed sales price. Taking logs means that errors in predicting expensive houses and cheap houses will affect the result equally. For each Id in the test set, participants must predict the value of the SalePrice variable.
+
+### Submission File
+
+The file should contain a header and have the following format:
+
+```
+Id,SalePrice
+1461,169000.1
+1462,187724.1233
+1463,175221
+etc.
+```
+
+### Dataset Description
+
+The Ames Housing dataset was compiled by Dean De Cock for use in data science education. It contains 79 explanatory variables describing residential homes in Ames, Iowa. The target variable is **SalePrice** (the property's sale price in dollars). Features include: MSSubClass (building class), MSZoning (zoning classification), LotFrontage (linear feet of street connected to property), LotArea (lot size in sq ft), Street, Alley, LotShape, LandContour, Utilities, LotConfig, LandSlope, Neighborhood, Condition1/2 (proximity to roads/railroad), BldgType, HouseStyle, OverallQual, OverallCond, YearBuilt, YearRemodAdd, RoofStyle, RoofMatl, Exterior1st/2nd, MasVnrType, MasVnrArea, ExterQual, ExterCond, Foundation, BsmtQual, BsmtCond, BsmtExposure, BsmtFinType1/2, BsmtFinSF1/2, BsmtUnfSF, TotalBsmtSF, Heating, HeatingQC, CentralAir, Electrical, 1stFlrSF, 2ndFlrSF, LowQualFinSF, GrLivArea, BsmtFullBath, BsmtHalfBath, FullBath, HalfBath, Bedroom, Kitchen, KitchenQual, TotRmsAbvGrd, Functional, Fireplaces, FireplaceQu, GarageType, GarageYrBlt, GarageFinish, GarageCars, GarageArea, GarageQual, GarageCond, PavedDrive, WoodDeckSF, OpenPorchSF, EnclosedPorch, 3SsnPorch, ScreenPorch, PoolArea, PoolQC, Fence, MiscFeature, MiscVal, MoSold, YrSold, SaleType, and SaleCondition.
+
+### Files
+
+**Under raw/**:
+
+- raw/train.csv - the training set, Rows: 1460, Columns: 81 (80 features + SalePrice target). Key columns: Id (int64, null_count=0), MSSubClass (int64), MSZoning (str), LotFrontage (float64, null_count=259), LotArea (int64), Street (str), Alley (str, null_count=1369), LotShape (str), LandContour (str), Neighborhood (str), OverallQual (int64), YearBuilt (int64), MasVnrType (str, null_count=872), MasVnrArea (int64, null_count=8), BsmtQual (str, null_count=37), BsmtCond (str, null_count=37), SalePrice (target variable), and 49 additional feature columns described in data_description.txt.
+    - row sample: Id=1, MSSubClass=60, MSZoning=RL, LotFrontage=65, LotArea=8450, Street=Pave, Alley=NaN, LotShape=Reg, LandContour=Lvl, Neighborhood=CollgCr, BldgType=1Fam, HouseStyle=2Story, OverallQual=7, YearBuilt=2003
+- raw/test.csv - the test set (predict SalePrice for these), Rows: 1459, Columns: 80 (no SalePrice). Key columns: Id (int64, null_count=0), MSSubClass (int64), MSZoning (str, null_count=4), LotFrontage (float64, null_count=227), Alley (str, null_count=1352), MasVnrType (str, null_count=894), MasVnrArea (int64, null_count=15), BsmtQual (str, null_count=44), BsmtCond (str, null_count=45), Utilities (str, null_count=2), Exterior1st (str, null_count=1), Exterior2nd (str, null_count=1), and 48 additional feature columns.
+    - row sample: Id=1461, MSSubClass=20, MSZoning=RH, LotFrontage=80, LotArea=11622, Street=Pave, Alley=NaN, LotShape=Reg, LandContour=Lvl, Neighborhood=NAmes, BldgType=1Fam, HouseStyle=1Story, OverallQual=5, YearBuilt=1961
+- raw/data_description.txt - full description of each column including variable names, descriptions, and categorical value mappings for all features.
+- raw/sample_submission.csv - a benchmark submission from a linear regression on year and month of sale, lot square footage, and number of bedrooms, Rows: 1459, Columns: 2, Id (int64, null_count=0), SalePrice (float64, null_count=0)
+    - row sample: Id=1461, SalePrice=169277.0524984

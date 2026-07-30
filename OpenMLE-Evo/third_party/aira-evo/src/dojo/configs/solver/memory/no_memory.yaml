@@ -1,0 +1,2 @@
+_target_: dojo.config_dataclasses.operators.memory.MemoryOpConfig
+memory_processor: "no_memory"

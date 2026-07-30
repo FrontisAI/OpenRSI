@@ -1,0 +1,34 @@
+# Third-party notices
+
+The repository-level `LICENSE` applies only to original OpenMLE material unless an individual file states otherwise. It does not replace the licenses of upstream projects, model bases, datasets, benchmarks, containers, or Python packages.
+
+## Training runtimes
+
+The RL release is designed to run with [THUDM/slime](https://github.com/THUDM/slime) at commit `680824dd5e01a2e83750bf87fc366ec6fa98766c`. That RL dependency is not vendored and remains subject to its upstream Apache License 2.0.
+
+The SFT release vendors its compatible SLIME source under `OpenMLE-ERL/SFT/slime/`; the upstream Apache License 2.0 text is preserved in `OpenMLE-ERL/SFT/slime/LICENSE`.
+
+## Test-time search runtime
+
+The `OpenMLE-ERL/SFT/third_party/aira-evo/` and `OpenMLE-Evo/third_party/aira-evo/` directories vendor the AIRA-Dojo runtime used for trajectory collection and OpenMLE-Evo. Its majority license is CC BY-NC 4.0 and is preserved in each vendored tree. Components with separate terms are listed in the corresponding `THIRD_PARTY_LICENSES.md`.
+
+## OpenMLE-Gym inputs and examples
+
+The OpenMLE-Gym implementation was imported from [`wangweiz03/gym`](https://github.com/wangweiz03/gym) at commit `72091255c51a175b5d95188af411dc822ff1182e`; the exact source identity is recorded in `OpenMLE-Gym/docs/source-manifest.md`.
+
+The bundled metadata table, leaderboard snapshots, and three smoke task packages are derived from public Kaggle competition pages and datasets. Their inclusion here does not replace Kaggle's terms or the terms selected by each competition and dataset owner.
+
+## Model bases
+
+The release expects checkpoints compatible with:
+
+- `Qwen/Qwen3-30B-A3B-Thinking-2507`
+- `Qwen/Qwen3.6-35B-A3B`
+
+The model weights are not bundled in this code repository. Qwen materials remain subject to their upstream Apache License 2.0 notices. The separate Frontis-MA1 model repositories include an upstream Apache license copy and lineage-specific attribution.
+
+## Other dependencies and benchmarks
+
+Ray, SGLang, Megatron-LM, Transformers, PyTorch, MLE-Bench, NatureBench, CNSBench-derived task packages, Kaggle-derived artifacts, sandbox/container images, and packages listed in `OpenMLE-ERL/RL/requirements.txt` remain subject to their respective licenses and terms.
+
+NatureBench task packages, hidden evaluation data, the evaluation service, and container images are not redistributed in `OpenMLE-Evo/`; only the OpenMLE adapter, public configuration templates, task manifest, and visible-data guidance are included. Users are responsible for reviewing all applicable benchmark, dataset, and image terms before redistribution or deployment.
