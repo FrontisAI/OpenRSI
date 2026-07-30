@@ -24,7 +24,7 @@
 ## 📰 News
 
 - **[2026-07-31]** 🎉 First OpenRSI release: **Frontis-MA1** ([35B](https://huggingface.co/FrontisAI/Frontis-MA1-35B) / [30B](https://huggingface.co/FrontisAI/Frontis-MA1-30B), with [GGUF](https://huggingface.co/collections/FrontisAI/frontis-ma1) derivatives), the **OpenMLE** stack (Gym / RL / Evo), and the [OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) and [OpenMLE SFT Traces](https://huggingface.co/datasets/FrontisAI/OpenMLE-SFT-Traces) datasets.
-- **[2026-06-23]** 📄 **NatureBench** is out: [*NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?*](https://arxiv.org/abs/2606.24530) ([code](https://github.com/FrontisAI/NatureBench)) — the held-out transfer benchmark used to evaluate Frontis-MA1 and OpenMLE-Evo.
+- **[2026-06-23]** 📄 We released **NatureBench**: [*NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?*](https://arxiv.org/abs/2606.24530) ([code](https://github.com/FrontisAI/NatureBench)) — a benchmark testing whether coding agents can match the published SOTA of Nature-family papers, later used as the held-out transfer benchmark for Frontis-MA1.
 
 <a id="openrsi"></a>
 
@@ -53,12 +53,17 @@ The mechanism ladder moves from **Evolution** to **Self-Evolution**, **Meta-Evol
 Our first executable domain is **machine learning engineering (MLE)**. MLE provides a concrete setting in which an AI system can draft, improve, debug, and recombine programs; execute them; observe measurable feedback; and learn from the resulting trajectories.
 
 <!-- GitHub only plays videos uploaded via the web editor (user-attachments URL on its own line).
-     To update: drag the new mp4 into any GitHub comment/edit box and paste the generated URL here. -->
-
-https://github.com/user-attachments/assets/ef05b97a-c719-4a87-b8c7-a5964fe52873
+     To enable inline playback: edit this file on github.com, drag docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4
+     into the editor, and replace the poster link below with the generated user-attachments URL. -->
 
 <p align="center">
-  <sub>Video not playing? <a href="docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4">Download the Frontis-MA1 release video</a> or watch it on the <a href="https://frontisai.github.io/OpenRSI/">project page</a>.</sub>
+  <a href="docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4">
+    <img src="docs/assets/images/frontis-ma1-openmle-release-teaser-poster.jpg" width="96%" alt="Frontis-MA1 + OpenMLE release teaser — click to watch">
+  </a>
+</p>
+
+<p align="center">
+  <sub>▶️ Click the poster to watch the release video, or view it on the <a href="https://frontisai.github.io/OpenRSI/">project page</a>.</sub>
 </p>
 
 The first release introduces:
