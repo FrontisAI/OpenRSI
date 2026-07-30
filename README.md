@@ -53,17 +53,12 @@ The mechanism ladder moves from **Evolution** to **Self-Evolution**, **Meta-Evol
 Our first executable domain is **machine learning engineering (MLE)**. MLE provides a concrete setting in which an AI system can draft, improve, debug, and recombine programs; execute them; observe measurable feedback; and learn from the resulting trajectories.
 
 <!-- GitHub only plays videos uploaded via the web editor (user-attachments URL on its own line).
-     To enable inline playback: edit this file on github.com, drag docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4
-     into the editor, and replace the poster link below with the generated user-attachments URL. -->
+     To update: drag the new mp4 into any GitHub comment/edit box and paste the generated URL here. -->
+
+https://github.com/user-attachments/assets/176247a4-c28e-4e30-b65e-45873a7ae946
 
 <p align="center">
-  <a href="docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4">
-    <img src="docs/assets/images/frontis-ma1-openmle-release-teaser-poster.jpg" width="96%" alt="Frontis-MA1 + OpenMLE release teaser — click to watch">
-  </a>
-</p>
-
-<p align="center">
-  <sub>▶️ Click the poster to watch the release video, or view it on the <a href="https://frontisai.github.io/OpenRSI/">project page</a>.</sub>
+  <sub>Video not playing? <a href="docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4">Download the full-quality release video</a> or watch it on the <a href="https://frontisai.github.io/OpenRSI/">project page</a>.</sub>
 </p>
 
 The first release introduces:
