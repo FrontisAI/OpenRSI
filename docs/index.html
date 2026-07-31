@@ -748,7 +748,7 @@ footer{background:var(--black);color:var(--white);margin-top:40px;}
       </div>
       <div class="tl hot">
         <p class="t-big">39.39 → 71.21</p>
-        <p>Base → post-trained → Evo-Max, MLE-Bench Lite @ 6 GPU-h / task. <b>Beats GPT-5.5 + Codex (68.18)</b>, approaching GPT-5.6 Sol and the 2.8T Kimi K3.</p>
+        <p>Base → post-trained → Evo-Max, MLE-Bench Lite @ 12 h / task on one RTX 4090 capped at 12 GB VRAM. <b>Beats GPT-5.5 + Codex (68.18)</b>, approaching GPT-5.6 Sol and the 2.8T Kimi K3.</p>
       </div>
       <div class="tl">
         <p class="t-big">100% open</p>
@@ -783,8 +783,8 @@ footer{background:var(--black);color:var(--white);margin-top:40px;}
     <div class="stats rv-st rv">
       <div class="stat peak"><div class="v"><span class="cnt" data-to="71.21" data-dec="2">0</span><i>%</i></div><div class="k">Medal Average — above GPT-5.5 + Codex (68.18%)</div></div>
       <div class="stat"><div class="v">+<span class="cnt" data-to="21.22" data-dec="2">0</span><i>pp</i></div><div class="k">Post-training gain over base, identical harness</div></div>
-      <div class="stat"><div class="v"><span class="cnt" data-to="5835" data-dec="0">0</span></div><div class="k">Quality-gated executable tasks in OpenMLE-Gym</div></div>
-      <div class="stat"><div class="v"><span class="cnt" data-to="26574" data-dec="0">0</span></div><div class="k">Execution-verified SFT samples</div></div>
+      <div class="stat"><div class="v"><span class="cnt" data-to="5758" data-dec="0">0</span></div><div class="k">Quality-gated executable tasks in OpenMLE-Gym</div></div>
+      <div class="stat"><div class="v"><span class="cnt" data-to="26259" data-dec="0">0</span></div><div class="k">Execution-verified SFT samples</div></div>
       <div class="stat"><div class="v"><span class="cnt" data-to="4" data-dec="0">0</span></div><div class="k">Trainable atomic operators = the action space</div></div>
       <div class="stat"><div class="v"><span class="cnt" data-to="35" data-dec="0">0</span><i>B</i></div><div class="k">Parameters — Pareto frontier vs trillion-scale systems</div></div>
     </div>
@@ -925,20 +925,20 @@ footer{background:var(--black);color:var(--white);margin-top:40px;}
             </g>
             <g class="fstage">
               <rect class="fb" x="4" y="36" width="83" height="16" rx="3" fill="#3D4145" opacity=".45"/>
-              <text class="fl" x="95" y="48" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">4,024 · eligible · 37%</text>
+              <text class="fl" x="95" y="48" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">3,972 · eligible · 36%</text>
             </g>
             <g class="fstage">
               <rect class="fb" x="4" y="66" width="60" height="16" rx="3" fill="#3D4145" opacity=".65"/>
-              <text class="fl" x="72" y="78" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">2,891 · executable · 26%</text>
+              <text class="fl" x="72" y="78" font-family="IBM Plex Mono" font-size="9.5" fill="#7A828C">2,839 · executable · 26%</text>
             </g>
             <g class="fstage">
               <rect class="fb" x="4" y="96" width="47" height="16" rx="3" fill="#00C1D4"/>
-              <text class="fl" x="59" y="108" font-family="IBM Plex Mono" font-size="9.5" fill="#000000">2,292 · quality-gated · 21% ✓</text>
+              <text class="fl" x="59" y="108" font-family="IBM Plex Mono" font-size="9.5" fill="#000000">2,240 · quality-gated · 20% ✓</text>
             </g>
           </svg>
         </div>
         <ul>
-          <li><b>5,835</b> executable tasks · 3 sources · MLE-Bench excluded</li>
+          <li><b>5,758</b> executable tasks · 3 sources · MLE-Bench excluded</li>
           <li><b>6</b> structured sandbox feedback modes</li>
         </ul>
       </div>
@@ -965,7 +965,7 @@ footer{background:var(--black);color:var(--white);margin-top:40px;}
           </svg>
         </div>
         <ul>
-          <li><b>26,574</b> execution-verified SFT samples</li>
+          <li><b>26,259</b> execution-verified SFT samples</li>
           <li>Async rollouts · no straggler stalls</li>
         </ul>
       </div>
@@ -1120,7 +1120,7 @@ footer{background:var(--black);color:var(--white);margin-top:40px;}
 <!-- ================= RESULTS ================= -->
 <section id="results">
   <div class="wrap">
-    <p class="eyebrow rv">05 · MLE-Bench Lite · 6 GPU-h / task · avg of 3 runs</p>
+    <p class="eyebrow rv">05 · MLE-Bench Lite · 12 h / task · 1× RTX 4090 · 12 GB VRAM cap · avg of 3 runs</p>
     <h2 class="rv">A 35B open model at the table<br>of <span class="cy">frontier systems</span></h2>
     <div class="chart rv" id="resChart">
       <div class="rbar"><div class="lbl">Qwen3.6-35B-A3B <small>base · OpenMLE-Evo</small></div><div class="track"><div class="fill" data-w="39.39"></div></div><div class="val">39.39</div></div>

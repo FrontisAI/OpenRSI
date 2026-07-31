@@ -19,7 +19,9 @@ This repository contains the OpenMLE-Gym task-construction/evaluation tools, the
 
 ## OpenMLE Tasks
 
-`OpenMLE-Tasks` is the task-environment companion release to OpenMLE. Its current selection contains 1,404 inventory records representing 1,358 distinct `task_id` values across two release categories:
+`OpenMLE-Tasks` is the task-environment companion release to OpenMLE. The technical report accounts for all 5,758 OpenMLE-Gym environments: full task-package data is released for 1,415 tasks, while `prepare.py` and `metric.py` reconstruction scripts are released for the remaining 4,343 tasks because source-data licensing and copyright constraints prevent redistribution.
+
+The release uses two artifact categories:
 
 - Category 2: rebuild recipes and processing scripts, without redistributing upstream task data.
 - Category 3: complete built task packages when upstream terms permit redistribution.

@@ -4,7 +4,7 @@ This document collects the detailed result tables and evaluation boundaries for 
 
 ## Evaluation protocol
 
-Unless otherwise stated, OpenMLE-Evo configurations use the official 22-task MLE-Bench Lite split, three independent runs, and a per-task sandbox-compute budget of 12 hours on 0.5 NVIDIA RTX 4090 equivalent, or 6 RTX 4090 GPU-hours.
+Unless otherwise stated, OpenMLE-Evo configurations use the official 22-task MLE-Bench Lite split, three independent runs, and a per-task sandbox-compute budget of 12 hours on one NVIDIA RTX 4090 capped at 12 GB VRAM.
 
 - **Valid Rate** is the mean number of the 22 tasks with a valid submission.
 - **Medal Average** is the mean fraction of tasks receiving a Kaggle medal.
