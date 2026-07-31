@@ -1,6 +1,6 @@
 # OpenMLE-ERL: Reinforcement Learning — Usage Guide
 
-OpenMLE-ERL is the execution-grounded reinforcement-learning implementation used in *Frontis-MA1: Towards Recursive Self-Improvement in Machine Learning Engineering*. This directory contains the OpenMLE-specific training logic, four launch profiles, and editable configuration templates.
+OpenMLE-ERL is the execution-grounded reinforcement-learning implementation used in *Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering*. This directory contains the OpenMLE-specific training logic, four launch profiles, and editable configuration templates.
 
 It does **not** contain training data, model weights, historical checkpoints, leaderboard assets, sandbox infrastructure, or credentials.
 

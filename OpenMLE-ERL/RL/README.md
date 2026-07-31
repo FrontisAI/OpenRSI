@@ -1,6 +1,6 @@
 # OpenMLE-ERL: Reinforcement Learning
 
-This module contains the execution-grounded reinforcement-learning implementation used in *Frontis-MA1: Towards Recursive Self-Improvement in Machine Learning Engineering*.
+This module contains the execution-grounded reinforcement-learning implementation used in *Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering*.
 
 ## Scope
 

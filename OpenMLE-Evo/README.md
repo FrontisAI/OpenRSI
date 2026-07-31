@@ -1,6 +1,6 @@
 # OpenMLE-Evo
 
-OpenMLE-Evo is the test-time search and evaluation system used in *Frontis-MA1: Towards Recursive Self-Improvement in Machine Learning Engineering*.
+OpenMLE-Evo is the test-time search and evaluation system used in *Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering*.
 
 MLE-Bench and NatureBench Lite-v2 are parallel benchmark adapters over one shared AIRA-Evo runtime. Standard and asynchronous multi-GPU search use the same journal, checkpoint, memory, parent-selection, and output implementation.
 
