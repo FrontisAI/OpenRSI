@@ -1,0 +1,15 @@
+<svg width="170" height="170" viewBox="0 0 170 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .frontis-outline { stroke: #000000; }
+    .frontis-fill { fill: #000000; }
+    @media (prefers-color-scheme: dark) {
+      .frontis-outline { stroke: #FFFFFF; }
+      .frontis-fill { fill: #FFFFFF; }
+    }
+  </style>
+  <g transform="translate(0 16.5)">
+    <circle class="frontis-outline" cx="84.7158" cy="68.3432" r="66.2076" transform="rotate(180 84.7158 68.3432)" stroke-width="4.27146"/>
+    <path class="frontis-fill" d="M149.586 78.8862C149.586 86.3853 147.931 92.0263 144.714 98.9545C141.498 105.883 136.784 112.178 130.84 117.48C124.897 122.783 117.842 126.989 110.077 129.859C102.312 132.729 93.989 134.206 85.5841 134.206C77.1792 134.206 68.8566 132.729 61.0916 129.859C53.3265 126.989 46.2709 122.783 40.3278 117.48C34.3847 112.178 29.6703 105.883 26.4539 98.9545C23.2375 92.0263 21.582 86.3853 21.582 78.8862L85.5841 78.8862L149.586 78.8862Z"/>
+    <line x1="5.60134e-07" y1="83.3941" x2="169.68" y2="83.3941" stroke="#00C1D4" stroke-width="12.8144"/>
+  </g>
+</svg>
