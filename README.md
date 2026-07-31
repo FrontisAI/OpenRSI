@@ -7,13 +7,14 @@
 **Making “AI improving AI” executable, measurable, and reproducible.**
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](LICENSE)
-[![arXiv](https://img.shields.io/badge/arXiv-2607.28568-b31b1b.svg)](https://arxiv.org/abs/2607.28568)
+[![arXiv](https://img.shields.io/badge/arXiv-2607.28568-b31b1b.svg)](https://arxiv.org/pdf/2607.28568)
+[![Hugging Face Paper](https://img.shields.io/badge/%F0%9F%A4%97%20Paper-2607.28568-yellow)](https://huggingface.co/papers/2607.28568)
 [![Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Collection-Frontis--MA1-yellow)](https://huggingface.co/collections/FrontisAI/frontis-ma1)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-Frontis--MA1--35B-yellow)](https://huggingface.co/FrontisAI/Frontis-MA1-35B)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-OpenMLE--Tasks-yellow)](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
 [![Project Page](https://img.shields.io/badge/%F0%9F%8C%90%20Project-Page-blue)](https://frontisai.github.io/OpenRSI/)
 
-[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [📄 Paper](https://arxiv.org/abs/2607.28568) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) · [🎬 Frontis-MA1 Video](docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4)
+[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [📄 arXiv Paper](https://arxiv.org/pdf/2607.28568) · [🤗 HF Paper](https://huggingface.co/papers/2607.28568) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) · [🎬 Frontis-MA1 Video](docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4)
 
 [📖 OpenRSI](#openrsi) · [🚀 Frontis-MA1](#frontis-ma1) · [🧩 OpenMLE](#openmle) · [📊 Results](#results) · [✨ Getting Started](#getting-started) · [🤝 Contribute](#contribute)
 
@@ -70,9 +71,9 @@ The first release introduces:
 
 ### Paper
 
-**[Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering](https://arxiv.org/abs/2607.28568)**
+**[Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering](https://arxiv.org/pdf/2607.28568)**
 
-[📄 arXiv](https://arxiv.org/abs/2607.28568) · [🤗 Hugging Face Papers](https://huggingface.co/papers/2607.28568)
+[📄 arXiv](https://arxiv.org/pdf/2607.28568) · [🤗 Hugging Face Papers](https://huggingface.co/papers/2607.28568)
 
 <details>
 <summary><strong>Abstract</strong></summary>
@@ -218,17 +219,17 @@ OpenRSI is intended to be built in the open. We welcome contributions that make 
 
 ## 🎈 Citation
 
-**Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering**
+**Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering**
 
 ```bibtex
-@misc{openrsi2026frontisma1,
-  title  = {Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering},
-  author = {{OpenRSI Team}},
-  year   = {2026},
-  eprint = {2607.28568},
-  archivePrefix = {arXiv},
-  url    = {https://arxiv.org/abs/2607.28568},
-  note   = {Preprint}
+@misc{yang2026frontisma1trainingai4aimodel,
+  title={Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering},
+  author={Junlin Yang and Che Jiang and Yu Fu and Tianwei Luo and Can Ren and Weizhi Wang and Kaikai Zhao and Hongyi Liu and Yuxin Zuo and Yuru Wang and Yuchen Fan and Kai Tian and Zhenzhao Yuan and Xiaojian Lin and Li Sheng and Rushi Qiang and Guoli Jia and Xingtai Lv and Ermo Hua and Dianqiao Lei and Youbang Sun and Ning Ding and Bowen Zhou and Kaiyan Zhang},
+  year={2026},
+  eprint={2607.28568},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2607.28568},
 }
 ```
 
