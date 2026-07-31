@@ -1,6 +1,6 @@
 # Training Data and Method
 
-This document summarizes the training-scale facts reported for *Frontis-MA1: Towards Recursive Self-Improvement in Machine Learning Engineering*. Operational instructions live in the component guides for [SFT](../OpenMLE-ERL/SFT/README.md) and [RL](../OpenMLE-ERL/RL/README.md).
+This document summarizes the training-scale facts reported for *Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering*. Operational instructions live in the component guides for [SFT](../OpenMLE-ERL/SFT/README.md) and [RL](../OpenMLE-ERL/RL/README.md).
 
 ## OpenMLE-Gym
 

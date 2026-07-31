@@ -1,6 +1,6 @@
 # Paper Results
 
-This document collects the detailed result tables and evaluation boundaries for *Frontis-MA1: Towards Recursive Self-Improvement in Machine Learning Engineering*. The repository [README](../README.md) keeps only the visual summary.
+This document collects the detailed result tables and evaluation boundaries for *Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering*. The repository [README](../README.md) keeps only the visual summary.
 
 ## Evaluation protocol
 
