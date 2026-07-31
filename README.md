@@ -7,12 +7,13 @@
 **Making “AI improving AI” executable, measurable, and reproducible.**
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](LICENSE)
+[![arXiv](https://img.shields.io/badge/arXiv-2607.28568-b31b1b.svg)](https://arxiv.org/abs/2607.28568)
 [![Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Collection-Frontis--MA1-yellow)](https://huggingface.co/collections/FrontisAI/frontis-ma1)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-Frontis--MA1--35B-yellow)](https://huggingface.co/FrontisAI/Frontis-MA1-35B)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-OpenMLE--Tasks-yellow)](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
 [![Project Page](https://img.shields.io/badge/%F0%9F%8C%90%20Project-Page-blue)](https://frontisai.github.io/OpenRSI/)
 
-[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) · [🎬 Frontis-MA1 Video](docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4)
+[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [📄 Paper](https://arxiv.org/abs/2607.28568) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) · [🎬 Frontis-MA1 Video](docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4)
 
 [📖 OpenRSI](#openrsi) · [🚀 Frontis-MA1](#frontis-ma1) · [🧩 OpenMLE](#openmle) · [📊 Results](#results) · [✨ Getting Started](#getting-started) · [🤝 Contribute](#contribute)
 
@@ -69,7 +70,9 @@ The first release introduces:
 
 ### Paper
 
-**Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering**
+**[Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering](https://arxiv.org/abs/2607.28568)**
+
+[📄 arXiv](https://arxiv.org/abs/2607.28568) · [🤗 Hugging Face Papers](https://huggingface.co/papers/2607.28568)
 
 <details>
 <summary><strong>Abstract</strong></summary>
@@ -222,12 +225,12 @@ OpenRSI is intended to be built in the open. We welcome contributions that make 
   title  = {Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in ML Engineering},
   author = {{OpenRSI Team}},
   year   = {2026},
-  url    = {https://github.com/FrontisAI/OpenRSI},
+  eprint = {2607.28568},
+  archivePrefix = {arXiv},
+  url    = {https://arxiv.org/abs/2607.28568},
   note   = {Preprint}
 }
 ```
-
-The canonical preprint URL will replace the repository URL when the public record is available.
 
 ## ⚖️ License
 
