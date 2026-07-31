@@ -1,20 +1,20 @@
-# OpenMLE-Evo：MLE-Bench 运行说明
+# OpenMLE-Evo: MLE-Bench Run Guide
 
-NatureBench Lite-v2 使用同一运行时但有独立的数据、eval service 和 Docker/SCM 配置；请见 [`../benchmarks/naturebench_lite_v2/RUNNING.md`](../benchmarks/naturebench_lite_v2/RUNNING.md)。
+NatureBench Lite-v2 uses the same runtime but has its own data, eval service, and Docker/SCM configuration; see [`../benchmarks/naturebench_lite_v2/RUNNING.md`](../benchmarks/naturebench_lite_v2/RUNNING.md).
 
-## 1. 运行边界
+## 1. Scope of This Runtime
 
-本目录提供 OpenMLE-Evo 的搜索与评测编排代码，不负责启动或分发模型、 准备 MLE-Bench 数据，也不包含 sandbox 镜像。运行前必须已有：
+This directory provides the search and evaluation orchestration code for OpenMLE-Evo. It does not launch or serve models, prepare MLE-Bench data, or ship sandbox images. Before running, you must already have:
 
-1. Python 3.11 或 3.12；
-2. OpenAI-compatible 模型服务；
-3. 与 `/api/v1/jobs` 协议兼容的 GPU/CPU sandbox；
-4. evaluation parquet、prepared task 数据和 leaderboard 元数据；
-5. 对应 sandbox API key。
+1. Python 3.11 or 3.12;
+2. an OpenAI-compatible model service;
+3. a GPU/CPU sandbox compatible with the `/api/v1/jobs` protocol;
+4. the evaluation parquet, prepared task data, and leaderboard metadata;
+5. the corresponding sandbox API keys.
 
-标准版与多 GPU 版共用同一套代码。标准版运行同步 generation loop；多 GPU 版在单个任务进程中运行多个 async steady-state worker，并由 sandbox router 分配实际 GPU worker。
+The standard and multi-GPU profiles share the same code. The standard profile runs a synchronous generation loop; the multi-GPU profile runs multiple async steady-state workers in a single task process, with a sandbox router assigning the actual GPU workers.
 
-## 2. 安装
+## 2. Installation
 
 ```bash
 cd /path/to/repository/OpenMLE-Evo
@@ -24,55 +24,56 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` 会以 editable 模式安装当前 `tts_search` 和 vendored `third_party/aira-evo`。启动脚本还会把当前目录置于 `PYTHONPATH` 首位， 避免复用旧虚拟环境时误加载其他工作树中的同名包。
+`requirements.txt` installs the current `tts_search` and the vendored `third_party/aira-evo` in editable mode. The launch scripts also prepend the current directory to `PYTHONPATH`, so a reused virtualenv cannot accidentally load same-named packages from another worktree.
 
-## 3. 配置环境
+## 3. Environment Configuration
 
 ```bash
 cp .env.example .env
 ```
 
-必须修改以下字段：
+The following fields must be edited:
 
-| 变量 | 用途 |
+| Variable | Purpose |
 | --- | --- |
-| `OPENMLE_EVAL_DATA` | evaluation parquet 的绝对路径 |
-| `OPENMLE_LEADERBOARD_DIR` | leaderboard 元数据目录 |
-| `OPENMLE_SUBMIT_DATA_DIR_ROOT` | 最终提交评测使用的 prepared task 根目录 |
-| `SGLANG_BASE_URL` | OpenAI-compatible 模型 API，必须以 `/v1` 结尾 |
-| `OPENMLE_MODEL_ID` | `/v1/models` 返回或服务接受的模型名 |
-| `PRIMARY_KEY` | 模型 API key；无鉴权本地服务可设为 `EMPTY` |
-| `SANDBOX_URL` | 标准模式的直接 sandbox endpoint |
-| `SANDBOX_ROUTER_URL` | 多 GPU 模式的 sandbox router |
+| `OPENMLE_EVAL_DATA` | Absolute path to the evaluation parquet |
+| `OPENMLE_LEADERBOARD_DIR` | Leaderboard metadata directory |
+| `OPENMLE_SUBMIT_DATA_DIR_ROOT` | Root of the prepared task data used for final submission scoring |
+| `SGLANG_BASE_URL` | OpenAI-compatible model API; must end with `/v1` |
+| `OPENMLE_MODEL_ID` | Model name returned by `/v1/models` or accepted by the service |
+| `PRIMARY_KEY` | Model API key; set to `EMPTY` for unauthenticated local services |
+| `SANDBOX_URL` | Direct sandbox endpoint for standard mode |
+| `SANDBOX_ROUTER_URL` | Sandbox router for multi-GPU mode |
 | `SANDBOX_CPU_API_KEY` | CPU sandbox key |
 | `SANDBOX_GPU_API_KEY` | GPU sandbox/router key |
 
-默认配置针对 `Qwen/Qwen3-30B-A3B-Thinking-2507`，并携带 Qwen thinking 所需的 `extra_body`。更换不兼容的模型时，应新增或修改 `tts_search/configs/litellm/` 下的配置。
+The default configuration targets `Qwen/Qwen3-30B-A3B-Thinking-2507` and carries the `extra_body` required for Qwen thinking. When switching to an incompatible model, add or modify the configs under `tts_search/configs/litellm/`.
 
-安全默认值：
+Secure defaults:
 
-- `sandbox.verify_tls=true`，HTTPS sandbox 会校验证书；
-- `sandbox.trust_model_validation_score=false`，self-valid stdout 分数仅记录在
-  `raw_scores`，搜索选择使用 sandbox 返回的 validation/score；
-- 只有在复现实验明确需要旧 self-valid 语义时，才显式设置
-  `sandbox.trust_model_validation_score=true`；
-- 解析后的 runner 配置会将 API key/token/password/secret 字段写成 `null`，
-  实际模型 key 仅通过子进程环境传递。
+- `sandbox.verify_tls=true`; HTTPS sandboxes verify certificates;
+- `sandbox.trust_model_validation_score=false`; self-valid stdout scores are only
+  recorded in `raw_scores`, and search selection uses the validation/score
+  returned by the sandbox;
+- set `sandbox.trust_model_validation_score=true` explicitly only when a
+  reproduction experiment specifically requires the legacy self-valid semantics;
+- the resolved runner config writes API key/token/password/secret fields as
+  `null`; the actual model key is passed only through the subprocess environment.
 
-evaluation parquet 至少需要：
+The evaluation parquet requires at least:
 
-- `prompt` 列：system/user 消息序列；
-- `metadata` 列：包含 `task_name`、`uuid`、`task`、`cpu_gpu`、 `data_dir`、`higher_is_better` 及评分范围字段。
+- a `prompt` column: the system/user message sequence;
+- a `metadata` column: containing `task_name`, `uuid`, `task`, `cpu_gpu`, `data_dir`, `higher_is_better`, and the score-range fields.
 
-## 4. 服务健康检查
+## 4. Service Health Checks
 
-模型：
+Model:
 
 ```bash
 curl -fsS "${SGLANG_BASE_URL}/models"
 ```
 
-Sandbox router：
+Sandbox router:
 
 ```bash
 curl -fsS "${SANDBOX_ROUTER_URL}/health"
@@ -81,33 +82,33 @@ curl -fsS \
   "${SANDBOX_ROUTER_URL}/api/v1/workers/status"
 ```
 
-## 5. 标准模式
+## 5. Standard Mode
 
 ```bash
 ./scripts/run_standard.sh
 ```
 
-只运行指定任务：
+Run only specific tasks:
 
 ```bash
 ./scripts/run_standard.sh \
   'search.runner.task_list=[spooky-author-identification]'
 ```
 
-标准模式固定：
+Standard mode pins:
 
 ```yaml
 execution_mode: generation
 async_workers: 1
 ```
 
-## 6. 多 GPU 模式
+## 6. Multi-GPU Mode
 
 ```bash
 AIRAEVO_WORKERS=8 ./scripts/run_multi_gpu.sh
 ```
 
-该模式显式设置：
+This mode explicitly sets:
 
 ```yaml
 execution_mode: async_steady_state
@@ -116,16 +117,13 @@ async_sandbox_urls:
   - ${SANDBOX_ROUTER_URL}
 ```
 
-多个 worker 并发生成和提交 sandbox 作业，但 Journal、SolutionsDatabase、 strategy board 和 checkpoint 仍由单写者提交路径更新。乱序完成时，每个 step 使用节点自身的 `attempt_id`、`worker_id`、`gpu_index` 和 `sandbox_url`，不会用提交时的全局状态猜测。
+Multiple workers generate and submit sandbox jobs concurrently, but the Journal, SolutionsDatabase, strategy board, and checkpoints are still updated through a single-writer commit path. When completions arrive out of order, each step uses the node's own `attempt_id`, `worker_id`, `gpu_index`, and `sandbox_url` rather than guessing from the global state at commit time.
 
-单个 async attempt 遇到瞬时异常时会使用指数退避重试，不会立即分配新的
-attempt id。可通过 `async_worker_max_retries` 和
-`async_worker_retry_backoff_secs` 调整。GPU/资源池等待时间不计入有效搜索预算，
-`max_wall_time_secs` 仍作为总墙钟时间的硬上限。
+When a single async attempt hits a transient exception, it retries with exponential backoff instead of immediately allocating a new attempt id. This is tunable via `async_worker_max_retries` and `async_worker_retry_backoff_secs`. Time spent waiting on GPU/resource pools does not count against the effective search budget; `max_wall_time_secs` remains the hard cap on total wall-clock time.
 
-## 7. 最小 smoke test
+## 7. Minimal Smoke Test
 
-标准版：
+Standard profile:
 
 ```bash
 OPENMLE_CONFIG_NAME=experiment/openmle_evo_smoke \
@@ -133,7 +131,7 @@ OPENMLE_CONFIG_NAME=experiment/openmle_evo_smoke \
   'search.runner.task_list=[spooky-author-identification]'
 ```
 
-两 worker 多 GPU：
+Two-worker multi-GPU:
 
 ```bash
 OPENMLE_CONFIG_NAME=experiment/openmle_evo_smoke \
@@ -142,24 +140,24 @@ AIRAEVO_WORKERS=2 \
   'search.runner.task_list=[spooky-author-identification]'
 ```
 
-成功条件：
+Success criteria:
 
-1. `runner_manifest.json` 中 profile、requested/resolved worker 数正确；
-2. `stat.json` 的 `status_count.success` 大于 0；
-3. 每个成功 step 均有 `status_code: 200` 和非空 token 统计；
-4. 多 GPU step 包含不同 `worker_id`，router 作业进入 `completed`；
-5. `submit_score` 非空且 `submission.csv` 通过 scorer；
-6. 进程退出码为 0。
+1. `runner_manifest.json` shows the correct profile and requested/resolved worker counts;
+2. `status_count.success` in `stat.json` is greater than 0;
+3. every successful step has `status_code: 200` and non-empty token statistics;
+4. multi-GPU steps include distinct `worker_id` values and router jobs reach `completed`;
+5. `submit_score` is non-empty and `submission.csv` passes the scorer;
+6. the process exits with code 0.
 
-## 8. 正式评测与常用覆盖
+## 8. Full Evaluation and Common Overrides
 
-默认正式配置：
+Default full-evaluation config:
 
 ```text
 experiment/openmle_evo
 ```
 
-关键默认口径：
+Key default settings:
 
 - `max_steps=800`
 - `time_budget=43200`
@@ -167,9 +165,9 @@ experiment/openmle_evo
 - `n_samples_per_task=3`
 - `evaluation_protocol=self_valid`
 - `execution_timeout=7200`
-- experience memory、score/delta/novelty parent selection 与 sibling ranking 默认开启
+- experience memory, score/delta/novelty parent selection, and sibling ranking are enabled by default
 
-Hydra 覆盖示例：
+Hydra override example:
 
 ```bash
 ./scripts/run_multi_gpu.sh \
@@ -183,9 +181,9 @@ Hydra 覆盖示例：
   'search.runner.task_list=[task-a,task-b]'
 ```
 
-## 9. 续跑
+## 9. Resuming
 
-使用相同 `output_dir` 并打开严格续跑：
+Use the same `output_dir` and enable strict resume:
 
 ```bash
 ./scripts/run_multi_gpu.sh \
@@ -193,9 +191,9 @@ Hydra 覆盖示例：
   search.runner.strict_resume=true
 ```
 
-Async steady-state 使用 at-most-once attempt 语义。checkpoint 记录已分配的 attempt ID；进程崩溃时，尚未提交的 in-flight attempt 可能留下 ID 空洞， 但已提交 Journal 与 step 产物保持一致。
+Async steady-state uses at-most-once attempt semantics. Checkpoints record the attempt IDs that have been allocated; if the process crashes, in-flight attempts that were never committed may leave ID gaps, but the committed Journal stays consistent with the step artifacts.
 
-## 10. 输出结构
+## 10. Output Layout
 
 ```text
 outputs/<experiment>/<date>/<time>/
@@ -215,38 +213,38 @@ outputs/<experiment>/<date>/<time>/
         └── clear_run_log.txt
 ```
 
-## 11. 测试
+## 11. Tests
 
-快速测试：
+Quick tests:
 
 ```bash
 python -m pytest -q tests
 ```
 
-包含 async scheduler 的 AIRA-Evo 测试：
+AIRA-Evo tests including the async scheduler:
 
 ```bash
 python -m pytest -q third_party/aira-evo/tests/test_async_steady_state.py
 ```
 
-## 12. 常见问题
+## 12. Troubleshooting
 
-### Import 指向其他工作树
+### Imports resolve to another worktree
 
-始终使用本目录的 `run_standard.sh` 或 `run_multi_gpu.sh`。它们会显式设置当前发布目录的 `PYTHONPATH`。手工启动时需自行设置：
+Always use `run_standard.sh` or `run_multi_gpu.sh` from this directory. They explicitly set `PYTHONPATH` to the current release directory. When launching manually, set it yourself:
 
 ```bash
 export PYTHONPATH="$PWD:$PWD/third_party/aira-evo/src${PYTHONPATH:+:$PYTHONPATH}"
 ```
 
-### Analysis function-call 返回 HTTP 400
+### Analysis function-call returns HTTP 400
 
-部分 SGLang 部署不支持 OpenAI function calling。当前 AIRA-Evo 会退回纯文本 JSON review；只要节点最终写入 Journal 且状态为 success，该告警不影响搜索结果。
+Some SGLang deployments do not support OpenAI function calling. AIRA-Evo falls back to a plain-text JSON review; as long as the node is eventually written to the Journal with status success, this warning does not affect search results.
 
-### Tree HTML 可视化告警
+### Tree HTML visualization warnings
 
-搜索 JSON、checkpoint、代码和统计是权威产物。HTML tree 生成失败不会改变节点、评分或最终提交状态。
+The search JSON, checkpoints, code, and statistics are the authoritative artifacts. A failed HTML tree render does not change nodes, scores, or the final submission status.
 
-### 多 GPU 只看到一个 Python 进程
+### Only one Python process visible in multi-GPU mode
 
-这是设计行为：当前实现是单进程 async multi-worker。实际 GPU 任务由模型服务和 sandbox router 调度，不是每个 worker 一个本地 CUDA 进程。
+This is by design: the current implementation is a single-process async multi-worker. The actual GPU work is scheduled by the model service and the sandbox router, not by one local CUDA process per worker.

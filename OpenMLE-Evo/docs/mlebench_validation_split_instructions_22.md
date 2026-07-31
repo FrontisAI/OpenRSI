@@ -35,9 +35,9 @@ Validation split protocol: train.csv has columns `id` and `has_cactus`. Use trai
 Validation metric: ROC-AUC on validation `has_cactus` probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据有 `train.csv(id, has_cactus)` 和 `train/` 图像。这个任务的官方 metric 是 ROC-AUC，所以 validation 必须输出概率并计算 AUC，而不是 accuracy。固定 80/20 分层切分能减少正负比例波动，也比“10-20%”这种范围表述更稳定。
+The real data has `train.csv(id, has_cactus)` and images under `train/`. The official metric for this task is ROC-AUC, so validation must output probabilities and compute AUC, not accuracy. A fixed 80/20 stratified split reduces fluctuation in the positive/negative ratio and is more stable than a range like "10-20%".
 
 ## 2. aptos2019-blindness-detection
 
@@ -49,9 +49,9 @@ Validation split protocol: train.csv has columns `id_code` and ordinal class `di
 Validation metric: quadratic weighted kappa between validation `diagnosis` labels and predicted integer classes 0-4. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是 `train.csv(id_code, diagnosis)`，官方 metric 是 QWK。之前没有强制 metric 时，模型可能用 accuracy、MSE 或 loss 来选节点，导致 validation 分数和 leaderboard 不一致。这里明确按 `diagnosis` 分层，并固定 QWK 作为唯一 selection metric。
+The real data is `train.csv(id_code, diagnosis)` and the official metric is QWK. When no metric was enforced, models might select nodes by accuracy, MSE, or loss, making the validation score inconsistent with the leaderboard. This version explicitly stratifies by `diagnosis` and fixes QWK as the only selection metric.
 
 ## 3. denoising-dirty-documents
 
@@ -63,9 +63,9 @@ Validation split protocol: public data contains paired dirty images in `train/` 
 Validation metric: RMSE over pixel values on the held-out validation images reconstructed at image level. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据没有 CSV 标签，而是 `train/` 与 `train_cleaned/` 成对 png。最大风险是 patch 泄漏。用 filename md5 hash 取模做 image-level 验证集，既完全确定，又比“排序后每 5 张”更不容易受文件名顺序或数据来源顺序影响。
+The real data has no CSV labels; it is paired pngs in `train/` and `train_cleaned/`. The biggest risk is patch leakage. Using a filename md5 hash modulo for an image-level validation set is fully deterministic and less sensitive to filename ordering or data-source ordering than "every 5th image after sorting".
 
 ## 4. detecting-insults-in-social-commentary
 
@@ -77,9 +77,9 @@ Validation split protocol: train.csv has columns `Insult`, `Date`, and `Comment`
 Validation metric: ROC-AUC on out-of-fold `Insult` probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是二分类文本，官方 metric 是 AUC。数据规模不大，单次 holdout seed 方差会比较明显；固定 5-fold StratifiedKFold 比随机 80/20 更稳定，同时不会让 TF-IDF/vectorizer 在验证文本上泄漏。
+The real data is binary text classification and the official metric is AUC. The dataset is small, so a single holdout shows visible seed variance; a fixed 5-fold StratifiedKFold is more stable than a random 80/20 split, and it keeps TF-IDF/vectorizers from leaking into the validation text.
 
 ## 5. dog-breed-identification
 
@@ -91,9 +91,9 @@ Validation split protocol: train.csv has columns `id` and `breed`. Use train_tes
 Validation metric: multiclass log loss over all dog breed classes in sample_submission order. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据有 120 个 breed 概率列，官方 metric 是 multiclass log loss。明确固定 class order 能避免因为 LabelEncoder 顺序或验证集缺类导致 log loss 不可比。
+The real data has 120 breed probability columns and the official metric is multiclass log loss. Fixing the class order explicitly avoids incomparable log loss values caused by LabelEncoder ordering or classes missing from the validation fold.
 
 ## 6. dogs-vs-cats-redux-kernels-edition
 
@@ -105,9 +105,9 @@ Validation split protocol: parse the binary label from train image filenames: `c
 Validation metric: binary log loss on validation dog probabilities. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据没有 train.csv，标签在 `cat.*.jpg` / `dog.*.jpg` 文件名里。官方 metric 是 log loss，不是 accuracy。固定 80/20 分层切分能避免 overconfident 模型在 accuracy 高但 log loss 差时被误选。
+The real data has no train.csv; labels live in the `cat.*.jpg` / `dog.*.jpg` filenames. The official metric is log loss, not accuracy. A fixed 80/20 stratified split prevents an overconfident model from being selected when its accuracy is high but its log loss is poor.
 
 ## 7. histopathologic-cancer-detection
 
@@ -119,9 +119,9 @@ Validation split protocol: train_labels.csv has columns `id` and binary `label`.
 Validation metric: ROC-AUC on validation cancer `label` probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据有 `train_labels.csv(id, label)` 和 `.tif` patch 图像，官方 metric 是 AUC。lite 数据里没有明确 patient/slide id，因此这里不再写“如果有 patient id”，直接固定 image-id 分层切分。
+The real data has `train_labels.csv(id, label)` and `.tif` patch images, and the official metric is AUC. The lite data has no explicit patient/slide id, so instead of saying "if a patient id exists", this version pins a stratified image-id split directly.
 
 ## 8. jigsaw-toxic-comment-classification-challenge
 
@@ -137,9 +137,9 @@ Use train_test_split with test_size=0.2, random_state=42, and stratify by the st
 Validation metric: macro mean ROC-AUC across the six toxicity labels. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是 6-label multilabel 文本，官方 metric 是 macro mean ROC-AUC。之前“iterative multilabel stratification”可能因为库不可用而导致实现差异；这里改成固定 composite stratification key，所有节点都能一致执行。
+The real data is 6-label multilabel text and the official metric is macro mean ROC-AUC. The earlier "iterative multilabel stratification" could vary by implementation when the library was unavailable; this version switches to a fixed composite stratification key that every node can execute identically.
 
 ## 9. leaf-classification
 
@@ -151,9 +151,9 @@ Validation split protocol: train.csv has target `species` and numeric features `
 Validation metric: mean multiclass log loss across the 5 validation folds, using the complete sample_submission class order. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是小规模 99 类表格/图像特征任务，官方 metric 是 multiclass log loss。固定 5-fold 比单次 holdout 更适合小数据，并且 class order 明确后，节点之间的 validation 分数才可比。
+The real data is a small 99-class tabular/image-feature task and the official metric is multiclass log loss. A fixed 5-fold suits small data better than a single holdout, and with the class order pinned, validation scores are comparable across nodes.
 
 ## 10. mlsp-2013-birds
 
@@ -165,9 +165,9 @@ Validation split protocol: use the provided `essential_data/CVfolds_2.txt` and `
 Validation metric: ROC-AUC on the validation binary bird-present probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据自带 `CVfolds_2.txt`、`rec_id2filename.txt`、`rec_labels_test_hidden.txt`，sample_submission 只有单列 `Probability`。因此直接使用官方 fold，并把 known label 字段非空定义为 bird-present=1，空标签定义为 0，比“same target definition”更清晰。
+The real data ships with `CVfolds_2.txt`, `rec_id2filename.txt`, and `rec_labels_test_hidden.txt`, and the sample_submission has a single `Probability` column. So this uses the official folds directly and defines a non-empty known label field as bird-present=1 and an empty label field as 0, which is clearer than "same target definition".
 
 ## 11. new-york-city-taxi-fare-prediction
 
@@ -179,9 +179,9 @@ Validation split protocol: train.csv has target `fare_amount`. First remove only
 Validation metric: RMSE on held-out `fare_amount`. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据列为 `fare_amount`, pickup/dropoff 经纬度、`pickup_datetime` 和 `passenger_count`，官方 metric 是 RMSE。旧版里的 “pickup year/month or date bucket, passenger-count bucket, and approximate distance bucket if feasible” 太模糊；这里固定清洗边界和 fare decile stratification，保证长尾 fare 分布稳定，且实现简单一致。
+The real columns are `fare_amount`, pickup/dropoff coordinates, `pickup_datetime`, and `passenger_count`, and the official metric is RMSE. The old wording "pickup year/month or date bucket, passenger-count bucket, and approximate distance bucket if feasible" was too vague; this version fixes the cleaning bounds and fare-decile stratification, keeping the long-tail fare distribution stable with a simple, consistent implementation.
 
 ## 12. nomad2018-predict-transparent-conductors
 
@@ -193,9 +193,9 @@ Validation split protocol: train.csv has two regression targets: `formation_ener
 Validation metric: mean RMSLE across `formation_energy_ev_natom` and `bandgap_energy_ev`, with predictions clipped to nonnegative values before RMSLE. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据有两个目标，官方 metric 是两个目标 RMSLE 的平均。Nomad 的 val/test mismatch 比较明显，单次随机 holdout 容易误导；固定 5-fold target-quantile stratification 能让两个目标的分布都更稳定。
+The real data has two targets and the official metric is the mean RMSLE over both. Nomad's val/test mismatch is noticeable, and a single random holdout is easily misleading; a fixed 5-fold target-quantile stratification keeps both target distributions stable.
 
 ## 13. plant-pathology-2020-fgvc7
 
@@ -207,9 +207,9 @@ Validation split protocol: train.csv has one-hot disease columns `healthy`, `mul
 Validation metric: macro mean ROC-AUC across the four disease probability columns. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是四列 one-hot disease label，官方 metric 是 mean column-wise ROC-AUC。固定按 label combination 分层比“80/20 或 90/10”更清晰，也能减少小类样本导致的 AUC 波动。
+The real data has four one-hot disease label columns and the official metric is mean column-wise ROC-AUC. Fixing a label-combination stratification is clearer than "80/20 or 90/10" and reduces AUC fluctuation caused by small classes.
 
 ## 14. random-acts-of-pizza
 
@@ -221,9 +221,9 @@ Validation split protocol: train.json has binary target `requester_received_pizz
 Validation metric: mean ROC-AUC across the 5 folds on `requester_received_pizza` probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实 train.json 有一些 test.json 没有的 retrieval 字段，例如 retrieval-time vote/comment fields。除了 split 不稳定外，这类字段会直接导致 test 失败或泄漏式高分。这里固定 5-fold AUC，同时明确只用 test 也有的 request-time 字段。
+The real train.json contains fields absent from test.json, such as retrieval-time vote/comment fields. Beyond split instability, such fields directly cause test failures or leakage-inflated scores. This version fixes 5-fold AUC and restricts features to request-time fields that also exist in test.json.
 
 ## 15. ranzcr-clip-catheter-line-classification
 
@@ -235,9 +235,9 @@ Validation split protocol: train.csv has `StudyInstanceUID`, multilabel catheter
 Validation metric: macro mean ROC-AUC across the sample_submission label columns. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据明确有 `PatientID`，所以不需要写“如果有 patient id”。医学 X-ray 任务必须按 patient 分组，避免同一病人的相关图像跨 train/val。固定 `random_state=13` 是因为在 lite 数据上它比 42 给稀有标签 `ETT - Abnormal` 留出更多验证正例，AUC 更稳定。sample_submission 只包含 9 个预测标签，metric 也应按这些提交列计算。
+The real data explicitly includes `PatientID`, so there is no need for "if a patient id exists". Medical X-ray tasks must split by patient to keep correlated images of the same patient from crossing train/val. `random_state=13` is pinned because, on the lite data, it leaves more validation positives for the rare label `ETT - Abnormal` than 42 does, making the AUC more stable. The sample_submission contains only the 9 predicted labels, so the metric should be computed over those submission columns.
 
 ## 16. siim-isic-melanoma-classification
 
@@ -249,9 +249,9 @@ Validation split protocol: train.csv has `image_name`, `patient_id`, metadata co
 Validation metric: ROC-AUC on validation melanoma `target` probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据明确有 `patient_id`，官方 metric 是 AUROC。固定 patient-level split 能避免同一 patient 信息泄漏到验证集，这比普通 target stratification 更重要。
+The real data explicitly includes `patient_id` and the official metric is AUROC. Pinning a patient-level split prevents same-patient information from leaking into the validation set, which matters more than plain target stratification.
 
 ## 17. spooky-author-identification
 
@@ -263,9 +263,9 @@ Validation split protocol: train.csv has target `author` with classes EAP, HPL, 
 Validation metric: mean multiclass log loss across the 5 folds in sample_submission author order. Lower is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是三分类文本，官方 metric 是 multiclass log loss。固定 5-fold 和 submission class order 可以避免 tokenizer 泄漏和 label order 不一致。
+The real data is three-class text and the official metric is multiclass log loss. Fixing 5-fold CV and the submission class order avoids tokenizer leakage and label-order mismatches.
 
 ## 18. tabular-playground-series-dec-2021
 
@@ -277,9 +277,9 @@ Validation split protocol: train.csv has target `Cover_Type`. Use StratifiedShuf
 Validation metric: classification accuracy on held-out `Cover_Type`. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据是大规模多分类表格任务，官方 metric 是 accuracy。固定 90/10 stratified split 足够稳定且比 KFold 更省时，适合 12h agent 搜索。
+The real data is a large-scale multiclass tabular task and the official metric is accuracy. A fixed 90/10 stratified split is stable enough while cheaper than KFold, which suits a 12h agent search.
 
 ## 19. tabular-playground-series-may-2022
 
@@ -291,9 +291,9 @@ Validation split protocol: train.csv has binary target `target`. Use train_test_
 Validation metric: ROC-AUC on validation `target` probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据列里有 `f_27`，但旧版“optionally include f_27 pattern buckets”会让不同节点采用不同 split。这里固定只按 target 分层，`f_27` 只能作为模型特征，不参与改变验证集定义。
+The real columns include `f_27`, but the old wording "optionally include f_27 pattern buckets" let different nodes adopt different splits. This version stratifies by the target only; `f_27` may serve as a model feature but must not change the validation-set definition.
 
 ## 20. text-normalization-challenge-english-language
 
@@ -305,9 +305,9 @@ Validation split protocol: en_train.csv has columns `sentence_id`, `token_id`, `
 Validation metric: exact token-level accuracy of predicted `after` strings on validation tokens. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实数据有 `sentence_id/token_id/class/before/after`。固定 `sentence_id % 20 == 0` 给出约 5% 句子级验证集，完全确定，避免 row-level token 泄漏。
+The real data has `sentence_id/token_id/class/before/after`. Pinning `sentence_id % 20 == 0` yields an ~5% sentence-level validation set that is fully deterministic and avoids row-level token leakage.
 
 ## 21. text-normalization-challenge-russian-language
 
@@ -319,9 +319,9 @@ Validation split protocol: ru_train.csv has columns `sentence_id`, `token_id`, `
 Validation metric: exact token-level accuracy of predicted `after` strings on validation tokens. Higher is better.
 ```
 
-原因：
+Rationale:
 
-俄语文本归一化与英语一样，真实数据也有 `sentence_id/token_id/class/before/after`。固定 sentence-level modulo split 可以避免同一句话上下文泄漏，同时保证各次尝试的验证集完全一致。
+Russian text normalization mirrors the English task, and the real data likewise has `sentence_id/token_id/class/before/after`. A fixed sentence-level modulo split prevents context leakage within the same sentence and keeps the validation set identical across attempts.
 
 ## 22. the-icml-2013-whale-challenge-right-whale-redux
 
@@ -333,9 +333,9 @@ Validation split protocol: training audio labels are encoded in train filenames 
 Validation metric: ROC-AUC on validation right-whale probabilities. Higher is better.
 ```
 
-原因：
+Rationale:
 
-真实 train 文件名示例是 `..._TRAIN0_0.aif`，标签在文件名后缀里。官方 metric 是 AUC。固定 clip-level stratified split 可以避免同一音频派生窗口跨 train/val。
+Real train filenames look like `..._TRAIN0_0.aif`, with the label in the filename suffix. The official metric is AUC. A fixed clip-level stratified split keeps windows derived from the same audio clip from crossing train/val.
 
 ## Compact Per-Task Prompt Map
 

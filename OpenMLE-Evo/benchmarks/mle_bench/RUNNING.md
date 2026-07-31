@@ -1,16 +1,16 @@
-# MLE-Bench 运行
+# Running MLE-Bench
 
-准备 `.env` 中的 `OPENMLE_EVAL_DATA`、`OPENMLE_LEADERBOARD_DIR`、 `OPENMLE_SUBMIT_DATA_DIR_ROOT`、模型服务和 sandbox 配置后运行：
+After setting up `OPENMLE_EVAL_DATA`, `OPENMLE_LEADERBOARD_DIR`, `OPENMLE_SUBMIT_DATA_DIR_ROOT`, the model service, and the sandbox configuration in `.env`, run:
 
 ```bash
-# 单 worker
+# single worker
 ./scripts/run_standard.sh
 
-# async steady-state，多 sandbox/GPU worker
+# async steady-state with multiple sandbox/GPU workers
 AIRAEVO_WORKERS=8 ./scripts/run_multi_gpu.sh
 ```
 
-最小 smoke：
+Minimal smoke:
 
 ```bash
 OPENMLE_CONFIG_NAME=experiment/openmle_evo_smoke \
@@ -18,4 +18,4 @@ OPENMLE_CONFIG_NAME=experiment/openmle_evo_smoke \
   'search.runner.task_list=[spooky-author-identification]'
 ```
 
-完整环境变量、续跑、输出结构和成功判据见 [`../../docs/usage.md`](../../docs/usage.md)。
+See [`../../docs/usage.md`](../../docs/usage.md) for the full environment variables, resuming, output layout, and success criteria.
