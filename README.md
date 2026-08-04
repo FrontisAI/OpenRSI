@@ -12,8 +12,6 @@
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-OpenMLE--Tasks-yellow)](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
 [![Project Page](https://img.shields.io/badge/%F0%9F%8C%90%20Project-Page-blue)](https://frontisai.github.io/OpenRSI/)
 
-[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [📄 arXiv Paper](https://arxiv.org/abs/2607.28568) · [🤗 HF Paper](https://huggingface.co/papers/2607.28568) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
-
 [📖 OpenRSI](#openrsi) · [🚀 Frontis-MA1](#frontis-ma1) · [🧩 OpenMLE](#openmle) · [📊 Results](#results) · [✨ Getting Started](#getting-started) · [🤝 Contribute](#contribute)
 
 > **FIRST RELEASE · MACHINE LEARNING ENGINEERING**<br>
