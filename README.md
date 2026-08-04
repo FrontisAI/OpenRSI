@@ -7,10 +7,11 @@
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2607.28568-b31b1b.svg)](https://arxiv.org/abs/2607.28568)
 [![Hugging Face Paper](https://img.shields.io/badge/%F0%9F%A4%97%20Paper-2607.28568-yellow)](https://huggingface.co/papers/2607.28568)
+[![Project Page](https://img.shields.io/badge/%F0%9F%8C%90%20Project-Page-blue)](https://frontisai.github.io/OpenRSI/)
+
 [![Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Collection-Frontis--MA1-yellow)](https://huggingface.co/collections/FrontisAI/frontis-ma1)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-Frontis--MA1--35B-yellow)](https://huggingface.co/FrontisAI/Frontis-MA1-35B)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-OpenMLE--Tasks-yellow)](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
-[![Project Page](https://img.shields.io/badge/%F0%9F%8C%90%20Project-Page-blue)](https://frontisai.github.io/OpenRSI/)
 
 [📖 OpenRSI](#openrsi) · [🚀 Frontis-MA1](#frontis-ma1) · [🧩 OpenMLE](#openmle) · [📊 Results](#results) · [✨ Getting Started](#getting-started) · [🤝 Contribute](#contribute)
 
