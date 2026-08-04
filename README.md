@@ -1,7 +1,5 @@
 <div align="center">
 
-# OpenRSI by Frontis
-
 <img src="assets/logos/openrsi-logo.svg" width="560" alt="OpenRSI by Frontis">
 
 **Making “AI improving AI” executable, measurable, and reproducible.**
@@ -14,7 +12,7 @@
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-OpenMLE--Tasks-yellow)](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
 [![Project Page](https://img.shields.io/badge/%F0%9F%8C%90%20Project-Page-blue)](https://frontisai.github.io/OpenRSI/)
 
-[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [📄 arXiv Paper](https://arxiv.org/abs/2607.28568) · [🤗 HF Paper](https://huggingface.co/papers/2607.28568) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) · [🎬 Frontis-MA1 Video](docs/assets/videos/frontis-ma1-openmle-release-teaser.mp4)
+[🌐 Project Page](https://frontisai.github.io/OpenRSI/) · [📄 arXiv Paper](https://arxiv.org/abs/2607.28568) · [🤗 HF Paper](https://huggingface.co/papers/2607.28568) · [🤗 Frontis-MA1 Collection](https://huggingface.co/collections/FrontisAI/frontis-ma1) · [🧩 OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks)
 
 [📖 OpenRSI](#openrsi) · [🚀 Frontis-MA1](#frontis-ma1) · [🧩 OpenMLE](#openmle) · [📊 Results](#results) · [✨ Getting Started](#getting-started) · [🤝 Contribute](#contribute)
 
@@ -27,7 +25,7 @@
 
 - **[2026-07-31]** 🎉 First OpenRSI release: **Frontis-MA1** ([35B](https://huggingface.co/FrontisAI/Frontis-MA1-35B) / [30B](https://huggingface.co/FrontisAI/Frontis-MA1-30B), with [GGUF](https://huggingface.co/collections/FrontisAI/frontis-ma1) derivatives), the **OpenMLE** stack (Gym / RL / Evo), and the [OpenMLE Tasks](https://huggingface.co/datasets/FrontisAI/OpenMLE-Tasks) and [OpenMLE SFT Traces](https://huggingface.co/datasets/FrontisAI/OpenMLE-SFT-Traces) datasets.
 - **[2026-06-25]** 📚 We released our RSI survey: [*Self-Improving Agents in the Era of Experience: A Survey of Self- to Meta-Evolution*](https://openreview.net/pdf?id=IUltZSgLMm) ([paper list](https://github.com/FrontisAI/Awesome-Self-Improving-Agents)) — the conceptual roadmap from self-evolution to meta-evolution behind OpenRSI.
-- **[2026-06-23]** 📄 We released **NatureBench**: [*NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?*](https://arxiv.org/abs/2606.24530) ([code](https://github.com/FrontisAI/NatureBench)) — a benchmark testing whether coding agents can match the published SOTA of Nature-family papers, later used as the held-out transfer benchmark for Frontis-MA1.
+- **[2026-06-23]** 📄 We released **NatureBench**: [*NatureBench: Can Coding Agents Match the Published SOTA of Nature-Family Papers?*](https://arxiv.org/abs/2606.24530) ([code](https://github.com/FrontisAI/NatureBench)) — a benchmark testing whether coding agents can match the published SOTA of Nature-family papers, later used as the held-out transfer benchmark for RSI.
 
 <a id="openrsi"></a>
 
