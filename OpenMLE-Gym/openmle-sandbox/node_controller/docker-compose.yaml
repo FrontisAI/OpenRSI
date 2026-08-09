@@ -1,0 +1,115 @@
+services:
+  postgres:
+    image: docker.m.daocloud.io/library/postgres:15.14
+    container_name: sandbox_postgres
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
+    environment:
+      POSTGRES_DB: sandbox
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    command: ["postgres", "-c", "max_connections=300"]
+    volumes:
+      - sandbox_postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  redis:
+    image: docker.m.daocloud.io/library/redis:7.4.6
+    container_name: sandbox_redis
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
+    ports:
+      - "127.0.0.1:6380:6379"
+
+  api:
+    image: ${OPENMLE_SANDBOX_IMAGE_PREFIX:-ccr.ccs.tencentyun.com/frontisai-openmle}/openmle-sandbox-controller-api:1.0.0
+    container_name: sandbox_api
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
+    command: uvicorn api_server:app --host 0.0.0.0 --port 8000 --workers 8
+    volumes:
+      - /nfs2/users/pubdatasets2:/mnt/pubdatasets2
+      - /local_nvme/mlsandbox_cache:/mlsandbox_cache
+      - ./api_server:/app
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DB_HOST: postgres
+      DB_NAME: sandbox
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_POOL_MIN: 2
+      DB_POOL_MAX: 25
+      STORAGE_PATH: /mnt/pubdatasets2/mlsandbox
+      UPLOAD_ROOT: /mnt/pubdatasets2/mlsandbox/uploads
+      ENABLE_OBS: "1"
+      OBS_LOG_DIR: /mlsandbox_cache/mlsandbox_runtime_logs
+      SUBMIT_MAX_INFLIGHT_PER_PROCESS: "8"
+      SUBMIT_SLOT_WAIT_SECONDS: "2"
+      ENABLE_IDEMPOTENCY: "1"
+    depends_on:
+      - postgres
+      - redis
+
+  dispatcher:
+    image: ${OPENMLE_SANDBOX_IMAGE_PREFIX:-ccr.ccs.tencentyun.com/frontisai-openmle}/openmle-sandbox-controller-dispatcher:1.0.0
+    container_name: sandbox_dispatcher
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
+    volumes:
+      - /nfs2/users/pubdatasets2:/mnt/pubdatasets2
+      - ./task_dispatcher:/app
+    environment:
+      REDIS_HOST: redis
+      DB_HOST: postgres
+      DB_NAME: sandbox
+      DB_USER: postgres
+      DB_PASSWORD: password
+      STORAGE_PATH: /mnt/pubdatasets2/mlsandbox
+      SANDBOX_CONFIG_FILE: /app/config/sandbox_config.json
+      EVALUATION_SCRIPT_PATH: /mnt/pubdatasets2/mlsandbox/workdir/evaluation/read_and_metric.py
+      ENABLE_LOCAL_JOB_SCRATCH: "1"
+      LOCAL_SCRATCH_ROOT: /mnt/local_sandbox_workdir
+      LOCAL_SCRATCH_MIN_FREE_BYTES: "107374182400"
+      LOCAL_SCRATCH_STAGE_TIMEOUT_SECONDS: "120"
+    depends_on:
+      - postgres
+      - redis
+
+  nginx:
+    image: docker.m.daocloud.io/library/nginx:1.25.5
+    container_name: sandbox_nginx
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
+    volumes:
+      - ./nginx/nginx-main.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "6580:80"
+    depends_on:
+      - api
+
+volumes:
+  sandbox_postgres_data:

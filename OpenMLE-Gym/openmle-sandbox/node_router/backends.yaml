@@ -1,0 +1,28 @@
+backends:
+  # These TEST-NET addresses are placeholders. Replace them with controller URLs.
+  - id: controller-a
+    base_url: http://203.0.113.10:6580
+    enabled: true
+    weight: 1
+  - id: controller-b
+    base_url: http://203.0.113.11:6580
+    enabled: true
+    weight: 1
+  - id: controller-c
+    base_url: http://203.0.113.12:6580
+    enabled: true
+    weight: 1
+
+routing:
+  # idle_gpu_first uses each backend's /api/v1/workers/status summary and
+  # subtracts a local short-lived virtual load so burst submissions spread out.
+  strategy: idle_gpu_first
+  fallback: round_robin
+  worker_status_ttl_seconds: 2.0
+
+request:
+  timeout_seconds: 120
+  health_timeout_seconds: 5
+
+storage:
+  route_store_path: gateway_routes.sqlite3

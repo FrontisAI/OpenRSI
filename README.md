@@ -103,6 +103,8 @@ OpenMLE aligns post-training and inference around a shared action space. The sam
 
 OpenMLE-Evo-Max is the asynchronous multi-GPU search profile inside `OpenMLE-Evo`, not a separate source tree. OpenMLE-RL ships in the [`OpenMLE-ERL/`](OpenMLE-ERL/) directory, which bundles both of its stages: execution-grounded SFT and online RL.
 
+Distributed code execution and automatic evaluation for OpenMLE-Evo and OpenMLE-ERL are provided by [OpenMLE Sandbox](OpenMLE-Gym/openmle-sandbox/README.md), which is maintained as part of OpenMLE-Gym.
+
 ### Trainable Atomic Operators
 
 | Operator | Function |
