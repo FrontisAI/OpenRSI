@@ -4,6 +4,8 @@ OpenMLE-Gym converts Kaggle competitions into standardized machine-learning task
 
 The maintained interface is the `openmle-task` CLI. Runtime outputs are written under the ignored `artifacts/` directory.
 
+Distributed code execution and automatic evaluation for OpenMLE-Evo and OpenMLE-ERL are provided by [OpenMLE Sandbox](openmle-sandbox/README.md).
+
 ## What the workflow does
 
 The main workflow is:
@@ -312,6 +314,7 @@ uv run --no-editable openmle-task evaluate \
 | Path | Purpose |
 | --- | --- |
 | `openmle_gym/` | Maintained package and `openmle-task` CLI |
+| [`openmle-sandbox/`](openmle-sandbox/README.md) | Distributed code execution, scheduling, and automatic evaluation for OpenMLE-Evo and OpenMLE-ERL |
 | `builder_core/` | LangGraph task-builder core |
 | `metadata_pipeline/` | Metadata extraction and quality pipeline |
 | `examples/` | Slug inputs and preserved three-task example |
