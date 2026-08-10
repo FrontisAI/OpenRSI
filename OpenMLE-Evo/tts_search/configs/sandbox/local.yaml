@@ -1,0 +1,10 @@
+base_url: null
+concurrency: 1
+priority: 2
+job_timeout: 1800
+wait_timeout: 1800
+poll_interval: 1
+use_score2reward: false
+use_clear_run_log_score: false
+trust_model_validation_score: false
+verify_tls: true

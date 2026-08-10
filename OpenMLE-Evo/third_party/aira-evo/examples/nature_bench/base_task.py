@@ -6,6 +6,7 @@ import json
 import os
 import re
 import shlex
+import signal
 import subprocess
 import sys
 import threading
@@ -121,12 +122,8 @@ class NatureBenchTask(Task):
         self.public_user_prompt = str(self.cfg.get("public_user_prompt") or "")
         self.raw_task_description = str(self.cfg.get("task_description") or "")
         self.data_description = str(self.cfg.get("data_description") or "")
-        self.visible_data_analysis = str(
-            self.cfg.get("visible_data_analysis") or ""
-        )
-        self.task_family_guidance = str(
-            self.cfg.get("task_family_guidance") or ""
-        )
+        self.visible_data_analysis = str(self.cfg.get("visible_data_analysis") or "")
+        self.task_family_guidance = str(self.cfg.get("task_family_guidance") or "")
         self.task_description = self._build_task_description()
         self.lower_is_better = False
         submit_repeats = self.cfg.get("submit_repeats", 1)
@@ -172,7 +169,12 @@ class NatureBenchTask(Task):
         return bool(self.cfg.get("candidate_preflight", True))
 
     def _candidate_preflight_imports_enabled(self) -> bool:
-        return bool(self.cfg.get("candidate_preflight_imports", self._uses_scm()))
+        return bool(
+            self.cfg.get(
+                "candidate_preflight_imports",
+                self._uses_scm() or self.execution_mode == "local",
+            )
+        )
 
     def _candidate_preflight_timeout_seconds(self) -> int:
         configured = self._coerce_score(self.cfg.get("candidate_preflight_timeout"))
@@ -197,7 +199,14 @@ class NatureBenchTask(Task):
 
     @staticmethod
     def _contains_package_install(tree: ast.AST, code: str) -> bool:
-        command_functions = {"system", "run", "call", "check_call", "check_output", "popen"}
+        command_functions = {
+            "system",
+            "run",
+            "call",
+            "check_call",
+            "check_output",
+            "popen",
+        }
         for node in ast.walk(tree):
             if not isinstance(node, ast.Call):
                 continue
@@ -313,6 +322,105 @@ class NatureBenchTask(Task):
             "elapsed_seconds": 0.0,
         }
 
+    def _local_python_command(self, *arguments: str) -> list[str]:
+        local_python = str(self.cfg.get("local_python") or "").strip()
+        if local_python:
+            prefix = [str(Path(os.path.abspath(Path(local_python).expanduser())))]
+        else:
+            conda_env = str(self.cfg.get("local_conda_env") or "").strip()
+            if conda_env:
+                prefix = [
+                    str(self.cfg.get("local_conda_executable") or "conda"),
+                    "run",
+                    "--no-capture-output",
+                    "-n",
+                    conda_env,
+                    "python",
+                ]
+            else:
+                prefix = [sys.executable]
+        return [*prefix, *arguments]
+
+    def _run_local_import_preflight(self, modules: list[str]) -> dict[str, Any]:
+        unknown_modules = [
+            module for module in modules if module not in self._import_preflight_cache
+        ]
+        if unknown_modules:
+            script = (
+                "import importlib, json\n"
+                f"modules = {json.dumps(unknown_modules)}\n"
+                "missing = {}\n"
+                "for module in modules:\n"
+                "    try:\n"
+                "        importlib.import_module(module)\n"
+                "    except Exception as exc:\n"
+                "        missing[module] = f'{type(exc).__name__}: {exc}'\n"
+                f"print({_IMPORT_PREFLIGHT_MARKER!r} + json.dumps({{'missing': missing}}, sort_keys=True))\n"
+            )
+            timeout_seconds = self._candidate_preflight_timeout_seconds()
+            started = time.monotonic()
+            workspace_root = self._workspace_root()
+            workspace_root.mkdir(parents=True, exist_ok=True)
+            try:
+                process = subprocess.run(
+                    self._local_python_command("-c", script),
+                    cwd=workspace_root,
+                    env=self._solution_env(workspace_root),
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout_seconds,
+                    check=False,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                return {
+                    "ok": False,
+                    "missing": {
+                        module: f"local runtime unavailable: {exc}"
+                        for module in unknown_modules
+                    },
+                    "elapsed_seconds": time.monotonic() - started,
+                }
+
+            marker_payload = None
+            for line in (process.stdout or "").splitlines():
+                if line.startswith(_IMPORT_PREFLIGHT_MARKER):
+                    marker_payload = line[len(_IMPORT_PREFLIGHT_MARKER) :]
+            if process.returncode != 0 or marker_payload is None:
+                detail = ((process.stderr or "") + (process.stdout or ""))[-1000:]
+                return {
+                    "ok": False,
+                    "missing": {
+                        module: f"local import preflight failed: {detail}"
+                        for module in unknown_modules
+                    },
+                    "elapsed_seconds": time.monotonic() - started,
+                }
+            try:
+                missing = dict(json.loads(marker_payload).get("missing") or {})
+            except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                return {
+                    "ok": False,
+                    "missing": {
+                        module: f"local import preflight returned invalid JSON: {exc}"
+                        for module in unknown_modules
+                    },
+                    "elapsed_seconds": time.monotonic() - started,
+                }
+            for module in unknown_modules:
+                detail = missing.get(module)
+                self._import_preflight_cache[module] = str(detail) if detail else None
+
+        unavailable = {
+            module: self._import_preflight_cache[module]
+            for module in modules
+            if self._import_preflight_cache.get(module)
+        }
+        return {
+            "ok": not unavailable,
+            "missing": unavailable,
+            "elapsed_seconds": 0.0,
+        }
+
     def _candidate_preflight(self, code: str) -> dict[str, Any]:
         started = time.monotonic()
         if not self._candidate_preflight_enabled():
@@ -340,17 +448,34 @@ class NatureBenchTask(Task):
                 elapsed_seconds=time.monotonic() - started,
             )
         modules = self._candidate_import_roots(tree)
-        if not self._uses_scm() or not self._candidate_preflight_imports_enabled() or not modules:
-            return {"ok": True, "status": "passed", "elapsed_seconds": time.monotonic() - started}
-        import_result = self._run_scm_import_preflight(modules)
+        if not self._candidate_preflight_imports_enabled() or not modules:
+            return {
+                "ok": True,
+                "status": "passed",
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        if self._uses_scm():
+            import_result = self._run_scm_import_preflight(modules)
+            runtime_name = "container"
+        elif self.execution_mode == "local":
+            import_result = self._run_local_import_preflight(modules)
+            runtime_name = "local runtime"
+        else:
+            return {
+                "ok": True,
+                "status": "passed",
+                "elapsed_seconds": time.monotonic() - started,
+            }
         elapsed = time.monotonic() - started
         if not import_result.get("ok", True):
             missing = dict(import_result.get("missing") or {})
-            details = "; ".join(f"{name}: {detail}" for name, detail in sorted(missing.items()))
+            details = "; ".join(
+                f"{name}: {detail}" for name, detail in sorted(missing.items())
+            )
             return self._preflight_failure(
                 category="unavailable_import",
                 feedback=(
-                    "Candidate preflight blocked execution because this container "
+                    f"Candidate preflight blocked execution because this {runtime_name} "
                     f"cannot import: {details}. Choose an available fallback."
                 ),
                 elapsed_seconds=elapsed,
@@ -377,7 +502,9 @@ class NatureBenchTask(Task):
             ),
         ]
         return "\n\n".join(
-            f"{title}:\n{content.strip()}" for title, content in sections if content.strip()
+            f"{title}:\n{content.strip()}"
+            for title, content in sections
+            if content.strip()
         )
 
     def prepare(self, **task_args: Any) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -496,12 +623,9 @@ class NatureBenchTask(Task):
         with self._state_lock:
             self.attempt_index += 1
             attempt_index = self.attempt_index
-        workspace = (
-            self._workspace_root()
-            / (
-                f"{self._safe_path_component(self.task_name)}_"
-                f"{self._safe_path_component(phase)}_{attempt_index}"
-            )
+        workspace = self._workspace_root() / (
+            f"{self._safe_path_component(self.task_name)}_"
+            f"{self._safe_path_component(phase)}_{attempt_index}"
         )
         output_dir = workspace / "output"
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -527,18 +651,12 @@ class NatureBenchTask(Task):
         configured_allowlist = self.cfg.get("candidate_env_allowlist") or []
         if isinstance(configured_allowlist, str):
             configured_allowlist = [
-                item.strip()
-                for item in configured_allowlist.split(",")
-                if item.strip()
+                item.strip() for item in configured_allowlist.split(",") if item.strip()
             ]
         allowed_names = _CANDIDATE_ENV_ALLOWLIST.union(
             str(item) for item in configured_allowlist
         )
-        env = {
-            name: os.environ[name]
-            for name in allowed_names
-            if name in os.environ
-        }
+        env = {name: os.environ[name] for name in allowed_names if name in os.environ}
         env.setdefault("PATH", os.defpath)
         env.update(
             {
@@ -571,21 +689,49 @@ class NatureBenchTask(Task):
             )
         ).rstrip("/")
 
-    def _run_local_solution(self, code: str, *, workspace: Path, output_dir: Path) -> dict[str, Any]:
+    def _terminate_local_process(self, process: subprocess.Popen[str]) -> None:
+        grace_seconds = max(
+            0.0,
+            float(self.cfg.get("local_terminate_grace_seconds", 5) or 0),
+        )
+        if process.poll() is not None:
+            return
+        try:
+            if os.name == "posix":
+                os.killpg(process.pid, signal.SIGTERM)
+            else:
+                process.terminate()
+            process.wait(timeout=grace_seconds)
+        except (ProcessLookupError, subprocess.TimeoutExpired):
+            if process.poll() is None:
+                if os.name == "posix":
+                    os.killpg(process.pid, signal.SIGKILL)
+                else:
+                    process.kill()
+                process.wait()
+
+    def _run_local_solution(
+        self, code: str, *, workspace: Path, output_dir: Path
+    ) -> dict[str, Any]:
         run_path = workspace / "run.py"
         run_path.write_text(code, encoding="utf-8")
         started = time.monotonic()
+        process: subprocess.Popen[str] | None = None
         try:
-            process = subprocess.run(
-                [sys.executable, str(run_path)],
+            process = subprocess.Popen(
+                self._local_python_command(str(run_path)),
                 cwd=workspace,
                 env=self._solution_env(output_dir),
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                timeout=self._execution_timeout_seconds(),
+                start_new_session=os.name == "posix",
+            )
+            stdout, stderr = process.communicate(
+                timeout=self._execution_timeout_seconds()
             )
             run_time = time.monotonic() - started
-            raw_log = (process.stdout or "") + (process.stderr or "")
+            raw_log = (stdout or "") + (stderr or "")
             return {
                 "status_code": 200 if process.returncode == 0 else 500,
                 "status": "success" if process.returncode == 0 else "failed",
@@ -595,14 +741,28 @@ class NatureBenchTask(Task):
                 "run_time": run_time,
                 "output_dir": str(output_dir),
             }
-        except subprocess.TimeoutExpired as exc:
-            raw_log = (exc.stdout or "") + (exc.stderr or "")
+        except subprocess.TimeoutExpired:
+            assert process is not None
+            self._terminate_local_process(process)
+            stdout, stderr = process.communicate()
+            raw_log = (stdout or "") + (stderr or "")
             return {
                 "status_code": 504,
                 "status": "timeout",
                 "raw_run_log": raw_log,
                 "clear_run_log": raw_log,
                 "feedback": raw_log or "candidate timed out",
+                "run_time": time.monotonic() - started,
+                "output_dir": str(output_dir),
+            }
+        except OSError as exc:
+            raw_log = f"Failed to start local NatureBench runtime: {exc}"
+            return {
+                "status_code": 500,
+                "status": "failed",
+                "raw_run_log": raw_log,
+                "clear_run_log": raw_log,
+                "feedback": raw_log,
                 "run_time": time.monotonic() - started,
                 "output_dir": str(output_dir),
             }
@@ -660,8 +820,14 @@ class NatureBenchTask(Task):
         gpu_devices = self.cfg.get("gpu_devices")
         resource = str(self.cfg.get("resource") or "cpu").lower()
         if resource != "cpu" and gpu_devices:
-            devices = ",".join(str(item) for item in gpu_devices) if isinstance(gpu_devices, list) else str(gpu_devices)
-            cmd.extend(["--gpus", "all" if devices.lower() == "all" else f"device={devices}"])
+            devices = (
+                ",".join(str(item) for item in gpu_devices)
+                if isinstance(gpu_devices, list)
+                else str(gpu_devices)
+            )
+            cmd.extend(
+                ["--gpus", "all" if devices.lower() == "all" else f"device={devices}"]
+            )
         cmd.extend([image, "bash", "-lc", "python /workspace/run.py"])
 
         started = time.monotonic()
@@ -673,9 +839,9 @@ class NatureBenchTask(Task):
                 timeout=self._execution_timeout_seconds(),
             )
         except subprocess.TimeoutExpired as exc:
-            raw_log = self._timeout_stream_text(
-                exc.stdout
-            ) + self._timeout_stream_text(exc.stderr)
+            raw_log = self._timeout_stream_text(exc.stdout) + self._timeout_stream_text(
+                exc.stderr
+            )
             try:
                 cleanup = subprocess.run(
                     ["docker", "rm", "-f", container_name],
@@ -690,9 +856,7 @@ class NatureBenchTask(Task):
                 cleanup_log = str(cleanup_exc)
                 cleanup_failed = True
             if cleanup_failed:
-                raw_log = (
-                    f"{raw_log}\nContainer cleanup failed: {cleanup_log}".strip()
-                )
+                raw_log = f"{raw_log}\nContainer cleanup failed: {cleanup_log}".strip()
             return {
                 "status_code": 504,
                 "status": "timeout",
@@ -745,7 +909,7 @@ class NatureBenchTask(Task):
 
     def _ssh_retry_delay(self, attempt: int) -> float:
         jitter = (sum(ord(char) for char in self.task_name) % 100) / 200.0
-        return min(8.0, 0.5 * (2 ** attempt)) + jitter
+        return min(8.0, 0.5 * (2**attempt)) + jitter
 
     @staticmethod
     def _is_transient_ssh_failure(output: str, returncode: int) -> bool:
@@ -894,7 +1058,9 @@ raise SystemExit(2)
         prep = f"rm -rf {remote_q} && mkdir -p {remote_q}"
         prep_proc = self._ssh(prep, timeout=30)
         if prep_proc.returncode != 0:
-            raise RuntimeError(f"Failed to prepare SCM workspace: {prep_proc.stderr[-1000:]}")
+            raise RuntimeError(
+                f"Failed to prepare SCM workspace: {prep_proc.stderr[-1000:]}"
+            )
         remote_tar_command = self._remote_tar_extract_command(remote_workspace)
         tar_cmd = (
             f"tar -C {shlex.quote(str(workspace.resolve()))} -cf - . "
@@ -968,7 +1134,9 @@ airaevo_gpu_is_available() {{
 """.strip()
 
     def _exclusive_gpu_acquire_script(self, devices: list[str]) -> str:
-        lock_root = self._gpu_lock_root("exclusive_gpu_pool", self.cfg.get("gpu_pool_file"))
+        lock_root = self._gpu_lock_root(
+            "exclusive_gpu_pool", self.cfg.get("gpu_pool_file")
+        )
         gpu_ids = " ".join(shlex.quote(device) for device in devices)
         wait_timeout = self._scm_gpu_wait_timeout_seconds()
         return f"""
@@ -1011,7 +1179,9 @@ done
     def _shared_gpu_acquire_script(self) -> str:
         gpu_id = str(self.cfg.get("shared_gpu_device"))
         slots = max(1, int(self.cfg.get("shared_gpu_slots", 1) or 1))
-        lock_root = self._gpu_lock_root("shared_gpu_pool", self.cfg.get("shared_gpu_pool_file"))
+        lock_root = self._gpu_lock_root(
+            "shared_gpu_pool", self.cfg.get("shared_gpu_pool_file")
+        )
         wait_timeout = self._scm_gpu_wait_timeout_seconds()
         return f"""
 AIREVO_GPU_ID={shlex.quote(gpu_id)}
@@ -1087,7 +1257,9 @@ done
 
         if gpu_mode == "shared":
             if self.cfg.get("shared_gpu_device") is None:
-                raise ValueError("NatureBench shared GPU tasks require shared_gpu_device")
+                raise ValueError(
+                    "NatureBench shared GPU tasks require shared_gpu_device"
+                )
             return self._shared_gpu_acquire_script(), [
                 "--gpus",
                 f"device={self.cfg.get('shared_gpu_device')}",
@@ -1095,8 +1267,15 @@ done
 
         gpu_devices = self.cfg.get("gpu_devices")
         if gpu_devices:
-            devices = ",".join(str(item) for item in gpu_devices) if isinstance(gpu_devices, list) else str(gpu_devices)
-            return "", ["--gpus", "all" if devices.lower() == "all" else f"device={devices}"]
+            devices = (
+                ",".join(str(item) for item in gpu_devices)
+                if isinstance(gpu_devices, list)
+                else str(gpu_devices)
+            )
+            return "", [
+                "--gpus",
+                "all" if devices.lower() == "all" else f"device={devices}",
+            ]
         return "", []
 
     def _wrap_scm_docker_command(
@@ -1230,7 +1409,9 @@ done
         )
         raw_log = (process.stdout or "") + (process.stderr or "")
         run_time = time.monotonic() - started
-        gpu_wait_seconds, gpu_wait_timed_out, clear_log = self._extract_gpu_wait_seconds(raw_log)
+        gpu_wait_seconds, gpu_wait_timed_out, clear_log = (
+            self._extract_gpu_wait_seconds(raw_log)
+        )
         gpu_wait_seconds = min(max(0.0, gpu_wait_seconds), run_time)
         status_code = 200 if process.returncode == 0 else 500
         if process.returncode == 124 or gpu_wait_timed_out:
@@ -1263,7 +1444,9 @@ done
         workspace = attempt.workspace
         output_dir = attempt.output_dir
         if self.execution_mode == "local":
-            return self._run_local_solution(code, workspace=workspace, output_dir=output_dir)
+            return self._run_local_solution(
+                code, workspace=workspace, output_dir=output_dir
+            )
         if self._uses_scm():
             return self._run_scm_docker_solution(code, attempt=attempt)
         return self._run_docker_solution(
@@ -1355,15 +1538,21 @@ done
         best = self._coerce_score(eval_payload.get("best_aggregate_improvement"))
         run_status_code = int(run_payload.get("status_code", 500))
         run_succeeded = run_status_code in {0, 200}
-        status_code = 200 if run_succeeded and aggregate is not None else run_status_code
+        status_code = (
+            200 if run_succeeded and aggregate is not None else run_status_code
+        )
         selection_score = (
             self._selection_score_from_aggregate(aggregate)
             if phase == "validation"
             else None
         )
-        selection_reward = float(selection_score) if selection_score is not None else 0.0
-        reward = selection_reward if phase == "validation" else (
-            float(aggregate) if aggregate is not None else 0.0
+        selection_reward = (
+            float(selection_score) if selection_score is not None else 0.0
+        )
+        reward = (
+            selection_reward
+            if phase == "validation"
+            else (float(aggregate) if aggregate is not None else 0.0)
         )
         selection_score_source = None
         if phase == "validation":
@@ -1387,7 +1576,8 @@ done
             "raw_aggregate_improvement": aggregate,
             "best_aggregate_improvement": best,
             "raw_scores": eval_payload.get("raw_scores") or {},
-            "per_instance_improvement": eval_payload.get("per_instance_improvement") or {},
+            "per_instance_improvement": eval_payload.get("per_instance_improvement")
+            or {},
             "selection_score": selection_score,
             "selection_reward": selection_reward,
             "selection_score_source": selection_score_source,
@@ -1473,7 +1663,9 @@ done
             )
             run_payload["preflight"] = dict(preflight)
         else:
-            run_payload = self._preflight_failure_payload(preflight, output_dir=output_dir)
+            run_payload = self._preflight_failure_payload(
+                preflight, output_dir=output_dir
+            )
         run_payload.setdefault("output_dir", str(output_dir))
         run_payload.setdefault("gpu_wait_seconds", 0.0)
         run_payload.setdefault("active_run_time", run_payload.get("run_time") or 0.0)
@@ -1493,9 +1685,7 @@ done
             ) = self._record_validation_timing(payload)
             payload["validation_time_used"] = validation_time_used
             payload["validation_gpu_wait_time"] = validation_gpu_wait_time
-            payload["validation_preflight_time_used"] = (
-                validation_preflight_time_used
-            )
+            payload["validation_preflight_time_used"] = validation_preflight_time_used
         return payload
 
     def _build_execution_result(self, eval_payload: dict[str, Any]) -> ExecutionResult:
@@ -1528,11 +1718,11 @@ done
         state["validation_gpu_wait_time"] = float(
             eval_payload.get("validation_gpu_wait_time") or 0.0
         )
-        state["naturebench_attempt_index"] = int(
-            eval_payload["attempt_index"]
-        )
+        state["naturebench_attempt_index"] = int(eval_payload["attempt_index"])
         valid_solution = eval_payload["status_code"] == 200
-        validation_fitness = eval_payload.get("selection_score") if valid_solution else None
+        validation_fitness = (
+            eval_payload.get("selection_score") if valid_solution else None
+        )
         return state, {
             EXECUTION_OUTPUT: self._build_execution_result(eval_payload),
             VALIDATION_FITNESS: validation_fitness,
@@ -1554,7 +1744,9 @@ done
         valid_solution = eval_payload["status_code"] == 200
         return {
             EXECUTION_OUTPUT: self._build_execution_result(eval_payload),
-            TEST_FITNESS: eval_payload.get("aggregate_improvement") if valid_solution else None,
+            TEST_FITNESS: (
+                eval_payload.get("aggregate_improvement") if valid_solution else None
+            ),
             AUX_EVAL_INFO: dict(eval_payload),
             VALID_SOLUTION: valid_solution,
             VALID_SOLUTION_FEEDBACK: str(eval_payload.get("feedback") or ""),

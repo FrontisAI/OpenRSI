@@ -36,6 +36,12 @@ Key variables:
 
 ## 3. Local Docker Smoke
 
+For development on a trusted workstation without Docker, use the local-process
+quick path in [`../naturebench_local_quick/README.md`](../naturebench_local_quick/README.md).
+That path uses the same NatureBench adapter and evaluator protocol, but Conda is
+dependency isolation rather than a security sandbox and is not suitable for
+formal benchmark submissions.
+
 Pick one task that exists locally:
 
 ```bash

@@ -1,0 +1,26 @@
+naturebench_root: ${oc.env:NATUREBENCH_DATA_ROOT,.naturebench/data}
+tasks_root: tasks
+task_list:
+  - s42256-023-00611-x
+task_set_path: null
+eval_service_url: ${oc.env:NATUREBENCH_EVAL_SERVICE_URL,http://127.0.0.1:8321}
+batch_name: ${oc.env:NATUREBENCH_BATCH_NAME,naturebench-local}
+execution_mode: local
+workspace_root: ${oc.env:NATUREBENCH_WORKSPACE_ROOT,.naturebench/workspaces}
+docker_image: null
+gpu_devices: null
+local_python: ${oc.env:NATUREBENCH_LOCAL_PYTHON,''}
+local_conda_env: ${oc.env:NATUREBENCH_LOCAL_CONDA_ENV,naturebench-local}
+local_conda_executable: ${oc.env:CONDA_EXE,conda}
+local_terminate_grace_seconds: 5
+candidate_env_allowlist:
+  - XDG_CACHE_HOME
+  - MPLCONFIGDIR
+submit_repeats: 0
+eval_timeout: 3600
+execution_timeout: 1800
+candidate_preflight: true
+candidate_preflight_imports: true
+candidate_preflight_timeout: 45
+public_system_prompt: ""
+public_user_prompt: ""

@@ -173,6 +173,39 @@ OpenRSI contains several independently runnable stages rather than one synthetic
 | Configure and launch execution-grounded RL | [`OpenMLE-ERL/RL/README.md`](OpenMLE-ERL/RL/README.md) |
 | Run OpenMLE-Evo or a benchmark adapter | [`OpenMLE-Evo/README.md`](OpenMLE-Evo/README.md) |
 
+### Quick Start: Run One NatureBench Case Locally
+
+Run a real OpenMLE-Evo search and evaluation loop on
+`s42256-023-00611-x` (Categorical Counterfactual Outcome Estimation). The
+following smoke profile generates and evaluates one candidate; task data,
+generated code, and evaluation stay on the local machine.
+
+```bash
+# Continue from the Getting Started commands above.
+cd ..
+git clone https://github.com/FrontisAI/NatureBench.git
+cd OpenRSI/OpenMLE-Evo
+
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+conda env create -f environments/naturebench-local.yml
+
+export PRIMARY_KEY='your-api-key'
+.venv/bin/python scripts/run_naturebench_local.py \
+  --naturebench-repo ../../NatureBench \
+  --conda-env naturebench-local \
+  --model-base-url https://model.example/v1 \
+  --model-id served-model-name \
+  --smoke
+```
+
+The same runner also supports local or remote SGLang endpoints. Remove
+`--smoke` for the full single-task search profile. See the
+[local NatureBench tutorial](OpenMLE-Evo/benchmarks/naturebench_local_quick/README.md)
+for SGLang commands, the four-hour search budget, advanced overrides, and the
+local-execution security boundary.
+
 Model weights, task artifacts, training corpora, external benchmark environments, service credentials, and private infrastructure configuration are distributed separately from this source repository.
 
 ## 🗂️ Repository Contents

@@ -1,0 +1,29 @@
+name: naturebench-local
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - llvm-openmp
+  - lightgbm>=4,<5
+  - python-igraph>=0.11,<1
+  - leidenalg>=0.10,<1
+  - pip
+  - pip:
+      - anndata>=0.10,<0.13
+      - h5py>=3.10,<4
+      - huggingface-hub>=0.24
+      - loompy>=3,<4
+      - matplotlib>=3.8,<4
+      - networkx>=3,<4
+      - numpy>=1.26,<3
+      - pandas>=2,<3
+      - pyarrow>=15
+      - pyyaml>=6,<7
+      - requests>=2.31,<3
+      - scanpy>=1.10,<2
+      - scikit-learn>=1.4,<2
+      - scipy>=1.11,<2
+      - seaborn>=0.13,<1
+      - statsmodels>=0.14,<1
+      - umap-learn>=0.5,<1
+      - xgboost>=2,<4

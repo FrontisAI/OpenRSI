@@ -10,6 +10,7 @@ MLE-Bench and NatureBench Lite-v2 are parallel benchmark adapters over one share
 | --- | --- | --- |
 | MLE-Bench | `scripts/evaluate_airaevo.py` | [`benchmarks/mle_bench/`](benchmarks/mle_bench/) |
 | NatureBench Lite-v2 | `scripts/evaluate_naturebench.py` | [`benchmarks/naturebench_lite_v2/`](benchmarks/naturebench_lite_v2/) |
+| NatureBench local quick | `scripts/run_naturebench_local.py` | [`benchmarks/naturebench_local_quick/`](benchmarks/naturebench_local_quick/) |
 
 ## Repository Contents
 
@@ -34,6 +35,9 @@ cp .env.example .env
 
 After configuring `.env`, use `./scripts/run_standard.sh` for the standard MLE-Bench profile or follow the benchmark-specific runbook.
 
+For a one-candidate NatureBench check that executes generated code in a local
+Conda environment, follow [`benchmarks/naturebench_local_quick/README.md`](benchmarks/naturebench_local_quick/README.md).
+
 ## Documentation
 
 | Document | Contents |
@@ -41,6 +45,7 @@ After configuring `.env`, use `./scripts/run_standard.sh` for the standard MLE-B
 | [`docs/overview.md`](docs/overview.md) | Runtime architecture, benchmark adapters, execution profiles, and command overview |
 | [`docs/usage.md`](docs/usage.md) | MLE-Bench installation, configuration, launch, resume, outputs, and troubleshooting |
 | [`benchmarks/naturebench_lite_v2/RUNNING.md`](benchmarks/naturebench_lite_v2/RUNNING.md) | NatureBench Lite-v2 operations |
+| [`benchmarks/naturebench_local_quick/README.md`](benchmarks/naturebench_local_quick/README.md) | Single-task local NatureBench quick experiment |
 | [`docs/validation.md`](docs/validation.md) | Source-level and runtime validation boundary |
 | [`docs/mlebench_validation_split_instructions_22.md`](docs/mlebench_validation_split_instructions_22.md) | Fixed validation instructions for the 22-task MLE-Bench Lite split |
 | [`docs/source-manifest.md`](docs/source-manifest.md) | Included runtime scope and release adjustments |

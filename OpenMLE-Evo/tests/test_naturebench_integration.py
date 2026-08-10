@@ -94,6 +94,10 @@ def test_naturebench_build_tasks_writes_airaevo_config(tmp_path):
                     "batch_name": "unit-batch",
                     "execution_mode": "local",
                     "execution_timeout": 123,
+                    "local_python": "/opt/naturebench/bin/python",
+                    "local_conda_env": None,
+                    "local_terminate_grace_seconds": 2,
+                    "candidate_env_allowlist": ["XDG_CACHE_HOME"],
                 }
             }
         ),
@@ -115,6 +119,10 @@ def test_naturebench_build_tasks_writes_airaevo_config(tmp_path):
     assert task_cfg["eval_service_url"] == "http://127.0.0.1:8321"
     assert task_cfg["batch_name"] == "unit-batch"
     assert task_cfg["execution_timeout"] == 123
+    assert task_cfg["local_python"] == "/opt/naturebench/bin/python"
+    assert task_cfg["local_conda_env"] is None
+    assert task_cfg["local_terminate_grace_seconds"] == 2
+    assert task_cfg["candidate_env_allowlist"] == ["XDG_CACHE_HOME"]
     assert task_cfg["data_dir"].endswith("problem/data")
     assert "Predict the target" in task_cfg["task_description"]
     assert "DATA_DIR" in task_cfg["data_description"]
@@ -222,7 +230,13 @@ def test_naturebench_build_tasks_uses_official_scm_resource_lines(tmp_path):
         / "build_tasks.py",
     )
     naturebench_root = tmp_path / "NatureBench"
-    for task_name in ["cpu-task", "thu-task", "thu-shared-task", "amd-task", "amd-shared-task"]:
+    for task_name in [
+        "cpu-task",
+        "thu-task",
+        "thu-shared-task",
+        "amd-task",
+        "amd-shared-task",
+    ]:
         _write_fake_naturebench_task(naturebench_root, task_name=task_name)
     task_set_root = naturebench_root / "task-set"
     task_set_root.mkdir()
@@ -371,9 +385,13 @@ def test_naturebench_build_tasks_fails_when_scm_resource_lines_are_unreadable(
         stdout = ""
         stderr = "cat: /missing/task-set/gemini_3.5_flash_cpu_thu.txt: No such file"
 
-    monkeypatch.setattr(build_tasks.subprocess, "run", lambda *args, **kwargs: FailedProcess())
+    monkeypatch.setattr(
+        build_tasks.subprocess, "run", lambda *args, **kwargs: FailedProcess()
+    )
 
-    with pytest.raises(RuntimeError, match="Failed to read NatureBench resource task-set"):
+    with pytest.raises(
+        RuntimeError, match="Failed to read NatureBench resource task-set"
+    ):
         build_tasks.build_tasks(build_cfg_path, output_root=tmp_path / "airaevo_tasks")
 
 
@@ -911,7 +929,7 @@ def test_naturebench_scm_docker_uses_shared_gpu_slot_pool(tmp_path):
     assert "AIREVO_GPU_ID=9" in captured["remote_command"]
     assert "AIREVO_SHARED_SLOT" in captured["remote_command"]
     assert "AIREVO_SHARED_GPU_SLOTS=4" in captured["remote_command"]
-    assert 'slot_${AIREVO_SLOT}.lock' in captured["remote_command"]
+    assert "slot_${AIREVO_SLOT}.lock" in captured["remote_command"]
     assert "device=9" in captured["remote_command"]
     assert "nvidia-smi" in captured["remote_command"]
     assert "airaevo_gpu_has_live_shared_holder" in captured["remote_command"]
@@ -1019,8 +1037,7 @@ def test_naturebench_runner_uses_naturebench_task_and_prompt_paths():
         == "naturebench/aira_operators/improve_experience.yaml"
     )
     assert (
-        experience_paths["debug"]
-        == "naturebench/aira_operators/debug_experience.yaml"
+        experience_paths["debug"] == "naturebench/aira_operators/debug_experience.yaml"
     )
     assert (
         experience_paths["crossover"]
@@ -1285,12 +1302,7 @@ def test_naturebench_valid_final_score_requires_successful_node():
 def test_naturebench_skipped_submit_outputs_count_as_completed(tmp_path):
     runner = _load_module(
         "airaevo_runner_resume_naturebench",
-        REPO_ROOT
-        / "third_party"
-        / "aira-evo"
-        / "examples"
-        / "mle_bench"
-        / "runner.py",
+        REPO_ROOT / "third_party" / "aira-evo" / "examples" / "mle_bench" / "runner.py",
     )
 
     (tmp_path / "valid_code_final.py").write_text("print('best')", encoding="utf-8")
@@ -1456,11 +1468,7 @@ def test_naturebench_default_configs_skip_submit_and_reduce_search_artifacts():
     )
     search_cfg = yaml.safe_load(
         (
-            REPO_ROOT
-            / "tts_search"
-            / "configs"
-            / "search"
-            / "airaevo_naturebench.yaml"
+            REPO_ROOT / "tts_search" / "configs" / "search" / "airaevo_naturebench.yaml"
         ).read_text(encoding="utf-8")
     )
 
@@ -1551,9 +1559,7 @@ def test_generic_llm_converts_generation_kwargs_to_plain_containers(
                 },
                 "generation_kwargs": {
                     "temperature": 0.2,
-                    "extra_body": {
-                        "chat_template_kwargs": {"enable_thinking": True}
-                    },
+                    "extra_body": {"chat_template_kwargs": {"enable_thinking": True}},
                 },
             },
             "system_message_prompt_template": {
@@ -1609,9 +1615,7 @@ def test_naturebench_concurrent_attempts_keep_distinct_workspaces(tmp_path):
         def _run_solution(self, code: str, *, phase: str, attempt=None) -> dict:
             barrier.wait(timeout=5)
             output_dir = (
-                attempt.output_dir
-                if attempt is not None
-                else self._active_output_dir
+                attempt.output_dir if attempt is not None else self._active_output_dir
             )
             return {
                 "status_code": 0,
@@ -1657,9 +1661,7 @@ def test_naturebench_concurrent_attempts_keep_distinct_workspaces(tmp_path):
         results = list(executor.map(run_candidate, (1, 2)))
 
     output_dirs = {payload["output_dir"] for _, payload in results}
-    attempt_indices = {
-        state["naturebench_attempt_index"] for state, _ in results
-    }
+    attempt_indices = {state["naturebench_attempt_index"] for state, _ in results}
     assert len(output_dirs) == 2
     assert attempt_indices == {1, 2}
 
@@ -1744,11 +1746,7 @@ def test_naturebench_remote_tar_command_quotes_workspace_component():
         remote_workspace
     )
 
-    assert remote_command == (
-        "tar -C "
-        + shlex.quote(remote_workspace)
-        + " -xf -"
-    )
+    assert remote_command == ("tar -C " + shlex.quote(remote_workspace) + " -xf -")
 
 
 def test_naturebench_local_candidate_env_does_not_inherit_secrets(
@@ -1793,12 +1791,7 @@ def test_naturebench_local_candidate_env_does_not_inherit_secrets(
 def test_runner_config_redaction_removes_nested_api_keys():
     runner = _load_module(
         "airaevo_runner_redaction",
-        REPO_ROOT
-        / "third_party"
-        / "aira-evo"
-        / "examples"
-        / "mle_bench"
-        / "runner.py",
+        REPO_ROOT / "third_party" / "aira-evo" / "examples" / "mle_bench" / "runner.py",
     )
     payload = {
         "llm": {"api_key": "top-secret", "model_id": "unit-model"},
