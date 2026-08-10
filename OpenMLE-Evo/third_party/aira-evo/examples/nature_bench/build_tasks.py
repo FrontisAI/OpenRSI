@@ -52,7 +52,11 @@ def _visible_data_analysis_for_task(data_cfg: Any, task_name: str) -> str:
 
 
 def _plain(value: Any) -> Any:
-    return OmegaConf.to_container(value, resolve=True) if OmegaConf.is_config(value) else value
+    return (
+        OmegaConf.to_container(value, resolve=True)
+        if OmegaConf.is_config(value)
+        else value
+    )
 
 
 OFFICIAL_RESOURCE_LINE_DEFAULTS: dict[str, dict[str, Any]] = {
@@ -258,7 +262,9 @@ def _normalize_scm_roots(value: Any) -> list[str]:
     return [str(plain)]
 
 
-def _remote_task_records(data_cfg: Any, task_names: list[str]) -> dict[str, dict[str, Any]]:
+def _remote_task_records(
+    data_cfg: Any, task_names: list[str]
+) -> dict[str, dict[str, Any]]:
     scm_host = data_cfg.get("scm_host")
     if not scm_host:
         return {}
@@ -356,7 +362,11 @@ def build_tasks(config_path: Path, output_root: Path | None = None) -> None:
     if not tasks_root.is_absolute():
         tasks_root = naturebench_root / tasks_root
 
-    base_dir = output_root.resolve() if output_root is not None else Path(__file__).resolve().parent
+    base_dir = (
+        output_root.resolve()
+        if output_root is not None
+        else Path(__file__).resolve().parent
+    )
     base_dir.mkdir(parents=True, exist_ok=True)
 
     task_names = _task_names_from_cfg(data_cfg, tasks_root)
@@ -367,7 +377,9 @@ def build_tasks(config_path: Path, output_root: Path | None = None) -> None:
         for task_name in task_names
         if not (tasks_root / task_name / "metadata.json").exists()
     ]
-    remote_records = _remote_task_records(data_cfg, missing_local) if missing_local else {}
+    remote_records = (
+        _remote_task_records(data_cfg, missing_local) if missing_local else {}
+    )
 
     for task_name in task_names:
         task_package_dir = tasks_root / task_name
@@ -420,14 +432,27 @@ def build_tasks(config_path: Path, output_root: Path | None = None) -> None:
             "operator_family": "naturebench",
             "solver_defaults": "naturebench/evo.yaml",
             "execution_mode": str(data_cfg.get("execution_mode", "docker")),
-            "eval_service_url": str(data_cfg.get("eval_service_url", "http://127.0.0.1:8321")),
+            "eval_service_url": str(
+                data_cfg.get("eval_service_url", "http://127.0.0.1:8321")
+            ),
             "batch_name": str(data_cfg.get("batch_name", "airaevo-naturebench")),
             "workspace_root": data_cfg.get("workspace_root"),
             "docker_image": data_cfg.get("docker_image"),
+            "local_python": data_cfg.get("local_python"),
+            "local_conda_env": data_cfg.get("local_conda_env"),
+            "local_conda_executable": data_cfg.get("local_conda_executable"),
+            "local_terminate_grace_seconds": float(
+                data_cfg.get("local_terminate_grace_seconds", 5) or 0
+            ),
+            "candidate_env_allowlist": _plain(data_cfg.get("candidate_env_allowlist")),
             "scm_host": _line_value(line_spec, data_cfg, "scm_host"),
-            "scm_workspace_root": _line_value(line_spec, data_cfg, "scm_workspace_root"),
+            "scm_workspace_root": _line_value(
+                line_spec, data_cfg, "scm_workspace_root"
+            ),
             "scm_task_roots": _plain(data_cfg.get("scm_task_roots")),
-            "scm_eval_service_url": _line_value(line_spec, data_cfg, "scm_eval_service_url"),
+            "scm_eval_service_url": _line_value(
+                line_spec, data_cfg, "scm_eval_service_url"
+            ),
             "scm_container_eval_service_url": _line_value(
                 line_spec,
                 data_cfg,
@@ -438,7 +463,9 @@ def build_tasks(config_path: Path, output_root: Path | None = None) -> None:
             "visible_data_analysis": visible_data_analysis,
             "task_family_guidance": _task_family_guidance(metadata),
             "public_system_prompt": str(data_cfg.get("public_system_prompt", "")),
-            "public_user_prompt": str(data_cfg.get("public_user_prompt", _public_user_prompt())),
+            "public_user_prompt": str(
+                data_cfg.get("public_user_prompt", _public_user_prompt())
+            ),
             "metadata": metadata,
             "submit_repeats": int(
                 1

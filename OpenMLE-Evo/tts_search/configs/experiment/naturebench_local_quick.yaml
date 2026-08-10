@@ -1,0 +1,51 @@
+# @package _global_
+defaults:
+  - /experiment: default
+  - /litellm: sglang_qwen3_30b_a3b_thinking_2507
+  - /search: airaevo_naturebench
+  - override /data: naturebench_local
+  - override /sandbox: local
+  - _self_
+
+experiment_name: naturebench_local_quick
+time_budget: 14400
+model_plus_sandbox_time_budget: 14400
+n_samples_per_task: 1
+candidates_per_step: 1
+llm_concurrency: 4
+
+sandbox:
+  concurrency: 1
+  priority: 2
+  job_timeout: 1800
+  wait_timeout: 1800
+  use_clear_run_log_score: false
+
+search:
+  runner:
+    task_concurrency: 1
+    solver:
+      step_limit: 160
+      max_island_size: 160
+      num_generations: 80
+      individuals_per_generation: 2
+      max_debug_time: 1200
+      max_wall_time_secs: 21600
+      execution_timeout: 1800
+      available_packages:
+        - numpy
+        - scipy
+        - pandas
+        - scikit-learn
+        - h5py
+        - statsmodels
+        - xgboost
+        - lightgbm
+        - anndata
+        - scanpy
+        - umap-learn
+        - loompy
+        - networkx
+        - igraph
+        - matplotlib
+        - seaborn

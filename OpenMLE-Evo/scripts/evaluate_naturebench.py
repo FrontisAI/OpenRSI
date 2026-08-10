@@ -119,13 +119,20 @@ def _build_payloads(
             "eval_service_url": str(
                 _data_value(cfg, "eval_service_url", "http://127.0.0.1:8321")
             ),
-            "batch_name": str(
-                _data_value(cfg, "batch_name", str(cfg.experiment_name))
-            ),
+            "batch_name": str(_data_value(cfg, "batch_name", str(cfg.experiment_name))),
             "execution_mode": str(_data_value(cfg, "execution_mode", "docker")),
             "workspace_root": _data_value(cfg, "workspace_root"),
             "docker_image": _data_value(cfg, "docker_image"),
             "gpu_devices": _data_value(cfg, "gpu_devices"),
+            "local_python": _data_value(cfg, "local_python"),
+            "local_conda_env": _data_value(cfg, "local_conda_env"),
+            "local_conda_executable": _data_value(
+                cfg, "local_conda_executable", "conda"
+            ),
+            "local_terminate_grace_seconds": _data_value(
+                cfg, "local_terminate_grace_seconds", 5
+            ),
+            "candidate_env_allowlist": _data_value(cfg, "candidate_env_allowlist", []),
             "scm_host": _data_value(cfg, "scm_host"),
             "scm_workspace_root": _data_value(cfg, "scm_workspace_root"),
             "scm_task_roots": _data_value(cfg, "scm_task_roots"),
@@ -143,9 +150,7 @@ def _build_payloads(
             "candidate_preflight_timeout": _data_value(
                 cfg, "candidate_preflight_timeout", 45
             ),
-            "scm_gpu_wait_timeout": _data_value(
-                cfg, "scm_gpu_wait_timeout"
-            ),
+            "scm_gpu_wait_timeout": _data_value(cfg, "scm_gpu_wait_timeout"),
             "visible_data_analysis_root": _data_value(
                 cfg, "visible_data_analysis_root"
             ),

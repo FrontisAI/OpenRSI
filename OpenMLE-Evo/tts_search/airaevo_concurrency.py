@@ -3,12 +3,13 @@ from __future__ import annotations
 import asyncio
 import base64
 import math
+import multiprocessing
 import os
 import threading
 import time
 from contextlib import asynccontextmanager
 from contextlib import contextmanager
-from multiprocessing import Semaphore
+from multiprocessing.context import BaseContext
 from multiprocessing.managers import SyncManager
 from secrets import token_bytes
 from typing import Any, AsyncIterator, Iterator
@@ -24,33 +25,66 @@ class _ClientSemaphoreManager(SyncManager):
     pass
 
 
+class _ServerSemaphoreManager(SyncManager):
+    pass
+
+
+_server_llm_semaphore: Any | None = None
+_server_sandbox_semaphore: Any | None = None
+
+
+def _initialize_server_semaphores(llm_semaphore: Any, sandbox_semaphore: Any) -> None:
+    global _server_llm_semaphore, _server_sandbox_semaphore
+    _server_llm_semaphore = llm_semaphore
+    _server_sandbox_semaphore = sandbox_semaphore
+
+
+def _get_server_llm_semaphore() -> Any:
+    if _server_llm_semaphore is None:
+        raise RuntimeError("Shared LLM semaphore is not initialized")
+    return _server_llm_semaphore
+
+
+def _get_server_sandbox_semaphore() -> Any:
+    if _server_sandbox_semaphore is None:
+        raise RuntimeError("Shared sandbox semaphore is not initialized")
+    return _server_sandbox_semaphore
+
+
 _ClientSemaphoreManager.register("get_llm_semaphore")
 _ClientSemaphoreManager.register("get_sandbox_semaphore")
+_ServerSemaphoreManager.register(
+    "get_llm_semaphore",
+    callable=_get_server_llm_semaphore,
+)
+_ServerSemaphoreManager.register(
+    "get_sandbox_semaphore",
+    callable=_get_server_sandbox_semaphore,
+)
 
 
 class SharedConcurrencyServer:
-    def __init__(self, *, llm_concurrency: int, sandbox_concurrency: int) -> None:
-        self._llm_semaphore = Semaphore(llm_concurrency)
-        self._sandbox_semaphore = Semaphore(sandbox_concurrency)
+    def __init__(
+        self,
+        *,
+        llm_concurrency: int,
+        sandbox_concurrency: int,
+        mp_context: BaseContext | None = None,
+    ) -> None:
+        context = mp_context or multiprocessing.get_context()
+        self._llm_semaphore = context.Semaphore(llm_concurrency)
+        self._sandbox_semaphore = context.Semaphore(sandbox_concurrency)
         authkey = token_bytes(16)
-
-        class _ServerSemaphoreManager(SyncManager):
-            pass
-
-        _ServerSemaphoreManager.register(
-            "get_llm_semaphore",
-            callable=self._get_llm_semaphore,
-        )
-        _ServerSemaphoreManager.register(
-            "get_sandbox_semaphore",
-            callable=self._get_sandbox_semaphore,
-        )
 
         self._manager = _ServerSemaphoreManager(
             address=("127.0.0.1", 0),
             authkey=authkey,
+            ctx=context,
         )
-        self._manager.start()
+        self._manager.start(
+            initializer=_initialize_server_semaphores,
+            initargs=(self._llm_semaphore, self._sandbox_semaphore),
+        )
         host, port = self._manager.address
         self.env = {
             ENV_ENABLED: "1",
@@ -58,12 +92,6 @@ class SharedConcurrencyServer:
             ENV_PORT: str(port),
             ENV_AUTHKEY: base64.urlsafe_b64encode(authkey).decode("ascii"),
         }
-
-    def _get_llm_semaphore(self) -> Semaphore:
-        return self._llm_semaphore
-
-    def _get_sandbox_semaphore(self) -> Semaphore:
-        return self._sandbox_semaphore
 
     def shutdown(self) -> None:
         self._manager.shutdown()

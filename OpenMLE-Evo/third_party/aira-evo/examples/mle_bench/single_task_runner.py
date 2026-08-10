@@ -46,7 +46,9 @@ def _operator_paths_for_benchmark(
     *,
     experience_enabled: bool,
 ) -> dict[str, str]:
-    family = "naturebench" if str(benchmark).strip().lower() == "naturebench" else "mlebench"
+    family = (
+        "naturebench" if str(benchmark).strip().lower() == "naturebench" else "mlebench"
+    )
     prefix = f"{family}/aira_operators"
     paths = {
         "draft": f"{prefix}/draft.yaml",
@@ -108,10 +110,18 @@ def _merge_generation_kwargs(
     return merged
 
 
+def _redact_dojo_config_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    from tts_search.config_security import redact_sensitive_config
+
+    return dict(redact_sensitive_config(payload))
+
+
 def _prompt_content(message: dict[str, Any]) -> str:
     content = message.get("content")
     if isinstance(content, list):
-        return "\n".join(str(part.get("text") or "") for part in content if isinstance(part, dict))
+        return "\n".join(
+            str(part.get("text") or "") for part in content if isinstance(part, dict)
+        )
     return str(content or "")
 
 
@@ -223,7 +233,9 @@ def _coerce_bool(value: Any, *, default: bool = False) -> bool:
     return bool(value)
 
 
-def _nested_cfg_get(payload: dict[str, Any], keys: tuple[str, ...], default: Any) -> Any:
+def _nested_cfg_get(
+    payload: dict[str, Any], keys: tuple[str, ...], default: Any
+) -> Any:
     current: Any = payload
     for key in keys:
         if not isinstance(current, dict):
@@ -271,7 +283,9 @@ def _effective_submit_score(
     return numeric_submit_score
 
 
-def _final_score_source(selected_source: str | None, aux_source: Any | None) -> str | None:
+def _final_score_source(
+    selected_source: str | None, aux_source: Any | None
+) -> str | None:
     if selected_source == "random_no_valid":
         return "random_no_valid"
     return str(aux_source) if aux_source is not None else selected_source
@@ -375,7 +389,8 @@ def _select_best_available_node(
     candidate_nodes = [
         node
         for node in solver.journal.nodes
-        if not solver.journal.is_root_node(node) and str(getattr(node, "code", "") or "")
+        if not solver.journal.is_root_node(node)
+        and str(getattr(node, "code", "") or "")
     ]
     is_naturebench = str(benchmark).strip().lower() == "naturebench"
     if is_naturebench:
@@ -387,15 +402,16 @@ def _select_best_available_node(
         ]
     else:
         valid_nodes = [
-            node
-            for node in candidate_nodes
-            if _node_selection_score(node) is not None
+            node for node in candidate_nodes if _node_selection_score(node) is not None
         ]
     if valid_nodes:
         if is_naturebench:
             selected = max(
                 valid_nodes,
-                key=lambda node: (_naturebench_score_from_node(node), _node_sort_key(node)),
+                key=lambda node: (
+                    _naturebench_score_from_node(node),
+                    _node_sort_key(node),
+                ),
             )
         else:
             selected = max(valid_nodes, key=lambda node: node.metric)
@@ -728,7 +744,9 @@ def main() -> None:
     )
     solver_interpreter = PythonInterpreter(
         interpreter_cfg,
-        data_dir=Path(str(task_cfg.get("interpreter_data_dir") or task_cfg["data_dir"])),
+        data_dir=Path(
+            str(task_cfg.get("interpreter_data_dir") or task_cfg["data_dir"])
+        ),
     )
 
     client_cfg = ClientConfig(
@@ -750,7 +768,9 @@ def main() -> None:
     def build_prompt_config(prompt_payload: dict[str, Any]) -> JinjaPromptConfig:
         return JinjaPromptConfig(**_strip_target(dict(prompt_payload)))
 
-    def maybe_build_prompt_config(prompt_payload: dict[str, Any] | None) -> JinjaPromptConfig:
+    def maybe_build_prompt_config(
+        prompt_payload: dict[str, Any] | None,
+    ) -> JinjaPromptConfig:
         if prompt_payload is None:
             return JinjaPromptConfig()
         return build_prompt_config(prompt_payload)
@@ -771,16 +791,15 @@ def main() -> None:
         generation_kwargs = _merge_generation_kwargs(
             generation_kwargs,
             dict(
-                solver_defaults["operators"].get(name, {})
+                solver_defaults["operators"]
+                .get(name, {})
                 .get("llm", {})
                 .get("generation_kwargs", {})
             ),
         )
         generation_kwargs = _merge_generation_kwargs(
             generation_kwargs,
-            dict(
-                solver_operator_overrides.get("llm", {}).get("generation_kwargs", {})
-            ),
+            dict(solver_operator_overrides.get("llm", {}).get("generation_kwargs", {})),
         )
 
         return OperatorConfig(
@@ -842,11 +861,15 @@ def main() -> None:
         or base_solver_defaults.get("time_limit_secs")
     )
     solver_cfg = EvolutionarySolverConfig(
-        step_limit=int(solver_cfg_overrides.get("step_limit", solver_defaults["step_limit"])),
+        step_limit=int(
+            solver_cfg_overrides.get("step_limit", solver_defaults["step_limit"])
+        ),
         available_packages=list(
             solver_cfg_overrides.get(
                 "available_packages",
-                solver_defaults.get("available_packages", base_solver_defaults["available_packages"]),
+                solver_defaults.get(
+                    "available_packages", base_solver_defaults["available_packages"]
+                ),
             )
         ),
         operators=operators,
@@ -885,7 +908,9 @@ def main() -> None:
                 base_solver_defaults.get("max_llm_call_retries", 3),
             )
         ),
-        num_islands=int(solver_cfg_overrides.get("num_islands", solver_defaults["num_islands"])),
+        num_islands=int(
+            solver_cfg_overrides.get("num_islands", solver_defaults["num_islands"])
+        ),
         max_island_size=int(
             solver_cfg_overrides.get(
                 "max_island_size",
@@ -1017,7 +1042,7 @@ def main() -> None:
         "solver": asdict(solver_cfg),
     }
     (aira_evo_dir / "dojo_config.json").write_text(
-        json.dumps(dojo_config_payload, indent=2),
+        json.dumps(_redact_dojo_config_payload(dojo_config_payload), indent=2),
         encoding="utf-8",
     )
 
@@ -1035,7 +1060,8 @@ def main() -> None:
         experience_cards = [
             card
             for card in load_experience_cards(output_dir)
-            if (step_index := _step_index_from_experience_card(card)) is None or step_index in written_steps
+            if (step_index := _step_index_from_experience_card(card)) is None
+            or step_index in written_steps
         ]
         cards_by_node_id = {
             str(card.get("node_id")): card
@@ -1094,7 +1120,10 @@ def main() -> None:
                 )
                 final_sandbox_score = raw_scores.get(
                     "sandbox_score",
-                    aux_info.get("sandbox_score", aux_info.get("raw_score", aux_info.get("score"))),
+                    aux_info.get(
+                        "sandbox_score",
+                        aux_info.get("raw_score", aux_info.get("score")),
+                    ),
                 )
                 final_valid_score = raw_scores.get(
                     "sandbox_valid_score",
@@ -1105,7 +1134,9 @@ def main() -> None:
                     aux_info.get("sandbox_test_score", aux_info.get("test_score")),
                 )
                 final_score = final_selection_score
-                final_reward = aux_info.get("selection_reward", aux_info.get("validation_reward"))
+                final_reward = aux_info.get(
+                    "selection_reward", aux_info.get("validation_reward")
+                )
                 final_score_source = _final_score_source(
                     selected_source,
                     aux_info.get("selection_score_source"),
@@ -1123,7 +1154,9 @@ def main() -> None:
             all_submit_results = [submit_result]
         submit_result = select_best_submit_result(all_submit_results)
 
-        submit_raw_scores = dict(submit_result.get("raw_scores") or {}) if submit_result else {}
+        submit_raw_scores = (
+            dict(submit_result.get("raw_scores") or {}) if submit_result else {}
+        )
         submit_valid_score = submit_result.get("valid_score") if submit_result else None
         submit_test_score = submit_result.get("test_score") if submit_result else None
         submit_score = submit_score_from_result(submit_result)
@@ -1162,15 +1195,14 @@ def main() -> None:
             status = str(step["status"])
             status_count[status] = status_count.get(status, 0) + 1
 
-        leaderboard_needed = (
-            not is_naturebench
-            and (
-                submit_score is not None
-                or final_sandbox_score is not None
-                or bool(all_submit_results)
-            )
+        leaderboard_needed = not is_naturebench and (
+            submit_score is not None
+            or final_sandbox_score is not None
+            or bool(all_submit_results)
         )
-        leaderboard = eval_utils.load_leaderboard(task_cfg) if leaderboard_needed else None
+        leaderboard = (
+            eval_utils.load_leaderboard(task_cfg) if leaderboard_needed else None
+        )
         submit_grade, submit_medal = eval_utils.build_submit_grade_and_medal(
             submit_score,
             leaderboard,
@@ -1209,10 +1241,10 @@ def main() -> None:
 
         self_valid_oracle_score = None
         self_valid_oracle_source = None
-        is_self_valid = (
-            str(task.evaluation_protocol).strip().lower() not in {"method1_0616", "method2_0616"}
-            and bool(task_cfg.get("sandbox", {}).get("use_clear_run_log_score", False))
-        )
+        is_self_valid = str(task.evaluation_protocol).strip().lower() not in {
+            "method1_0616",
+            "method2_0616",
+        } and bool(task_cfg.get("sandbox", {}).get("use_clear_run_log_score", False))
         if is_self_valid:
             for source, score in (
                 ("final_sandbox_score", final_sandbox_score),
@@ -1275,7 +1307,9 @@ def main() -> None:
             "submit_test_score": submit_test_score,
             "submit_raw_scores": submit_raw_scores or None,
             "submit_score_source": submit_score_source,
-            "submit_reward": float(submit_reward) if submit_reward is not None else None,
+            "submit_reward": (
+                float(submit_reward) if submit_reward is not None else None
+            ),
             "submit_grade": submit_grade,
             "submit_medal": submit_medal,
             "submit_attempts": submit_attempts if len(submit_attempts) > 1 else None,
@@ -1295,16 +1329,16 @@ def main() -> None:
             "total_completion_tokens": total_completion_tokens,
             "total_tokens": total_tokens,
             "val_time": float(task.validation_time_used),
-            "naturebench_gpu_wait_time": float(
-                getattr(task, "validation_gpu_wait_time", 0.0)
-            )
-            if is_naturebench
-            else None,
-            "naturebench_preflight_time": float(
-                getattr(task, "validation_preflight_time_used", 0.0)
-            )
-            if is_naturebench
-            else None,
+            "naturebench_gpu_wait_time": (
+                float(getattr(task, "validation_gpu_wait_time", 0.0))
+                if is_naturebench
+                else None
+            ),
+            "naturebench_preflight_time": (
+                float(getattr(task, "validation_preflight_time_used", 0.0))
+                if is_naturebench
+                else None
+            ),
             "test_time": test_time,
             "total_time": float(task.validation_time_used) + test_time,
             "total_model_time": total_model_time,
@@ -1329,7 +1363,9 @@ def main() -> None:
                 coerce_float(result.get("best_aggregate_improvement"))
                 for result in all_submit_results
             )
-            naturebench_best_candidates.append(coerce_float(final_aggregate_improvement))
+            naturebench_best_candidates.append(
+                coerce_float(final_aggregate_improvement)
+            )
             naturebench_best_scores = [
                 score for score in naturebench_best_candidates if score is not None
             ]
@@ -1411,7 +1447,9 @@ def main() -> None:
         )
         sandbox_score = raw_scores.get(
             "sandbox_score",
-            aux_info.get("sandbox_score", aux_info.get("raw_score", aux_info.get("score"))),
+            aux_info.get(
+                "sandbox_score", aux_info.get("raw_score", aux_info.get("score"))
+            ),
         )
         valid_score = raw_scores.get(
             "sandbox_valid_score",
@@ -1500,14 +1538,18 @@ def main() -> None:
             "prompt_tokens": int(usage["prompt_tokens"]),
             "completion_tokens": int(usage["completion_tokens"]),
             "total_tokens": int(usage["total_tokens"]),
-            "status": str(aux_info.get("status") or ("buggy" if node.is_buggy else "unknown")),
+            "status": str(
+                aux_info.get("status") or ("buggy" if node.is_buggy else "unknown")
+            ),
             "status_code": aux_info.get("status_code"),
             "model_time_used": float(usage["latency"]),
             "sandbox_time_used": sandbox_time_used,
             "model_plus_sandbox_time_used": float(usage["latency"]) + sandbox_time_used,
             "is_buggy": bool(node.is_buggy),
             "parent_steps": [
-                int(parent.step) - 1 for parent in list(node.parents or []) if parent.step
+                int(parent.step) - 1
+                for parent in list(node.parents or [])
+                if parent.step
             ],
             "node_id": node.id,
         }
@@ -1531,7 +1573,8 @@ def main() -> None:
             if isinstance(parent_selection_trace, dict):
                 card["parent_selection_trace"] = parent_selection_trace
                 selected_node_ids = {
-                    str(node_id) for node_id in parent_selection_trace.get("selected_node_ids", [])
+                    str(node_id)
+                    for node_id in parent_selection_trace.get("selected_node_ids", [])
                 }
                 selected_utilities = [
                     candidate
@@ -1683,7 +1726,10 @@ def main() -> None:
         ):
             submit_result = task.evaluate_code(best_code, phase="test")
             submit_results.append(submit_result)
-            if submit_result["status_code"] == 200 and submit_result.get("run_time") is not None:
+            if (
+                submit_result["status_code"] == 200
+                and submit_result.get("run_time") is not None
+            ):
                 test_time += float(submit_result["run_time"])
 
             raw_log = str(submit_result.get("raw_run_log") or "")
