@@ -276,3 +276,13 @@ Third-party components and dependencies retain their own terms; see [NOTICE](NOT
 ## 🙏 Acknowledgements
 
 We thank the communities behind Qwen, SLIME, Ray, SGLang, Megatron-LM, Transformers, MLE-Bench, NatureBench, and the broader executable AI4AI ecosystem.
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=FrontisAI%2FOpenRSI&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=FrontisAI/OpenRSI&type=date&theme=dark&legend=top-left&sealed_token=UWbC_3WnIT3WDncJggzeSTAlJGo18V4FuMpMk_g3mE4bJ4Wf-8gJbcqVJjIIYMkrsCgnZOSiAOdeY7zdVmumjZxTDEMDQ54DVIw7xBdh39hvcZTqtHr76w" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=FrontisAI/OpenRSI&type=date&legend=top-left&sealed_token=UWbC_3WnIT3WDncJggzeSTAlJGo18V4FuMpMk_g3mE4bJ4Wf-8gJbcqVJjIIYMkrsCgnZOSiAOdeY7zdVmumjZxTDEMDQ54DVIw7xBdh39hvcZTqtHr76w" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=FrontisAI/OpenRSI&type=date&legend=top-left&sealed_token=UWbC_3WnIT3WDncJggzeSTAlJGo18V4FuMpMk_g3mE4bJ4Wf-8gJbcqVJjIIYMkrsCgnZOSiAOdeY7zdVmumjZxTDEMDQ54DVIw7xBdh39hvcZTqtHr76w" />
+ </picture>
+</a>
