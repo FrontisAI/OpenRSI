@@ -20,6 +20,10 @@ Silicon, produced a positive score in prior local experiments, and lets users
 inspect a real multi-node trajectory. This example is a functionality demo,
 not a substitute for reporting the full NatureBench benchmark.
 
+See [Reading the local NatureBench trajectory](RESULTS.md) for an illustrative
+end-to-end comparison, best-so-far visualization, operator ancestry, and
+sub-dataset score attribution.
+
 ## Security boundary
 
 Conda isolates Python dependencies, not files, networking, processes, or host
