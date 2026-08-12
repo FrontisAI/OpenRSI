@@ -46,6 +46,7 @@ Conda environment, follow [`benchmarks/naturebench_local_quick/README.md`](bench
 | [`docs/usage.md`](docs/usage.md) | MLE-Bench installation, configuration, launch, resume, outputs, and troubleshooting |
 | [`benchmarks/naturebench_lite_v2/RUNNING.md`](benchmarks/naturebench_lite_v2/RUNNING.md) | NatureBench Lite-v2 operations |
 | [`benchmarks/naturebench_local_quick/README.md`](benchmarks/naturebench_local_quick/README.md) | Single-task local NatureBench quick experiment |
+| [`benchmarks/naturebench_local_quick/RESULTS.md`](benchmarks/naturebench_local_quick/RESULTS.md) | Example trajectory, operator ancestry, and score attribution |
 | [`docs/validation.md`](docs/validation.md) | Source-level and runtime validation boundary |
 | [`docs/mlebench_validation_split_instructions_22.md`](docs/mlebench_validation_split_instructions_22.md) | Fixed validation instructions for the 22-task MLE-Bench Lite split |
 | [`docs/source-manifest.md`](docs/source-manifest.md) | Included runtime scope and release adjustments |

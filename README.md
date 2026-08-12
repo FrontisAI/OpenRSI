@@ -204,7 +204,9 @@ The same runner also supports local or remote SGLang endpoints. Remove
 `--smoke` for the full single-task search profile. See the
 [local NatureBench tutorial](OpenMLE-Evo/benchmarks/naturebench_local_quick/README.md)
 for SGLang commands, the four-hour search budget, advanced overrides, and the
-local-execution security boundary.
+local-execution security boundary, then read the
+[example trajectory analysis](OpenMLE-Evo/benchmarks/naturebench_local_quick/RESULTS.md)
+for score attribution and optimization dynamics.
 
 Model weights, task artifacts, training corpora, external benchmark environments, service credentials, and private infrastructure configuration are distributed separately from this source repository.
 
