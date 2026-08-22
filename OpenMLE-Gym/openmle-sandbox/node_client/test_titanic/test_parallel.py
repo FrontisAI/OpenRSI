@@ -1,4 +1,5 @@
 import asyncio
+import secrets
 import random
 
 
@@ -305,7 +306,7 @@ async def get_sandbox_result(
             if submit_resp.status_code in transient_submit_statuses and submit_attempt < submit_connect_retries:
                 retry_delay = retry_after_seconds(
                     submit_resp,
-                    min(30.0, 1.5 ** submit_attempt) + random.uniform(0.0, 1.0),
+                    min(30.0, 1.5 ** submit_attempt) + secrets.SystemRandom().uniform(0.0, 1.0),
                 )
                 print(
                     f"WARNING: transient submit status {submit_resp.status_code} trace_id={trace_id}; "
@@ -324,7 +325,7 @@ async def get_sandbox_result(
         ) as e:
             error_detail = format_httpx_error(e, BASE_URL)
             if submit_attempt < submit_connect_retries:
-                retry_delay = min(30.0, 1.5 ** submit_attempt) + random.uniform(0.0, 1.0)
+                retry_delay = min(30.0, 1.5 ** submit_attempt) + secrets.SystemRandom().uniform(0.0, 1.0)
                 print(
                     f"WARNING: transient submit error to {BASE_URL}: {error_detail}; trace_id={trace_id}; "
                     f"retry {submit_attempt}/{submit_connect_retries} in {retry_delay:.2f}s",
@@ -371,7 +372,7 @@ async def get_sandbox_result(
             if r.status_code in (502, 503, 504, 429):
                 if poll_error_retries < max_poll_error_retries:
                     poll_error_retries += 1
-                    retry_delay = min(5.0, 1.0 + 0.25 * poll_error_retries) + random.uniform(0.0, 0.5)
+                    retry_delay = min(5.0, 1.0 + 0.25 * poll_error_retries) + secrets.SystemRandom().uniform(0.0, 0.5)
                     print(
                         f"WARNING: transient poll status {r.status_code} for {job_id}, "
                         f"retry {poll_error_retries}/{max_poll_error_retries} in {retry_delay:.2f}s",
@@ -383,7 +384,7 @@ async def get_sandbox_result(
             error_detail = format_httpx_error(e, f"{BASE_URL}/api/v1/jobs/{job_id}")
             if poll_error_retries < max_poll_error_retries:
                 poll_error_retries += 1
-                retry_delay = min(5.0, 1.0 + 0.25 * poll_error_retries) + random.uniform(0.0, 0.5)
+                retry_delay = min(5.0, 1.0 + 0.25 * poll_error_retries) + secrets.SystemRandom().uniform(0.0, 0.5)
                 print(
                     f"WARNING: transient poll transport error for {job_id}: {error_detail}; "
                     f"retry {poll_error_retries}/{max_poll_error_retries} in {retry_delay:.2f}s",
@@ -399,13 +400,13 @@ async def get_sandbox_result(
         status = data.get("status")
         print(f"job_id:{job_id}, status({time.monotonic()}):{status}")
         if status in wait_status:
-            await asyncio.sleep(poll_interval + random.uniform(0.0, 1.0))
+            await asyncio.sleep(poll_interval + secrets.SystemRandom().uniform(0.0, 1.0))
             continue
         if status in finished_status:
             return 200, data
         malformed_poll_retries += 1
         if malformed_poll_retries <= max_malformed_poll_retries:
-            retry_delay = min(5.0, 1.0 + malformed_poll_retries) + random.uniform(0.0, 0.5)
+            retry_delay = min(5.0, 1.0 + malformed_poll_retries) + secrets.SystemRandom().uniform(0.0, 0.5)
             print(
                 f"WARNING: unexpected poll body for {job_id}: status={status}; "
                 f"retry {malformed_poll_retries}/{max_malformed_poll_retries} in {retry_delay:.2f}s",
