@@ -491,8 +491,6 @@ async def eval_rollout_single_dataset(
     """
     assert not args.group_rm, "Group RM is not supported for eval rollout"
 
-    global EVAL_PROMPT_DATASET
-
     cache_key = dataset_cfg.cache_key + (args.hf_checkpoint, args.apply_chat_template)
     if cache_key not in EVAL_PROMPT_DATASET:
         tokenizer = load_tokenizer(args.hf_checkpoint, trust_remote_code=True)
