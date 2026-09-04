@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import shlex
 import signal
 import subprocess
@@ -48,6 +49,10 @@ _GPU_WAIT_MARKER_RE = re.compile(
 )
 _GPU_WAIT_TIMEOUT_MARKER = "__AIREVO_GPU_WAIT_TIMED_OUT__=1"
 _IMPORT_PREFLIGHT_MARKER = "__AIREVO_IMPORT_PREFLIGHT__="
+_EVAL_CONTROL_TOKEN_HEADER = "X-NatureBench-Control-Token"
+_EVAL_CONTROL_ENDPOINTS = frozenset(
+    {"register", "start_timer", "resume_timer", "pause_timer"}
+)
 _CANDIDATE_ENV_ALLOWLIST = frozenset(
     {
         "CUDA_VISIBLE_DEVICES",
@@ -90,6 +95,11 @@ class NatureBenchTask(Task):
         self.evaluation_protocol = "naturebench"
         self.execution_mode = str(self.cfg.get("execution_mode", "docker")).lower()
         self.eval_service_url = str(self.cfg["eval_service_url"]).rstrip("/")
+        self.eval_control_token_file = str(
+            self.cfg.get("eval_control_token_file")
+            or os.environ.get("NATUREBENCH_EVAL_CONTROL_TOKEN_FILE")
+            or ""
+        ).strip()
         self.scm_host = str(self.cfg.get("scm_host") or "")
         self.scm_workspace_root = str(self.cfg.get("scm_workspace_root") or "")
         self.scm_eval_service_url = str(
@@ -139,6 +149,8 @@ class NatureBenchTask(Task):
         self.attempt_index = 0
         self._eval_service_registered = False
         self._eval_service_timer_started = False
+        self._eval_control_token: str | None = None
+        self._eval_token: str | None = None
         self._scm_task_root_cache: str | None = None
         self._import_preflight_cache: dict[str, str | None] = {}
 
@@ -583,6 +595,52 @@ class NatureBenchTask(Task):
             )
         return str(self._eval_service_out_dir())
 
+    def _uses_token_eval_contract(self) -> bool:
+        return bool(self.eval_control_token_file)
+
+    def _load_eval_control_token(self) -> str:
+        if self._eval_control_token is not None:
+            return self._eval_control_token
+        if not self.eval_control_token_file:
+            raise RuntimeError("NatureBench eval control token file is not configured")
+        token_path = Path(self.eval_control_token_file).expanduser()
+        try:
+            token = token_path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise RuntimeError(
+                f"Could not read NatureBench eval control token file: {token_path}"
+            ) from exc
+        if not token:
+            raise RuntimeError(
+                f"NatureBench eval control token file is empty: {token_path}"
+            )
+        self._eval_control_token = token
+        return token
+
+    def _load_or_create_eval_token(self) -> str:
+        if self._eval_token is not None:
+            return self._eval_token
+        control_token = self._load_eval_control_token()
+        token_path = self._eval_service_out_dir() / "eval_token.txt"
+        token_path.parent.mkdir(parents=True, exist_ok=True)
+        if token_path.is_file():
+            token = token_path.read_text(encoding="utf-8").strip()
+            if token and not secrets.compare_digest(token, control_token):
+                self._eval_token = token
+                return token
+
+        token = secrets.token_urlsafe(32)
+        while secrets.compare_digest(token, control_token):
+            token = secrets.token_urlsafe(32)
+        temporary_path = token_path.with_name(
+            f".{token_path.name}.{os.getpid()}.{threading.get_ident()}.tmp"
+        )
+        temporary_path.write_text(token + "\n", encoding="utf-8")
+        temporary_path.chmod(0o600)
+        temporary_path.replace(token_path)
+        self._eval_token = token
+        return token
+
     def _solve_timeout_seconds(self) -> int:
         candidates = [
             self.time_budget,
@@ -623,21 +681,31 @@ class NatureBenchTask(Task):
         with self._state_lock:
             self.attempt_index += 1
             attempt_index = self.attempt_index
-        workspace = self._workspace_root() / (
+        attempt_root = self._workspace_root() / (
             f"{self._safe_path_component(self.task_name)}_"
             f"{self._safe_path_component(phase)}_{attempt_index}"
+        )
+        workspace = (
+            attempt_root / "workspace"
+            if self._uses_token_eval_contract()
+            else attempt_root
         )
         output_dir = workspace / "output"
         output_dir.mkdir(parents=True, exist_ok=True)
         scm_workspace = None
         if self._uses_scm():
-            scm_workspace = "/".join(
+            scm_attempt_root = "/".join(
                 [
                     self.scm_workspace_root.rstrip("/"),
                     self._safe_path_component(self.batch_name),
                     self._safe_path_component(self.task_name),
                     f"{self._safe_path_component(phase)}_{attempt_index}",
                 ]
+            )
+            scm_workspace = (
+                f"{scm_attempt_root}/workspace"
+                if self._uses_token_eval_contract()
+                else scm_attempt_root
             )
         return _AttemptContext(
             index=attempt_index,
@@ -970,10 +1038,13 @@ import urllib.request
 
 req = json.loads(sys.stdin.read())
 data = None if req["payload"] is None else json.dumps(req["payload"]).encode("utf-8")
+headers = dict(req.get("headers") or {})
+if data is not None:
+    headers["Content-Type"] = "application/json"
 request = urllib.request.Request(
     req["url"],
     data=data,
-    headers={"Content-Type": "application/json"} if data is not None else {},
+    headers=headers,
     method=req["method"],
 )
 try:
@@ -991,6 +1062,7 @@ except Exception as exc:
             "url": f"{self.scm_eval_service_url}/{endpoint.lstrip('/')}",
             "payload": payload,
             "timeout": timeout,
+            "headers": self._eval_request_headers(endpoint),
         }
         process = self._ssh(
             "python3 -c " + shlex.quote(script),
@@ -1465,10 +1537,12 @@ done
     ) -> dict[str, Any]:
         if self._uses_scm():
             return self._remote_json_request(endpoint, payload, timeout=timeout)
+        headers = {"Content-Type": "application/json"}
+        headers.update(self._eval_request_headers(endpoint))
         request = urllib.request.Request(
             f"{self.eval_service_url}/{endpoint.lstrip('/')}",
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=headers,
             method="POST",
         )
         try:
@@ -1481,9 +1555,35 @@ done
                 f"HTTP {exc.code}: {body}"
             ) from exc
 
-    def _ensure_eval_service_registered(self) -> None:
+    def _eval_request_headers(self, endpoint: str) -> dict[str, str]:
+        normalized_endpoint = endpoint.strip("/")
+        if (
+            self._uses_token_eval_contract()
+            and normalized_endpoint in _EVAL_CONTROL_ENDPOINTS
+        ):
+            return {_EVAL_CONTROL_TOKEN_HEADER: self._load_eval_control_token()}
+        return {}
+
+    def _registration_out_dir_for_output(self, output_dir: str | Path) -> str:
+        if not self._uses_token_eval_contract():
+            return self._eval_service_out_dir_value()
+        output_path = Path(str(output_dir))
+        workspace = output_path.parent
+        if output_path.name != "output" or workspace.name != "workspace":
+            raise RuntimeError(
+                "Token-based NatureBench evaluation requires an "
+                "<attempt>/workspace/output directory"
+            )
+        return str(workspace.parent)
+
+    def _ensure_eval_service_registered(
+        self,
+        *,
+        out_dir: str | None = None,
+        refresh: bool = False,
+    ) -> None:
         with self._eval_service_lock:
-            if self._eval_service_registered:
+            if self._eval_service_registered and not refresh:
                 return
             payload: dict[str, Any] = {
                 "task_name": self.task_name,
@@ -1493,10 +1593,15 @@ done
                     else str(Path(self.task_dir).resolve())
                 ),
                 "timeout": self._solve_timeout_seconds(),
-                "out_dir": self._eval_service_out_dir_value(),
+                "out_dir": out_dir or self._eval_service_out_dir_value(),
                 "batch_name": self.batch_name,
             }
-            if bool(self.cfg.get("force_eval_register", False)):
+            if self._uses_token_eval_contract():
+                payload["eval_token"] = self._load_or_create_eval_token()
+            if (
+                bool(self.cfg.get("force_eval_register", False))
+                and not self._eval_service_registered
+            ):
                 payload["force"] = True
             response = self._post_json("register", payload, timeout=10)
             status = response.get("status")
@@ -1519,13 +1624,22 @@ done
             self._eval_service_timer_started = True
 
     def _post_evaluate(self, output_dir: str | Path) -> dict[str, Any]:
-        self._ensure_eval_service_registered()
-        payload = {
-            "task_name": self.task_name,
-            "batch_name": self.batch_name,
-            "output_dir": str(output_dir),
-        }
-        return self._post_json("evaluate", payload, timeout=self.eval_timeout)
+        with self._eval_service_lock:
+            if self._uses_token_eval_contract():
+                self._ensure_eval_service_registered(
+                    out_dir=self._registration_out_dir_for_output(output_dir),
+                    refresh=True,
+                )
+            else:
+                self._ensure_eval_service_registered()
+            payload = {
+                "task_name": self.task_name,
+                "batch_name": self.batch_name,
+                "output_dir": str(output_dir),
+            }
+            if self._uses_token_eval_contract():
+                payload["eval_token"] = self._load_or_create_eval_token()
+            return self._post_json("evaluate", payload, timeout=self.eval_timeout)
 
     def _annotate_eval_payload(
         self,

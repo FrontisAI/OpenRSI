@@ -69,6 +69,15 @@ export PRIMARY_KEY='your-api-key'
 Credentials are read only from `PRIMARY_KEY`; they are not written into Hydra
 config snapshots.
 
+Current NatureBench releases protect evaluator registration and timer controls
+with a service control token. When this launcher starts the evaluator, it
+creates a private token file under the experiment output and configures the
+controller automatically; the token is not exposed to generated candidate
+code. If reusing an evaluator that was started separately with a non-default
+token path, pass the same path with `--eval-control-token-file PATH`. The
+launcher remains compatible with older NatureBench checkouts that do not use
+control tokens.
+
 ### Self-hosted SGLang model
 
 Start SGLang before starting OpenMLE-Evo. The model path, GPU selection, tensor

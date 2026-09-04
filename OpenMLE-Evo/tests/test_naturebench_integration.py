@@ -781,6 +781,127 @@ def test_naturebench_task_registers_eval_service_once_before_evaluation(tmp_path
     }
 
 
+def test_naturebench_task_uses_token_contract_and_rebinds_each_attempt(tmp_path):
+    base_task = _load_module(
+        "naturebench_base_task_token_contract",
+        REPO_ROOT
+        / "third_party"
+        / "aira-evo"
+        / "examples"
+        / "nature_bench"
+        / "base_task.py",
+    )
+
+    control_token_file = tmp_path / "eval-control-token"
+    control_token_file.write_text("service-control-token\n", encoding="utf-8")
+    calls = []
+
+    class TokenContractTask(base_task.NatureBenchTask):
+        def _run_solution(self, code: str, *, phase: str, attempt=None) -> dict:
+            return {
+                "status_code": 0,
+                "status": "success",
+                "raw_run_log": "ran candidate",
+                "clear_run_log": "ran candidate",
+                "feedback": "execution succeeded",
+                "run_time": 0.25,
+                "output_dir": str(attempt.output_dir),
+            }
+
+        def _post_json(
+            self,
+            endpoint: str,
+            payload: dict,
+            *,
+            timeout: int | float,
+        ) -> dict:
+            calls.append((endpoint, dict(payload), timeout))
+            if endpoint in {"register", "start_timer"}:
+                return {"status": "ok"}
+            attempt_number = len([call for call in calls if call[0] == "evaluate"])
+            return {
+                "aggregate_improvement": attempt_number / 10,
+                "best_aggregate_improvement": attempt_number / 10,
+                "raw_scores": {},
+                "per_instance_improvement": {},
+                "attempt": attempt_number,
+            }
+
+    task_package_dir = tmp_path / "task-package"
+    data_dir = task_package_dir / "problem" / "data"
+    data_dir.mkdir(parents=True)
+    task = TokenContractTask(
+        {
+            "benchmark": "naturebench",
+            "task_name": "fake-nature-task",
+            "higher_is_better": True,
+            "data_dir": str(data_dir),
+            "problem_dir": str(data_dir.parent),
+            "task_dir": str(task_package_dir),
+            "workspace_root": str(tmp_path / "workspaces"),
+            "eval_service_url": "http://127.0.0.1:8321",
+            "eval_control_token_file": str(control_token_file),
+            "batch_name": "unit-batch",
+            "execution_mode": "local",
+            "task_description": "Do the fake task.",
+            "data_description": "Use DATA_DIR.",
+            "execution_timeout": 600,
+        },
+        time_budget=14400,
+    )
+
+    state, _ = task.prepare()
+    task.step_task(state, "print('first')")
+    task.step_task(state, "print('second')")
+
+    assert [endpoint for endpoint, _, _ in calls] == [
+        "register",
+        "start_timer",
+        "evaluate",
+        "register",
+        "evaluate",
+    ]
+    registrations = [
+        payload for endpoint, payload, _ in calls if endpoint == "register"
+    ]
+    evaluations = [payload for endpoint, payload, _ in calls if endpoint == "evaluate"]
+    assert registrations[0]["eval_token"] == registrations[1]["eval_token"]
+    assert evaluations == [
+        {
+            "task_name": "fake-nature-task",
+            "batch_name": "unit-batch",
+            "output_dir": str(
+                tmp_path
+                / "workspaces"
+                / "fake-nature-task_validation_1"
+                / "workspace"
+                / "output"
+            ),
+            "eval_token": registrations[0]["eval_token"],
+        },
+        {
+            "task_name": "fake-nature-task",
+            "batch_name": "unit-batch",
+            "output_dir": str(
+                tmp_path
+                / "workspaces"
+                / "fake-nature-task_validation_2"
+                / "workspace"
+                / "output"
+            ),
+            "eval_token": registrations[0]["eval_token"],
+        },
+    ]
+    assert registrations[0]["out_dir"].endswith("fake-nature-task_validation_1")
+    assert registrations[1]["out_dir"].endswith("fake-nature-task_validation_2")
+    assert "force" not in registrations[1]
+    assert task._solution_env(task._workspace_root())["EVAL_SERVICE_URL"]
+    assert (
+        "service-control-token"
+        not in task._solution_env(task._workspace_root()).values()
+    )
+
+
 def test_naturebench_scm_docker_uses_exclusive_gpu_pool_not_all_flag(tmp_path):
     base_task = _load_module(
         "naturebench_base_task_gpu",
