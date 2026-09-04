@@ -3,9 +3,14 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import socket
 import subprocess
 import sys
+import time
+import urllib.request
 from pathlib import Path
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -119,6 +124,50 @@ def test_local_solution_uses_configured_python(tmp_path):
     assert task.validation_data_dir in result["raw_run_log"]
 
 
+def test_current_eval_contract_adds_control_header_only_to_control_endpoints(
+    monkeypatch,
+    tmp_path,
+):
+    base_task = _base_task_module()
+    control_token_file = tmp_path / "eval-control-token"
+    control_token_file.write_text("private-control-token\n", encoding="utf-8")
+    task = base_task.NatureBenchTask(
+        _task_config(
+            tmp_path,
+            eval_control_token_file=str(control_token_file),
+        )
+    )
+    requests = []
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    def fake_urlopen(request, timeout):
+        requests.append((request, timeout))
+        return FakeResponse()
+
+    monkeypatch.setattr(base_task.urllib.request, "urlopen", fake_urlopen)
+
+    task._post_json("register", {"task_name": "local-test"}, timeout=10)
+    task._post_json("evaluate", {"eval_token": "opaque"}, timeout=10)
+
+    register_headers = {
+        key.lower(): value for key, value in requests[0][0].header_items()
+    }
+    evaluate_headers = {
+        key.lower(): value for key, value in requests[1][0].header_items()
+    }
+    assert register_headers["x-naturebench-control-token"] == "private-control-token"
+    assert "x-naturebench-control-token" not in evaluate_headers
+
+
 def test_local_timeout_terminates_process_group(tmp_path):
     if os.name != "posix":
         return
@@ -182,6 +231,62 @@ def test_local_launcher_helpers_validate_task_packages(tmp_path):
     )
     launcher._verify_task_packages(tmp_path, [task_id])
     assert json.loads(launcher._hydra_list([task_id])) == [task_id]
+
+
+def test_local_launcher_selects_control_token_file_for_current_service(tmp_path):
+    launcher = _load_module(
+        "naturebench_local_launcher_control_token",
+        REPO_ROOT / "scripts" / "run_naturebench_local.py",
+    )
+    naturebench_repo = tmp_path / "NatureBench"
+    naturebench_repo.mkdir()
+    (naturebench_repo / "eval_service.py").write_text(
+        'parser.add_argument("--control-token-file")\n',
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "output"
+
+    new_service_token = launcher._resolve_eval_control_token_file(
+        naturebench_repo=naturebench_repo,
+        output_dir=output_dir,
+        configured=None,
+        reusing_service=False,
+    )
+    assert new_service_token == output_dir / ".eval_service" / "control_token"
+
+    default_token = naturebench_repo / "eval_logs" / "eval_control_token"
+    default_token.parent.mkdir()
+    default_token.write_text("existing-token\n", encoding="utf-8")
+    reused_token = launcher._resolve_eval_control_token_file(
+        naturebench_repo=naturebench_repo,
+        output_dir=output_dir,
+        configured=None,
+        reusing_service=True,
+    )
+    assert reused_token == default_token
+
+
+def test_local_launcher_rejects_current_service_without_readable_control_token(
+    tmp_path,
+):
+    launcher = _load_module(
+        "naturebench_local_launcher_missing_control_token",
+        REPO_ROOT / "scripts" / "run_naturebench_local.py",
+    )
+    naturebench_repo = tmp_path / "NatureBench"
+    naturebench_repo.mkdir()
+    (naturebench_repo / "eval_service.py").write_text(
+        'parser.add_argument("--control-token-file")\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(RuntimeError, match="control token"):
+        launcher._resolve_eval_control_token_file(
+            naturebench_repo=naturebench_repo,
+            output_dir=tmp_path / "output",
+            configured=None,
+            reusing_service=True,
+        )
 
 
 def test_local_quick_example_targets_only_counterfactual_task():
@@ -275,3 +380,130 @@ def test_local_launcher_builds_ssh_model_tunnel_and_hydra_overrides():
         "litellm.model_list.0.litellm_params.model=openai/served-model",
         "litellm.model_list.0.litellm_params.base_url=http://127.0.0.1:31010/v1",
     ]
+
+
+def test_local_adapter_against_current_naturebench_service(tmp_path):
+    naturebench_repo_value = os.environ.get("NATUREBENCH_REPO")
+    if not naturebench_repo_value:
+        pytest.skip("set NATUREBENCH_REPO to run the external contract test")
+    naturebench_repo = Path(naturebench_repo_value).expanduser().resolve()
+    eval_service = naturebench_repo / "eval_service.py"
+    if not eval_service.is_file():
+        pytest.skip(f"NatureBench eval service is unavailable: {eval_service}")
+
+    task_dir = tmp_path / "task-package"
+    data_dir = task_dir / "problem" / "data"
+    evaluation_dir = task_dir / "evaluation"
+    data_dir.mkdir(parents=True)
+    evaluation_dir.mkdir()
+    (task_dir / "metadata.json").write_text(
+        json.dumps(
+            {
+                "performance_entries": [
+                    {
+                        "dataset_name": "fake-instance",
+                        "metrics": [
+                            {
+                                "name": "accuracy",
+                                "is_primary": True,
+                                "metric_direction": "higher_is_better",
+                                "sota_score": 0.5,
+                            }
+                        ],
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    (evaluation_dir / "evaluator.py").write_text(
+        "import json\n"
+        "import os\n"
+        "from pathlib import Path\n\n"
+        "def run_evaluation():\n"
+        "    score_path = Path(os.environ['OUTPUT_DIR']) / 'score.json'\n"
+        "    score = json.loads(score_path.read_text())['score']\n"
+        "    return {'fake-instance': {'accuracy': score}}\n",
+        encoding="utf-8",
+    )
+    control_token_file = tmp_path / "control-token"
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+        listener.bind(("127.0.0.1", 0))
+        port = int(listener.getsockname()[1])
+    service = subprocess.Popen(
+        [
+            sys.executable,
+            str(eval_service),
+            "--host",
+            "127.0.0.1",
+            "--port",
+            str(port),
+            "--control-token-file",
+            str(control_token_file),
+        ],
+        cwd=naturebench_repo,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    try:
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            try:
+                with urllib.request.urlopen(
+                    f"http://127.0.0.1:{port}/health", timeout=0.5
+                ) as response:
+                    if response.status == 200:
+                        break
+            except OSError:
+                pass
+            if service.poll() is not None:
+                break
+            time.sleep(0.05)
+        else:
+            pytest.fail("current NatureBench eval service did not become healthy")
+        assert service.poll() is None
+
+        task = _base_task_module().NatureBenchTask(
+            _task_config(
+                tmp_path,
+                task_name="current-contract-test",
+                task_dir=str(task_dir),
+                data_dir=str(data_dir),
+                problem_dir=str(data_dir.parent),
+                eval_service_url=f"http://127.0.0.1:{port}",
+                eval_control_token_file=str(control_token_file),
+                local_python=sys.executable,
+                batch_name="current-contract-batch",
+            ),
+            time_budget=60,
+        )
+        candidate = (
+            "import json, os\n"
+            "from pathlib import Path\n"
+            "output = Path(os.environ['OUTPUT_DIR'])\n"
+            "output.mkdir(parents=True, exist_ok=True)\n"
+            "(output / 'score.json').write_text(json.dumps({'score': SCORE}))\n"
+        )
+        first = task.evaluate_code(
+            candidate.replace("SCORE", "0.8"), phase="validation"
+        )
+        second = task.evaluate_code(
+            candidate.replace("SCORE", "0.6"), phase="validation"
+        )
+
+        assert first["aggregate_improvement"] == pytest.approx(0.6)
+        assert second["aggregate_improvement"] == pytest.approx(0.2)
+        assert second["best_aggregate_improvement"] == pytest.approx(0.6)
+        assert first["attempt"] == 1
+        assert second["attempt"] == 2
+        assert Path(first["output_dir"]).parent.name == "workspace"
+        assert Path(second["output_dir"]).parent.name == "workspace"
+        assert first["output_dir"] != second["output_dir"]
+    finally:
+        service.terminate()
+        try:
+            service.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            service.kill()
+            service.wait(timeout=5)

@@ -141,6 +141,51 @@ def _service_is_healthy(host: str, port: int) -> bool:
         return False
 
 
+def _eval_service_supports_control_token(naturebench_repo: Path) -> bool:
+    source = (naturebench_repo / "eval_service.py").read_text(
+        encoding="utf-8", errors="replace"
+    )
+    return "--control-token-file" in source
+
+
+def _resolve_eval_control_token_file(
+    *,
+    naturebench_repo: Path,
+    output_dir: Path,
+    configured: str | None,
+    reusing_service: bool,
+) -> Path | None:
+    if not _eval_service_supports_control_token(naturebench_repo):
+        if configured:
+            raise RuntimeError(
+                "--eval-control-token-file was provided, but this NatureBench "
+                "eval service does not support control tokens"
+            )
+        return None
+
+    if configured:
+        token_path = Path(configured).expanduser().resolve()
+    elif reusing_service:
+        token_path = naturebench_repo / "eval_logs" / "eval_control_token"
+    else:
+        token_path = output_dir / ".eval_service" / "control_token"
+
+    if token_path.exists() and not token_path.read_text(encoding="utf-8").strip():
+        raise RuntimeError(
+            f"NatureBench eval control token file is empty: {token_path}"
+        )
+    if reusing_service and not token_path.is_file():
+        raise RuntimeError(
+            "A current NatureBench eval service is already running, but its "
+            f"control token file is unavailable: {token_path}. Pass the file "
+            "used to start that service with --eval-control-token-file, or use "
+            "a free --eval-port."
+        )
+    if not reusing_service:
+        token_path.parent.mkdir(parents=True, exist_ok=True)
+    return token_path
+
+
 def _find_free_loopback_port(host: str = "127.0.0.1") -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
         listener.bind((host, 0))
@@ -371,6 +416,15 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--eval-port", type=int, default=8321)
     parser.add_argument("--eval-start-timeout", type=float, default=30)
     parser.add_argument(
+        "--eval-control-token-file",
+        default=None,
+        help=(
+            "Control-token file used by a current NatureBench eval service. "
+            "For a service started by this launcher, a private file under the "
+            "experiment output is used automatically."
+        ),
+    )
+    parser.add_argument(
         "--model-id",
         default=None,
         help="Model ID exposed by the OpenAI-compatible endpoint (the SGLang --served-model-name value).",
@@ -554,7 +608,14 @@ def main() -> None:
             model_id = _select_model_id(model_id, available)
             print(f"Using model {model_id} at {model_base_url}", flush=True)
 
-        if _service_is_healthy(args.eval_host, args.eval_port):
+        reusing_eval_service = _service_is_healthy(args.eval_host, args.eval_port)
+        eval_control_token_file = _resolve_eval_control_token_file(
+            naturebench_repo=naturebench_repo,
+            output_dir=output_dir,
+            configured=args.eval_control_token_file,
+            reusing_service=reusing_eval_service,
+        )
+        if reusing_eval_service:
             print(
                 f"Reusing healthy NatureBench eval service at "
                 f"http://{args.eval_host}:{args.eval_port}",
@@ -563,15 +624,20 @@ def main() -> None:
         else:
             eval_log_path = output_dir / "eval_service.log"
             eval_log_handle = eval_log_path.open("a", encoding="utf-8")
+            eval_command = [
+                str(runtime_python),
+                str(naturebench_repo / "eval_service.py"),
+                "--host",
+                args.eval_host,
+                "--port",
+                str(args.eval_port),
+            ]
+            if eval_control_token_file is not None:
+                eval_command.extend(
+                    ["--control-token-file", str(eval_control_token_file)]
+                )
             eval_process = subprocess.Popen(
-                [
-                    str(runtime_python),
-                    str(naturebench_repo / "eval_service.py"),
-                    "--host",
-                    args.eval_host,
-                    "--port",
-                    str(args.eval_port),
-                ],
+                eval_command,
                 cwd=naturebench_repo,
                 stdout=eval_log_handle,
                 stderr=subprocess.STDOUT,
@@ -590,6 +656,25 @@ def main() -> None:
                 f"Started local NatureBench eval service at "
                 f"http://{args.eval_host}:{args.eval_port}",
                 flush=True,
+            )
+
+        if eval_control_token_file is not None:
+            try:
+                control_token = eval_control_token_file.read_text(
+                    encoding="utf-8"
+                ).strip()
+            except OSError as exc:
+                raise RuntimeError(
+                    "NatureBench eval service became healthy without a readable "
+                    f"control token file: {eval_control_token_file}"
+                ) from exc
+            if not control_token:
+                raise RuntimeError(
+                    "NatureBench eval service control token file is empty: "
+                    f"{eval_control_token_file}"
+                )
+            child_env["NATUREBENCH_EVAL_CONTROL_TOKEN_FILE"] = str(
+                eval_control_token_file
             )
 
         command = [
