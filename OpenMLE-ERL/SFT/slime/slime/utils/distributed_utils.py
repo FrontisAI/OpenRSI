@@ -27,7 +27,6 @@ def init_gloo_group():
 
 def get_gloo_group():
     """Get the Gloo group for distributed communication."""
-    global GLOO_GROUP
     if GLOO_GROUP is None:
         raise RuntimeError("Gloo group has not been initialized. Call _init_gloo_group() first.")
     return GLOO_GROUP
