@@ -1053,7 +1053,6 @@ async def generate(args, sample: Sample, sampling_params, evaluation) -> Sample:
     # )
 
     # Check if we already have a cached parent selection for this group
-    global _parent_selection_cache
     cache_key = None if evaluation else group_index
     secondary_parent_program = None
     selection_metadata = {}

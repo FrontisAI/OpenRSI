@@ -626,13 +626,13 @@ def to_builtin(value):
     if hasattr(value, "model_dump"):
         try:
             return to_builtin(value.model_dump())
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Warning: Failed to convert model_dump for {type(value)}: {e}")
     if hasattr(value, "dict"):
         try:
             return to_builtin(value.dict())
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Warning: Failed to convert dict for {type(value)}: {e}")
     if hasattr(value, "__dict__"):
         return {
             k: to_builtin(v)

@@ -370,8 +370,8 @@ def get_db_connection():
         try:
             if not conn.closed:
                 conn.rollback()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Error rolling back connection: {e}")
         _DB_POOL.putconn(conn)
 
 
@@ -842,8 +842,8 @@ def cancel_job(job_id: str, api_key: str = Depends(verify_api_key)):
             if removed:
                 break
         redis_client.setex(f"job:{job_id}:cancelled", 3600, "1")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"Error cancelling job {job_id} in Redis: {e}")
 
     return {"message": "Job cancelled successfully", "removed_from_queue": removed}
 

@@ -585,5 +585,4 @@ def format_sandbox_feedback(status_code: int, payload: dict) -> str:
 
 
 if __name__ == "__main__":
-    # Test score2reward for all tasks
-    test_score2reward()
+    pass
