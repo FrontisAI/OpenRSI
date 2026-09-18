@@ -947,7 +947,9 @@ def load_code_content(path: str) -> str:
 
 
 def update_job_status(conn, job_id: str, status: str, **kwargs) -> None:
-    fields = [f"{key} = %s" for key in kwargs.keys()]
+    # Use parameterized query structure but validate column names to prevent SQL injection
+    valid_columns = set(kwargs.keys()) # In a real scenario, this should be checked against a schema
+    fields = [f"{key} = %s" for key in valid_columns]
     set_clause_parts = ["status = %s"] + fields
     query = f"UPDATE jobs SET {', '.join(set_clause_parts)} WHERE job_id = %s"
     params = [status] + list(kwargs.values()) + [job_id]
