@@ -3,7 +3,9 @@ from __future__ import annotations
 import csv
 import io
 import json
+import math
 import os
+import statistics
 import time
 import zipfile
 from pathlib import Path
@@ -14,7 +16,7 @@ from requests.adapters import HTTPAdapter
 from requests.auth import HTTPBasicAuth
 from urllib3.util.retry import Retry
 
-from .common import read_slugs_file
+from .common import json_safe, read_slugs_file
 
 
 BASE_URL = "https://www.kaggle.com/api/v1/competitions/{slug}/leaderboard/download"
@@ -107,6 +109,95 @@ def _extract_csv(content: bytes, slug: str) -> bytes:
         return data
 
 
+def _to_float(value: str) -> float | None:
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        number = float(text)
+    except ValueError:
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _select_score_column(header: list[str], rows: list[list[str]]) -> int | None:
+    """Pick the score column: an exact/partial ``score`` header, else the
+    right-most column whose present values are all numeric."""
+    lowered = [cell.strip().lower() for cell in header]
+    if "score" in lowered:
+        return lowered.index("score")
+    for index, name in enumerate(lowered):
+        if "score" in name:
+            return index
+    for index in range(len(header) - 1, -1, -1):
+        present = [row[index] for row in rows if index < len(row)]
+        numeric = [value for value in present if _to_float(value) is not None]
+        if present and len(numeric) == len(present):
+            return index
+    return None
+
+
+def _percentile(values: list[float], q: float) -> float:
+    """Linear-interpolation percentile (``q`` in [0, 100]) over ``values``."""
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+    rank = (q / 100.0) * (len(ordered) - 1)
+    low = math.floor(rank)
+    high = math.ceil(rank)
+    if low == high:
+        return ordered[low]
+    fraction = rank - low
+    return ordered[low] * (1.0 - fraction) + ordered[high] * fraction
+
+
+def summarize_leaderboard(source: str | Path | bytes) -> dict[str, Any]:
+    """Summarize a Kaggle public-leaderboard CSV into score statistics.
+
+    ``source`` is a CSV file path or its raw ``bytes``. Returns a JSON-safe dict
+    with the detected ``score_column`` and ``count``/``min``/``max``/``median``/
+    ``p10``/``p90``, or ``{"status": "unavailable", "reason": ...}`` when no
+    numeric score column is found. The ``min``/``max`` feed the consumer task
+    metadata's ``leaderboard_min``/``leaderboard_max`` fields.
+    """
+    if isinstance(source, bytes):
+        text = source.decode("utf-8-sig", errors="replace")
+    else:
+        text = Path(source).read_text(encoding="utf-8-sig")
+
+    rows = [row for row in csv.reader(io.StringIO(text)) if any(cell.strip() for cell in row)]
+    if len(rows) < 2:
+        return {"status": "unavailable", "reason": "no leaderboard rows"}
+
+    header, data_rows = rows[0], rows[1:]
+    index = _select_score_column(header, data_rows)
+    if index is None:
+        return {"status": "unavailable", "reason": "no numeric score column"}
+
+    values = [
+        number
+        for row in data_rows
+        if index < len(row)
+        for number in (_to_float(row[index]),)
+        if number is not None
+    ]
+    if not values:
+        return {"status": "unavailable", "reason": "score column has no numeric values"}
+
+    return json_safe(
+        {
+            "status": "ok",
+            "score_column": header[index].strip(),
+            "count": len(values),
+            "min": min(values),
+            "max": max(values),
+            "median": statistics.median(values),
+            "p10": _percentile(values, 10.0),
+            "p90": _percentile(values, 90.0),
+        }
+    )
+
+
 def download_leaderboards(
     slugs_file: str | Path,
     out_dir: str | Path,
@@ -114,6 +205,7 @@ def download_leaderboards(
     timeout: int = 120,
     sleep_seconds: float = 1.0,
     execute: bool = False,
+    summarize: bool = False,
 ) -> list[dict[str, Any]]:
     slugs = read_slugs_file(slugs_file)
     if not slugs:
@@ -143,8 +235,12 @@ def download_leaderboards(
             if response.status_code != 200:
                 preview = response.text[:1000].replace("\n", " ")
                 raise RuntimeError(f"HTTP {response.status_code}: {preview}")
-            target.write_bytes(_extract_csv(response.content, slug))
-            results.append({"slug": slug, "status": "ok", "target": str(target)})
+            csv_bytes = _extract_csv(response.content, slug)
+            target.write_bytes(csv_bytes)
+            result = {"slug": slug, "status": "ok", "target": str(target)}
+            if summarize:
+                result["summary"] = summarize_leaderboard(csv_bytes)
+            results.append(result)
         except Exception as exc:
             results.append({"slug": slug, "status": "failed", "error": str(exc), "target": str(target)})
         if index < len(slugs):
