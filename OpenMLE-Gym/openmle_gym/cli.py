@@ -160,6 +160,11 @@ def build_parser() -> argparse.ArgumentParser:
     leaderboard.add_argument("--kaggle-json", default=None, help="Optional Kaggle JSON credential file.")
     leaderboard.add_argument("--timeout", type=int, default=120, help="HTTP timeout in seconds.")
     leaderboard.add_argument("--sleep-seconds", type=float, default=1.0, help="Delay between requests.")
+    leaderboard.add_argument(
+        "--summarize",
+        action="store_true",
+        help="Attach a score-distribution summary (count/min/max/median/p10/p90) to each downloaded leaderboard.",
+    )
     _add_execute_flag(leaderboard)
     _add_partial_success_flag(leaderboard)
 
@@ -259,6 +264,7 @@ def main(argv: list[str] | None = None) -> int:
                 timeout=args.timeout,
                 sleep_seconds=args.sleep_seconds,
                 execute=args.execute,
+                summarize=args.summarize,
             ),
             allow_partial_success=args.allow_partial_success,
         )
