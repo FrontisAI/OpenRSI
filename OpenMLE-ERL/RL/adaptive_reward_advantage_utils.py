@@ -250,18 +250,26 @@ def group_samples_by_group_index(args, samples) -> list[list]:
         return samples
 
     grouped: dict[int, list] = defaultdict(list)
-    fallback_groups: list[list] = []
-    for idx, sample in enumerate(samples):
+    ungrouped: list = []
+    for sample in samples:
         group_index = getattr(sample, "group_index", None)
         if group_index is None:
-            fallback_groups.append([sample])
+            ungrouped.append(sample)
             continue
         grouped[int(group_index)].append(sample)
 
-    if grouped:
-        return [grouped[key] for key in sorted(grouped)]
-    if fallback_groups:
-        return fallback_groups
-
     n = max(int(getattr(args, "n_samples_per_prompt", 1) or 1), 1)
-    return [samples[i : i + n] for i in range(0, len(samples), n)]
+
+    if not grouped:
+        # No sample carries a group_index: fall back to contiguous chunks of
+        # n_samples_per_prompt so each group still holds the samples that must
+        # be compared against one another.
+        return [samples[i : i + n] for i in range(0, len(samples), n)]
+
+    groups = [grouped[key] for key in sorted(grouped)]
+    if ungrouped:
+        # Keep the un-indexed samples instead of dropping them; they form their
+        # own contiguous chunks so downstream reward/advantage alignment by
+        # position stays intact.
+        groups.extend(ungrouped[i : i + n] for i in range(0, len(ungrouped), n))
+    return groups
