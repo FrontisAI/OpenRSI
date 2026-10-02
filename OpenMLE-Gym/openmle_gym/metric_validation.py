@@ -34,14 +34,34 @@ def load_metric_class(task_dir: str | Path) -> type:
     metric_path = task_path / "utils" / "metric.py"
     module_name = f"openmle_metric_{task_path.name.replace('-', '_')}"
     module = _load_module(module_name, metric_path)
-    for _, obj in inspect.getmembers(module):
+    candidates = [
+        obj
+        for _, obj in inspect.getmembers(module)
         if (
             inspect.isclass(obj)
             and obj.__name__.endswith("Metrics")
             and obj.__module__ == module.__name__
-        ):
-            return obj
-    raise LookupError(f"No '*Metrics' class found in {metric_path}")
+        )
+    ]
+    if not candidates:
+        raise LookupError(f"No '*Metrics' class found in {metric_path}")
+
+    # inspect.getmembers() sorts by name, so returning the first match picks the
+    # class that happens to sort first. When a task declares an abstract base
+    # alongside its concrete implementation ("AbstractMetrics" /
+    # "TitanicMetrics"), that picks the base purely by alphabet -- and the base
+    # raises NotImplementedError. Prefer a class that actually implements
+    # evaluate(); among equals, prefer the most-derived one.
+    def rank(cls: type) -> tuple:
+        implements_evaluate = "evaluate" in vars(cls)
+        # Negated: the most-derived class has the fewest subclasses, and max()
+        # needs the largest key.
+        subclasses = -sum(
+            1 for other in candidates if other is not cls and issubclass(other, cls)
+        )
+        return (implements_evaluate, subclasses)
+
+    return max(candidates, key=rank)
 
 
 def evaluate_sample_submission(task_dir: str | Path) -> dict[str, Any]:
