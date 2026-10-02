@@ -1386,15 +1386,19 @@ def score2reward(score, metadata, mode="logistic", power_alpha: float | None = N
         # best score
         score_range_best_score = theoretical_max if theoretical_max is not None else leaderboard_max
 
-        # worst score
-        score_range_worst_score = safe_max(leaderboard_min, theoretical_min, -100)
+        # worst score: the lowest achievable bound, floored at -100
+        score_range_worst_score = safe_min(leaderboard_min, theoretical_min)
+        if score_range_worst_score is not None:
+            score_range_worst_score = max(-100, score_range_worst_score)
 
     else:
         # best score
         score_range_best_score = theoretical_min if theoretical_min is not None else leaderboard_min
 
-        # worst score
-        score_range_worst_score = safe_min(leaderboard_max, theoretical_max, 100)
+        # worst score: the highest achievable bound, capped at 100
+        score_range_worst_score = safe_max(leaderboard_max, theoretical_max)
+        if score_range_worst_score is not None:
+            score_range_worst_score = min(100, score_range_worst_score)
 
     # Return a neutral reward when the score interval is still unknown.
     if score_range_best_score is None or score_range_worst_score is None:
