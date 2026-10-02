@@ -205,6 +205,9 @@ def analyze_task(
         if metric_execution_mode == "isolated":
             raise
         row["Metric"] = f"#MEVA_RUNTIME_ERROR: {type(exc).__name__}: {exc}"
+        # overview_has_task_failures() keys on NOTE, so a metric failure has to
+        # be recorded there too or the batch is reported as successful.
+        row["NOTE"] = f"#TASK_RUNTIME_ERROR: {type(exc).__name__}: {exc}"
     return row
 
 
@@ -260,10 +263,20 @@ def _failed_overview_row(task_dir: Path, reason: str, skip_llm: bool) -> dict[st
 
 
 def overview_has_task_failures(path: str | Path) -> bool:
-    return any(
-        row.get("NOTE", "").startswith("#TASK_RUNTIME_ERROR:")
-        for row in _read_overview_rows(Path(path))
-    )
+    """Report whether any row failed.
+
+    Two markers count as a failure. #TASK_RUNTIME_ERROR: in NOTE is the
+    canonical one, written by _failed_overview_row() and by analyze_task() when
+    a task's metric raises. #MEVA_RUNTIME_ERROR: in Metric is also treated as a
+    failure so that a row written by an older version, or by a caller that only
+    populated Metric, is not silently reported as success.
+    """
+    def failed(row: dict[str, Any]) -> bool:
+        if str(row.get("NOTE", "")).startswith("#TASK_RUNTIME_ERROR:"):
+            return True
+        return str(row.get("Metric", "")).startswith("#MEVA_RUNTIME_ERROR:")
+
+    return any(failed(row) for row in _read_overview_rows(Path(path)))
 
 
 def generate_overview(
