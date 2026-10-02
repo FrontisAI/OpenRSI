@@ -300,7 +300,10 @@ def build_tasks(
     preflight_failures: dict[int, dict[str, Any]] = {}
     seen: set[str] = set()
     for index, slug in enumerate(raw_entries):
-        if limit is not None and index >= limit:
+        if limit is not None and len(selected) >= limit:
+            # Count accepted entries, not raw positions: duplicate and invalid
+            # lines must not consume slots, otherwise --limit selects fewer
+            # tasks than the dry run promised.
             break
         try:
             validate_task_name(slug)
