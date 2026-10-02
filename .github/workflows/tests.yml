@@ -1,0 +1,55 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  openmle-gym:
+    name: OpenMLE-Gym (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: OpenMLE-Gym/pyproject.toml
+
+      - name: Install openmle-gym with test extras
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[input]"
+          python -m pip install pytest
+
+      - name: Run tests
+        working-directory: OpenMLE-Gym
+        run: python -m pytest tests -q
+
+  openmle-evo:
+    name: OpenMLE-Evo (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: OpenMLE-Evo/pyproject.toml
+
+      - name: Install openmle-evo
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run tests
+        working-directory: OpenMLE-Evo
+        run: python -m pytest tests -q
