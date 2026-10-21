@@ -655,10 +655,9 @@ def score2reward(score, metadata, mode="logistic"):
         )
 
         # worst score
-        score_range_worst_score = safe_max(
+        score_range_worst_score = safe_min(
             leaderboard_min,
             theoretical_min,
-            -100
         )
 
     else:
@@ -670,10 +669,9 @@ def score2reward(score, metadata, mode="logistic"):
         )
 
         # worst score
-        score_range_worst_score = safe_min(
+        score_range_worst_score = safe_max(
             leaderboard_max,
             theoretical_max,
-            100
         )
 
     # 若仍然无法确定区间，直接返回中性奖励
